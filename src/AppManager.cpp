@@ -238,6 +238,8 @@ void AppManager::keyPressed(int key) {
             paused = !paused;
         } else if (key == '1') {
             setCurrentApplication("mqttTransmission");
+        } else if (key == '2') {
+            setCurrentApplication("axisChecker");
         }
 
     // forward unreserved keys to the application
