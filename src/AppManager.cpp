@@ -24,6 +24,9 @@ void AppManager::setup(){
     mqttApp = new MqttTransmissionApp();
     applications["mqttTransmission"] = mqttApp;
     
+    videoPlayerApp = new VideoPlayerApp();
+    applications["videoPlayer"] = videoPlayerApp;
+    
     // set up debugging application
     // and the debugging apps, too
     axisCheckerApp = new AxisCheckerApp();
@@ -240,6 +243,8 @@ void AppManager::keyPressed(int key) {
             setCurrentApplication("mqttTransmission");
         } else if (key == '2') {
             setCurrentApplication("axisChecker");
+        } else if (key == '3') {
+            setCurrentApplication("videoPlayer");
         }
 
     // forward unreserved keys to the application

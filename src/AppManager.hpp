@@ -29,6 +29,9 @@
 // mqtt application
 #include "MqttTransmissionApp.hpp"
 
+// static applications
+#include "VideoPlayerApp.hpp"
+
 class AppManager : public ofBaseApp {
     
 public:
@@ -67,6 +70,9 @@ private:
     
     // mqtt application
     MqttTransmissionApp *mqttApp;
+    
+    // static applications
+    VideoPlayerApp *videoPlayerApp;
     
     // program state
     bool paused = false;
