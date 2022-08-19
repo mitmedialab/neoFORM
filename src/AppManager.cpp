@@ -26,6 +26,7 @@ void AppManager::setup(){
     
     videoPlayerApp = new VideoPlayerApp();
     applications["videoPlayer"] = videoPlayerApp;
+    videoPlayerApp->setup();
     
     // set up debugging application
     // and the debugging apps, too
