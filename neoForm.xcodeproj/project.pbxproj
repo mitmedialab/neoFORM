@@ -53,6 +53,7 @@
 		10D9EDA52656E40F003F197B /* options.c in Sources */ = {isa = PBXBuildFile; fileRef = 10D9ED762656E40F003F197B /* options.c */; };
 		10D9EDA62656E40F003F197B /* srv_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10D9ED792656E40F003F197B /* srv_mosq.c */; };
 		10D9EDA72656E40F003F197B /* ofxMQTT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10D9ED7F2656E40F003F197B /* ofxMQTT.cpp */; };
+		B910432928ADDEAA00071B8A /* VideoPlayerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B910432728ADDEAA00071B8A /* VideoPlayerApp.cpp */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
 /* End PBXBuildFile section */
@@ -150,6 +151,8 @@
 		10D9ED7C2656E40F003F197B /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		10D9ED7E2656E40F003F197B /* ofxMQTT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxMQTT.h; sourceTree = "<group>"; };
 		10D9ED7F2656E40F003F197B /* ofxMQTT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxMQTT.cpp; sourceTree = "<group>"; };
+		B910432728ADDEAA00071B8A /* VideoPlayerApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VideoPlayerApp.cpp; sourceTree = "<group>"; };
+		B910432828ADDEAA00071B8A /* VideoPlayerApp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VideoPlayerApp.hpp; sourceTree = "<group>"; };
 		E42962AC2163EDD300A6A9E2 /* ofCamera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ofCamera.cpp; path = ../../../libs/openFrameworks/3d/ofCamera.cpp; sourceTree = SOURCE_ROOT; };
 		E42962AD2163EDD300A6A9E2 /* ofMesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ofMesh.h; path = ../../../libs/openFrameworks/3d/ofMesh.h; sourceTree = SOURCE_ROOT; };
 		E42962AE2163EDD300A6A9E2 /* ofNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ofNode.h; path = ../../../libs/openFrameworks/3d/ofNode.h; sourceTree = SOURCE_ROOT; };
@@ -352,6 +355,8 @@
 				10D9ED2B265571BE003F197B /* Application.hpp */,
 				10D9ED342656CFD3003F197B /* MqttTransmissionApp.cpp */,
 				10D9ED352656CFD3003F197B /* MqttTransmissionApp.hpp */,
+				B910432728ADDEAA00071B8A /* VideoPlayerApp.cpp */,
+				B910432828ADDEAA00071B8A /* VideoPlayerApp.hpp */,
 			);
 			path = Applications;
 			sourceTree = "<group>";
@@ -923,6 +928,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				10D9ED15265564B2003F197B /* utils.cpp in Sources */,
+				B910432928ADDEAA00071B8A /* VideoPlayerApp.cpp in Sources */,
 				10D9ED8B2656E40F003F197B /* messages_mosq.c in Sources */,
 				10D9ED9C2656E40F003F197B /* handle_publish.c in Sources */,
 				10D9ED852656E40F003F197B /* net_mosq.c in Sources */,
