@@ -19,7 +19,7 @@ public:
     string appInstructionsText();
     void keyPressed(int key);
 
-    string getName() {return "Axis Checker";};
+    string getName() {return "Mqtt Transmission";};
     
     // commands for mqtt
     ofxMQTT client;
