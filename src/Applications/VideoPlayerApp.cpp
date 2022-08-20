@@ -18,7 +18,12 @@ void VideoPlayerApp::update(float dt) {
 }
 
 void VideoPlayerApp::updateHeights() {
-    // get pixel values from the video and map them to pin heights here.
+    // Get pixel values from the video and map them to pin heights here.
+    ofPixels & pixels = video.getPixels();
+    for(size_t i = 0; i < pixels.size(); i++){
+        // do something here with the pixel value
+        char pix = pixels[i];
+    }
 }
 
 void VideoPlayerApp::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
