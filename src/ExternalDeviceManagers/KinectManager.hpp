@@ -9,5 +9,6 @@
 #define KinectManager_hpp
 
 #include <stdio.h>
+#include "ofxKinect.h"
 
 #endif /* KinectManager_hpp */
