@@ -33,7 +33,9 @@ private:
     int m_videoToTransformIndicies[1152];
     int m_videoPixelSize = 2448;
     
+    unsigned char * m_videoPixels;
     
+    ofPixels plz;
     
     
 };
