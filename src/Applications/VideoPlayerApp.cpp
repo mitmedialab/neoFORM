@@ -22,11 +22,11 @@ void VideoPlayerApp::updateHeights() {
     // Get pixel values from the video and map them to pin heights here.
     //m_videoPixels = video.getPixels().getData();
     
-    //plz is the stored pixels from the current video frame, stored in this app header.
-    plz = video.getPixels();
+    //m_videoPixels is the stored pixels from the current video frame, stored in this app header.
+    m_videoPixels = video.getPixels();
     
-    plz.setImageType(OF_IMAGE_GRAYSCALE);
-    cout << plz.size() << "\n";
+    m_videoPixels.setImageType(OF_IMAGE_GRAYSCALE);
+    //cout << plz.size() << "\n";
     //cout << m_videoToTransformIndicies[56] << " in array\n";
    
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
@@ -37,7 +37,7 @@ void VideoPlayerApp::updateHeights() {
             int unwrappedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
             
             // This takes the 1 dimensional index for the pin, and grabs the corresponding index from the uncorrected video pixel array.
-            heightsForShapeDisplay[unwrappedIndex] = plz[m_videoToTransformIndicies[unwrappedIndex]];
+            heightsForShapeDisplay[unwrappedIndex] = m_videoPixels[m_videoToTransformIndicies[unwrappedIndex]];
         }
     }
 }
