@@ -36,8 +36,6 @@ void VideoPlayerApp::updateHeights() {
             // This takes the 2 dimensional coordinates and turns them into a one dimensional index for the unwrapped array.
             int unwrappedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
             
-            char foo = plz[m_videoToTransformIndicies[unwrappedIndex]];
-            
             // This takes the 1 dimensional index for the pin, and grabs the corresponding index from the uncorrected video pixel array.
             heightsForShapeDisplay[unwrappedIndex] = plz[m_videoToTransformIndicies[unwrappedIndex]];
         }
