@@ -29,11 +29,11 @@ void VideoPlayerApp::updateHeights() {
 
         for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
             
-            // This takes the 2 dimensional coordinates and turns them into a one dimensional index for the unwrapped array.
-            int unwrappedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
+            // This takes the 2 dimensional coordinates and turns them into a one dimensional index for the flattened array.
+            int flattenedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
             
             // This takes the 1 dimensional index for the pin, and grabs the corresponding index from the uncorrected video pixel array.
-            heightsForShapeDisplay[unwrappedIndex] = m_videoPixels[m_videoToTransformIndicies[unwrappedIndex]];
+            heightsForShapeDisplay[flattenedIndex] = m_videoPixels[m_videoToTransformIndicies[flattenedIndex]];
         }
     }
 }
