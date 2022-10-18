@@ -11,4 +11,40 @@
 #include <stdio.h>
 #include "ofxKinect.h"
 
+class KinectManager {
+public:
+    KinectManager();
+    
+    ~KinectManager();
+    
+    void update();
+    
+    void orientInputImages();
+    
+    void getColorPixels(ofPixels &pixels);
+    
+    void getDepthPixels(ofPixels &pixels);
+    
+    void setDepthClipping(int near, int far);
+    
+    int numAvailableDevices();
+    
+    bool isFrameNew();
+    
+    bool isConnected();
+    
+    int getImageWidth();
+    
+    int getImageHeight();
+    
+private:
+    ofxKinect kinect;
+    
+    int imageWidth;
+    int imageHeight;
+    
+    ofPixels colorPixels;
+    ofPixels depthPixels;
+};
+
 #endif /* KinectManager_hpp */

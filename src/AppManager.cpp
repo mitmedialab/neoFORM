@@ -33,6 +33,8 @@ void AppManager::setup(){
     axisCheckerApp = new AxisCheckerApp();
     applications["axisChecker"] = axisCheckerApp;
     
+    kinectDebugApp = new KinectDebugApp();
+    applications["kinectDebug"] = kinectDebugApp;
     // give applications read access to input data
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
         Application *app = iter->second;
@@ -246,6 +248,8 @@ void AppManager::keyPressed(int key) {
             setCurrentApplication("axisChecker");
         } else if (key == '3') {
             setCurrentApplication("videoPlayer");
+        } else if (key == '4') {
+            setCurrentApplication("kinectDebug");
         }
 
     // forward unreserved keys to the application

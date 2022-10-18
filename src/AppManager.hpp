@@ -20,11 +20,16 @@
 #include "ShapeIOManager.hpp"
 #include "TransformIOManager.hpp"
 
+// External Device Managers
+#include "KinectManager.hpp"
+
 // major classes
 #include "Application.hpp"
 
 // debugging applications
 #include "AxisCheckerApp.hpp"
+
+#include "KinectDebugApp.hpp"
 
 // mqtt application
 #include "MqttTransmissionApp.hpp"
@@ -67,12 +72,14 @@ private:
     
     // debugging applications
     AxisCheckerApp *axisCheckerApp;
+    KinectDebugApp *kinectDebugApp;
     
     // mqtt application
     MqttTransmissionApp *mqttApp;
     
     // static applications
     VideoPlayerApp *videoPlayerApp;
+    
     
     // program state
     bool paused = false;
