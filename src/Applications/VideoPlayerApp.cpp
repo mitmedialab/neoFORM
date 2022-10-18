@@ -20,9 +20,10 @@ void VideoPlayerApp::update(float dt) {
 
 void VideoPlayerApp::updateHeights() {
     // Get pixel values from the video and map them to pin heights here.
-    //m_videoPixels is the stored pixels from the current video frame, stored in this app header.
+    // m_videoPixels is the stored pixels from the current video frame, stored in this app header.
     m_videoPixels = video.getPixels();
     
+    // Grayscale ensures that there is only one brightness value per pixel (instead of three channel RGB).
     m_videoPixels.setImageType(OF_IMAGE_GRAYSCALE);
    
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
