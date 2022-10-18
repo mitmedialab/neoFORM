@@ -20,14 +20,10 @@ void VideoPlayerApp::update(float dt) {
 
 void VideoPlayerApp::updateHeights() {
     // Get pixel values from the video and map them to pin heights here.
-    //m_videoPixels = video.getPixels().getData();
-    
     //m_videoPixels is the stored pixels from the current video frame, stored in this app header.
     m_videoPixels = video.getPixels();
     
     m_videoPixels.setImageType(OF_IMAGE_GRAYSCALE);
-    //cout << plz.size() << "\n";
-    //cout << m_videoToTransformIndicies[56] << " in array\n";
    
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
 
