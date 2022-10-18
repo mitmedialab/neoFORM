@@ -116,9 +116,6 @@ void VideoPlayerApp::setupTransformedPixelMap(){
         }
     }
 }
-int VideoPlayerApp::getBlockWidth(){
-    return m_blockWidth;
-}
 
 void VideoPlayerApp::keyPressed(int key) {
     // no-op
