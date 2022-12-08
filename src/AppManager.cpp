@@ -17,6 +17,9 @@ void AppManager::setup(){
     // initialize shape display and set up helper objects
     setupShapeDisplayManagement();
     
+    // setup external devices (e.g., kinect)
+    kinectManager = new KinectManager();
+    
     // zero timeOfLastUpdate tracker
     timeOfLastUpdate = elapsedTimeInSeconds();
     

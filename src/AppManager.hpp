@@ -66,6 +66,9 @@ private:
     // interfaces to the peripherals
     ShapeIOManager *shapeIOManager;
     
+    // external devices
+    KinectManager *kinectManager;
+    
     // applications
     map<string, Application *> applications;
     Application *currentApplication;
