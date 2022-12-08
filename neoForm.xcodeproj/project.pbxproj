@@ -54,6 +54,7 @@
 		10D9EDA62656E40F003F197B /* srv_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 10D9ED792656E40F003F197B /* srv_mosq.c */; };
 		10D9EDA72656E40F003F197B /* ofxMQTT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10D9ED7F2656E40F003F197B /* ofxMQTT.cpp */; };
 		8471173B28FF626200F02D84 /* KinectDebugApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8471173928FF626200F02D84 /* KinectDebugApp.cpp */; };
+		8471173E294175E300F02D84 /* KinectManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B993188D28BAECAC00F904DE /* KinectManager.cpp */; };
 		B910432928ADDEAA00071B8A /* VideoPlayerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B910432728ADDEAA00071B8A /* VideoPlayerApp.cpp */; };
 		B99318C228BAEE3F00F904DE /* usb-1.0.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B993189728BAEE3F00F904DE /* usb-1.0.0.a */; };
 		B99318C328BAEE3F00F904DE /* loader.c in Sources */ = {isa = PBXBuildFile; fileRef = B99318A928BAEE3F00F904DE /* loader.c */; };
@@ -566,8 +567,6 @@
 		B993188C28BAECAC00F904DE /* ExternalDeviceManagers */ = {
 			isa = PBXGroup;
 			children = (
-				B993188D28BAECAC00F904DE /* KinectManager.cpp */,
-				B993188E28BAECAC00F904DE /* KinectManager.hpp */,
 			);
 			path = ExternalDeviceManagers;
 			sourceTree = "<group>";
@@ -1035,6 +1034,8 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				B993188D28BAECAC00F904DE /* KinectManager.cpp */,
+				B993188E28BAECAC00F904DE /* KinectManager.hpp */,
 				B993188C28BAECAC00F904DE /* ExternalDeviceManagers */,
 				10D9ED1126556460003F197B /* Constants */,
 				10D9ED1026556457003F197B /* Utils */,
@@ -1190,6 +1191,7 @@
 				10D9ED1C265566DC003F197B /* SerialShapeIO.cpp in Sources */,
 				10D9ED2526556A45003F197B /* ShapeIOManager.cpp in Sources */,
 				10D9ED842656E40F003F197B /* tls_mosq.c in Sources */,
+				8471173E294175E300F02D84 /* KinectManager.cpp in Sources */,
 				10D9EDA72656E40F003F197B /* ofxMQTT.cpp in Sources */,
 				B99318C828BAEE3F00F904DE /* tilt.c in Sources */,
 				10D9ED962656E40F003F197B /* util_mosq.c in Sources */,
