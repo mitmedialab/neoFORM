@@ -17,6 +17,9 @@ void AppManager::setup(){
     // initialize shape display and set up helper objects
     setupShapeDisplayManagement();
     
+    // setup external devices (e.g., kinect)
+    kinectManager = new KinectManager();
+    
     // zero timeOfLastUpdate tracker
     timeOfLastUpdate = elapsedTimeInSeconds();
     
@@ -24,11 +27,17 @@ void AppManager::setup(){
     mqttApp = new MqttTransmissionApp();
     applications["mqttTransmission"] = mqttApp;
     
+    videoPlayerApp = new VideoPlayerApp();
+    applications["videoPlayer"] = videoPlayerApp;
+    videoPlayerApp->setup();
+    
     // set up debugging application
     // and the debugging apps, too
     axisCheckerApp = new AxisCheckerApp();
     applications["axisChecker"] = axisCheckerApp;
     
+    kinectDebugApp = new KinectDebugApp();
+    applications["kinectDebug"] = kinectDebugApp;
     // give applications read access to input data
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
         Application *app = iter->second;
@@ -240,6 +249,10 @@ void AppManager::keyPressed(int key) {
             setCurrentApplication("mqttTransmission");
         } else if (key == '2') {
             setCurrentApplication("axisChecker");
+        } else if (key == '3') {
+            setCurrentApplication("videoPlayer");
+        } else if (key == '4') {
+            setCurrentApplication("kinectDebug");
         }
 
     // forward unreserved keys to the application
