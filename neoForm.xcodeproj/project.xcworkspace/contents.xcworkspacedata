@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/jdub/CodeProjects/openframeworks/omniform/of_v20210513_osx_release neoForm/apps/myApps/emptyExample/neoForm.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>
