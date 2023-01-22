@@ -38,8 +38,10 @@ void KinectManager::update() {
     kinect.update();
 
     if (isFrameNew()) {
-        colorPixels.setFromPixels(kinect.getPixels(), kinect.width, kinect.height, OF_IMAGE_COLOR);
-        depthPixels.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height, OF_IMAGE_GRAYSCALE);
+        //colorPixels.setFromPixels(kinect.getPixels(), kinect.width, kinect.height, OF_IMAGE_COLOR);
+        //depthPixels.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height, OF_IMAGE_GRAYSCALE);
+        colorPixels = kinect.getPixels();
+        depthPixels = kinect.getDepthPixels();
 
         orientInputImages();
     }
