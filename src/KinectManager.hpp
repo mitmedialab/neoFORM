@@ -37,7 +37,6 @@ public:
     
     int getImageHeight();
     
-private:
     ofxKinect kinect;
     
     int imageWidth;

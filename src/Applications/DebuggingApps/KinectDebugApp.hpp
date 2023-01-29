@@ -17,11 +17,16 @@ public:
 //    KinectDebugApp();
 //    ~KinectDebugApp();
     
+    KinectDebugApp(KinectManager* kinectManager);
+    
     void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     
     // near and far boundary values for depth data captured, specified in millimeters
     //pair<int, int> getDepthInputBoundaries();
-};
 
+private:
+    KinectManager* m_kinectManager;
+
+};
 #endif /* KinectDebugApp_hpp */

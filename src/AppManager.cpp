@@ -36,7 +36,7 @@ void AppManager::setup(){
     axisCheckerApp = new AxisCheckerApp();
     applications["axisChecker"] = axisCheckerApp;
     
-    kinectDebugApp = new KinectDebugApp();
+    kinectDebugApp = new KinectDebugApp(kinectManager);
     applications["kinectDebug"] = kinectDebugApp;
     // give applications read access to input data
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
