@@ -139,7 +139,7 @@ void AppManager::update(){
         }
     }
 
-    // render graphics
+    // Render the shape preview from the app into the graphicsForShapeDisplay frame buffer.
    graphicsForShapeDisplay.begin();
     ofBackground(0);
     ofSetColor(255);
