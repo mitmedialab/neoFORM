@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include "Application.hpp"
+#include "KinectManager.hpp"
 
 
 class AxisCheckerApp : public Application {
