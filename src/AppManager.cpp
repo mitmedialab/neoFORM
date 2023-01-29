@@ -159,13 +159,13 @@ void AppManager::draw(){
     
     // draw shape and color I/O images
 
-    ofRect(1, 1, 302, 302);
+    ofDrawRectangle(1, 1, 302, 302);
     ofImage(heightPixelsFromShapeDisplay).draw(2, 2, 300, 300);
     
-    ofRect(305, 1, 302, 302);
+    ofDrawRectangle(305, 1, 302, 302);
     ofImage(heightPixelsForShapeDisplay).draw(306, 2, 300, 300);
     
-    ofRect(609, 1, 302, 302);
+    ofDrawRectangle(609, 1, 302, 302);
     graphicsForShapeDisplay.draw(610, 2, 300, 300);
     
     ofRect(913, 1, 302, 302);
