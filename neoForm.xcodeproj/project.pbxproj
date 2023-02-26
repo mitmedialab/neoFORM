@@ -44,7 +44,6 @@
 		7ADB04AF67C568EAFAEBA546 /* ofxKinectExtras.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01438542609FC64F1EC60EEB /* ofxKinectExtras.cpp */; };
 		7BB869C7114A607859B1D47C /* ofxMQTT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8130AFF2F6485D85D2604796 /* ofxMQTT.cpp */; };
 		7F59AC8CDAF8CF8D30E50E57 /* send_disconnect.c in Sources */ = {isa = PBXBuildFile; fileRef = 25D84EECC76A85F5598FF2B3 /* send_disconnect.c */; };
-		84AAF8B629904CF1001DF148 /* KinectTracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84AAF8B429904CF1001DF148 /* KinectTracker.cpp */; };
 		960D20B191346612D5C05A6A /* ofxTCPClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF88F02779DD820913ACEA06 /* ofxTCPClient.cpp */; };
 		970F7BDF7CEC493324E54078 /* mosquitto.c in Sources */ = {isa = PBXBuildFile; fileRef = 3ED28FEFD9CF37FA98716CB4 /* mosquitto.c */; };
 		A5AA80533C3E963A2F9AE672 /* connect.c in Sources */ = {isa = PBXBuildFile; fileRef = EE30C563540B82C44CE106AF /* connect.c */; };
@@ -368,8 +367,6 @@
 		83C70000C4AE60283CC77EB9 /* freenect_internal.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = freenect_internal.h; path = ../../../addons/ofxKinect/libs/libfreenect/src/freenect_internal.h; sourceTree = SOURCE_ROOT; };
 		848371264443687510D5047E /* cv_cpu_dispatch.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cv_cpu_dispatch.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/cv_cpu_dispatch.h; sourceTree = SOURCE_ROOT; };
 		849E0FB3BF7726C6FFE88602 /* matx.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = matx.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv4/opencv2/core/matx.hpp; sourceTree = SOURCE_ROOT; };
-		84AAF8B429904CF1001DF148 /* KinectTracker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KinectTracker.cpp; sourceTree = "<group>"; };
-		84AAF8B529904CF1001DF148 /* KinectTracker.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = KinectTracker.hpp; sourceTree = "<group>"; };
 		84C059AA681D7088B742D8E8 /* cuda.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cuda.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/cuda.hpp; sourceTree = SOURCE_ROOT; };
 		84DB6A323E1B2EBC068676D0 /* version.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = version.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/dnn/version.hpp; sourceTree = SOURCE_ROOT; };
 		85EE29124410F522F3338B11 /* mosquitto_internal.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = mosquitto_internal.h; path = "../../../addons/ofxMQTT-1.5.0/libs/mosquitto/src/mosquitto_internal.h"; sourceTree = SOURCE_ROOT; };
@@ -1671,8 +1668,6 @@
 			children = (
 				B9A9F2F5297DF82000ACC2F8 /* KinectManager.cpp */,
 				B9A9F2F6297DF82000ACC2F8 /* KinectManager.hpp */,
-				84AAF8B429904CF1001DF148 /* KinectTracker.cpp */,
-				84AAF8B529904CF1001DF148 /* KinectTracker.hpp */,
 			);
 			path = KinectManager;
 			sourceTree = "<group>";
@@ -2680,7 +2675,6 @@
 				610BC333CDAE587DEB9AAEAA /* callbacks.c in Sources */,
 				B9A9F324297DF82000ACC2F8 /* AxisCheckerApp.cpp in Sources */,
 				A5AA80533C3E963A2F9AE672 /* connect.c in Sources */,
-				84AAF8B629904CF1001DF148 /* KinectTracker.cpp in Sources */,
 				3ED5B9A5D2B0F2C1252B327D /* handle_auth.c in Sources */,
 				B9A9F31E297DF82000ACC2F8 /* utils.cpp in Sources */,
 				FBF33C2405C6C8FEB2354602 /* handle_connack.c in Sources */,

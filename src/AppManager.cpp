@@ -18,7 +18,9 @@ void AppManager::setup(){
     setupShapeDisplayManagement();
     
     // setup external devices (e.g., kinect)
-    kinectManager = new KinectManager();
+    //kinectManager = new KinectManager();
+    kinectManager = new KinectManager(230, 70, 20);
+
     
     // zero timeOfLastUpdate tracker
     timeOfLastUpdate = elapsedTimeInSeconds();
