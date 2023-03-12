@@ -52,6 +52,8 @@ void KinectManager::loadAlphaMaskAndPrepForCvProcessing(){
     image.setImageType(OF_IMAGE_COLOR);
     maskColorCv.setFromPixels(image.getPixels());
     maskCv = maskColorCv;
+    
+    //useMask = true;
 }
 
 void KinectManager::baseSetup(){
@@ -149,8 +151,8 @@ void KinectManager::calculateThresholdsAndModifyImages(){
 }
 
 void KinectManager::orientInputImages() {
-        colorPixels.rotate90(2);
-        depthPixels.rotate90(2);
+        //colorPixels.rotate90(2);
+        //depthPixels.rotate90(2);
 }
 
 void KinectManager::getColorPixels(ofPixels &pixels) {
@@ -191,5 +193,16 @@ int KinectManager::getImageHeight() {
 }
 
 void KinectManager::drawContours(){
-    contourFinder.draw(0,0,200,100);
+    // Draw a preview of the contours that opencv identified.
+    contourFinder.draw(0,0,640,480);
+    
+    // Draw solid bounding boxes for each contour blob in the contour finder
+    ofColor c(255, 255, 255);
+    for(int i = 0; i < contourFinder.nBlobs; i++) {
+       ofRectangle r = contourFinder.blobs.at(i).boundingRect;
+       //r.x += 320; r.y += 240;
+       c.setHsb(i * 64, 255, 255);
+       ofSetColor(c);
+       ofDrawRectangle(r);
+   }
 }
