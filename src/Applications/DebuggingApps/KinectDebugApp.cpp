@@ -7,6 +7,8 @@
 
 #include "KinectDebugApp.hpp"
 
+#include "ofxXmlSettings.h"
+
 KinectDebugApp::KinectDebugApp(KinectManager* kinectManager){
     m_kinectManager = kinectManager;
 }

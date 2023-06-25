@@ -14,6 +14,8 @@
 
 #include "ofxOpenCv.h"
 
+#include "ofxXmlSettings.h"
+
 class KinectDebugApp : public Application{
 public:
 
