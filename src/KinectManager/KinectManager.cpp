@@ -204,5 +204,32 @@ void KinectManager::drawContours(){
        c.setHsb(i * 64, 255, 255);
        ofSetColor(c);
        ofDrawRectangle(r);
+        if (m_contoursRecordedFlag<1){
+            m_capturedContours.push_back(r);
+        }
    }
+    m_contoursRecordedFlag = 1;
 }
+
+std::vector<int> KinectManager::getBigBoundingRectValues(std::vector<ofRectangle> theBlobs){
+    std::vector<int> output;
+    
+    output.push_back((int)theBlobs[0].getX());
+    output.push_back((int)theBlobs[1].getY());
+    output.push_back((int)theBlobs[2].getWidth());
+    output.push_back((int)theBlobs[3].getHeight());
+    
+    return output;
+}
+
+
+std::vector<ofRectangle> KinectManager::getBlobs(){
+    return m_capturedContours;
+}
+
+
+
+
+
+
+

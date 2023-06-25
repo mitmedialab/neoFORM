@@ -90,6 +90,17 @@ public:
     ofFbo fbo;
     
     ofxCvContourFinder      contourFinder;
+    
+    // Dan book keeping to be able to save config file of contours of rectangular shape display bounding box
+    std::vector<int> getBigBoundingRectValues(std::vector<ofRectangle>);
+    
+    std::vector<ofRectangle> getBlobs();
+    
+    //linked list of ofRectangles for blob contours
+    std::vector<ofRectangle> m_capturedContours;
+    int m_contoursRecordedFlag = 0;
+    //ofRectangle* m_capturedContours;
+    
 };
 
 #endif /* KinectManager_hpp */
