@@ -44,6 +44,10 @@
 		7ADB04AF67C568EAFAEBA546 /* ofxKinectExtras.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01438542609FC64F1EC60EEB /* ofxKinectExtras.cpp */; };
 		7BB869C7114A607859B1D47C /* ofxMQTT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8130AFF2F6485D85D2604796 /* ofxMQTT.cpp */; };
 		7F59AC8CDAF8CF8D30E50E57 /* send_disconnect.c in Sources */ = {isa = PBXBuildFile; fileRef = 25D84EECC76A85F5598FF2B3 /* send_disconnect.c */; };
+		84CE66CA2A48CDED00921BAA /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84CE66C42A48CDED00921BAA /* tinyxmlparser.cpp */; };
+		84CE66CB2A48CDED00921BAA /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84CE66C52A48CDED00921BAA /* tinyxmlerror.cpp */; };
+		84CE66CC2A48CDED00921BAA /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84CE66C62A48CDED00921BAA /* tinyxml.cpp */; };
+		84CE66CD2A48CDED00921BAA /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84CE66C82A48CDED00921BAA /* ofxXmlSettings.cpp */; };
 		960D20B191346612D5C05A6A /* ofxTCPClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF88F02779DD820913ACEA06 /* ofxTCPClient.cpp */; };
 		970F7BDF7CEC493324E54078 /* mosquitto.c in Sources */ = {isa = PBXBuildFile; fileRef = 3ED28FEFD9CF37FA98716CB4 /* mosquitto.c */; };
 		A5AA80533C3E963A2F9AE672 /* connect.c in Sources */ = {isa = PBXBuildFile; fileRef = EE30C563540B82C44CE106AF /* connect.c */; };
@@ -368,6 +372,12 @@
 		848371264443687510D5047E /* cv_cpu_dispatch.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cv_cpu_dispatch.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/cv_cpu_dispatch.h; sourceTree = SOURCE_ROOT; };
 		849E0FB3BF7726C6FFE88602 /* matx.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = matx.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv4/opencv2/core/matx.hpp; sourceTree = SOURCE_ROOT; };
 		84C059AA681D7088B742D8E8 /* cuda.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cuda.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/cuda.hpp; sourceTree = SOURCE_ROOT; };
+		84CE66C32A48CDED00921BAA /* tinyxml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml.h; sourceTree = "<group>"; };
+		84CE66C42A48CDED00921BAA /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
+		84CE66C52A48CDED00921BAA /* tinyxmlerror.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlerror.cpp; sourceTree = "<group>"; };
+		84CE66C62A48CDED00921BAA /* tinyxml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml.cpp; sourceTree = "<group>"; };
+		84CE66C82A48CDED00921BAA /* ofxXmlSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxXmlSettings.cpp; sourceTree = "<group>"; };
+		84CE66C92A48CDED00921BAA /* ofxXmlSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxXmlSettings.h; sourceTree = "<group>"; };
 		84DB6A323E1B2EBC068676D0 /* version.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = version.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/dnn/version.hpp; sourceTree = SOURCE_ROOT; };
 		85EE29124410F522F3338B11 /* mosquitto_internal.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = mosquitto_internal.h; path = "../../../addons/ofxMQTT-1.5.0/libs/mosquitto/src/mosquitto_internal.h"; sourceTree = SOURCE_ROOT; };
 		861B5E7A444F20DBDF743639 /* uthash.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = uthash.h; path = "../../../addons/ofxMQTT-1.5.0/libs/mosquitto/src/uthash.h"; sourceTree = SOURCE_ROOT; };
@@ -1672,6 +1682,36 @@
 			path = KinectManager;
 			sourceTree = "<group>";
 		};
+		84CE66C12A48CDED00921BAA /* ofxXmlSettings */ = {
+			isa = PBXGroup;
+			children = (
+				84CE66C22A48CDED00921BAA /* libs */,
+				84CE66C72A48CDED00921BAA /* src */,
+			);
+			name = ofxXmlSettings;
+			path = ../../../addons/ofxXmlSettings;
+			sourceTree = "<group>";
+		};
+		84CE66C22A48CDED00921BAA /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				84CE66C32A48CDED00921BAA /* tinyxml.h */,
+				84CE66C42A48CDED00921BAA /* tinyxmlparser.cpp */,
+				84CE66C52A48CDED00921BAA /* tinyxmlerror.cpp */,
+				84CE66C62A48CDED00921BAA /* tinyxml.cpp */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+		84CE66C72A48CDED00921BAA /* src */ = {
+			isa = PBXGroup;
+			children = (
+				84CE66C82A48CDED00921BAA /* ofxXmlSettings.cpp */,
+				84CE66C92A48CDED00921BAA /* ofxXmlSettings.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		86FEC009E2721D0FB23338D7 /* features2d */ = {
 			isa = PBXGroup;
 			children = (
@@ -1995,6 +2035,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				84CE66C12A48CDED00921BAA /* ofxXmlSettings */,
 				9683228C705CA3FF4F2EA945 /* ofxKinect */,
 				062C8287FF93301CC27E6656 /* ofxMQTT-1.5.0 */,
 				18240ECCE4076FB0833A8578 /* ofxNetwork */,
@@ -2707,6 +2748,8 @@
 				1FA72848C8337EC38CC44BEB /* send_connect.c in Sources */,
 				B9A9F31B297DF82000ACC2F8 /* SerialShapeIO.cpp in Sources */,
 				B9A9F319297DF82000ACC2F8 /* SerialIOManager.cpp in Sources */,
+				84CE66CA2A48CDED00921BAA /* tinyxmlparser.cpp in Sources */,
+				84CE66CB2A48CDED00921BAA /* tinyxmlerror.cpp in Sources */,
 				7F59AC8CDAF8CF8D30E50E57 /* send_disconnect.c in Sources */,
 				4E4864D2F0F4BC534DCD772A /* send_mosq.c in Sources */,
 				3810A17985F000CBCECAF4AE /* send_publish.c in Sources */,
@@ -2718,12 +2761,14 @@
 				E04291D21E6AA9CA63350010 /* srv_mosq.c in Sources */,
 				461753F41E2BCC885CD9728B /* strings_mosq.c in Sources */,
 				1985F508DABADFBFD7EE6A21 /* thread_mosq.c in Sources */,
+				84CE66CC2A48CDED00921BAA /* tinyxml.cpp in Sources */,
 				1F0F9FBF69381509F6969127 /* time_mosq.c in Sources */,
 				F527E399D8A82479A7082187 /* tls_mosq.c in Sources */,
 				B006626C26FF99AB717C7CD4 /* utf8_mosq.c in Sources */,
 				549DA215810C4915DA94ED9F /* util_mosq.c in Sources */,
 				BCC0588F6EE7A6B94548C546 /* util_topic.c in Sources */,
 				A7A38C1DAA6949FC9F8B48C0 /* will_mosq.c in Sources */,
+				84CE66CD2A48CDED00921BAA /* ofxXmlSettings.cpp in Sources */,
 				7BB869C7114A607859B1D47C /* ofxMQTT.cpp in Sources */,
 				661A1991F5CE4CCC2919D8E7 /* ofxNetworkUtils.cpp in Sources */,
 				960D20B191346612D5C05A6A /* ofxTCPClient.cpp in Sources */,
