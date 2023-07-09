@@ -214,11 +214,34 @@ void KinectManager::drawContours(){
 std::vector<int> KinectManager::getBigBoundingRectValues(std::vector<ofRectangle> theBlobs){
     std::vector<int> output;
     
-    output.push_back((int)theBlobs[0].getX());
-    output.push_back((int)theBlobs[1].getY());
-    output.push_back((int)theBlobs[2].getWidth());
-    output.push_back((int)theBlobs[3].getHeight());
+    // Iterate through all the blobs looking for the one that most closely matches the aspect ratio of the transform surface.
     
+    // Declaring iterator to a vector
+    vector<ofRectangle>::iterator ptr;
+    
+    ofRectangle chosenOne; // The closest match will be the "chosenOne".
+    float chosenError;
+    float transformRatio = 4.03;  // This is the ratio for TRANSFORM, other shape displays will need a different constant.
+    float ratio = 99999999; // larger than life
+    float error = 99999999;
+    
+    
+    for (ptr = theBlobs.begin(); ptr < theBlobs.end(); ptr++) {
+        ratio = ptr->getWidth()/ptr->getHeight();
+        error = abs(transformRatio - ratio);
+        
+        if (error<chosenError){
+            chosenOne = *ptr;
+            chosenError = error;
+        }
+    }
+    
+    output.push_back((int)chosenOne.getX());
+    output.push_back((int)chosenOne.getY());
+    output.push_back((int)chosenOne.getWidth());
+    output.push_back((int)chosenOne.getHeight());
+
+    // Return the dimensions of the "chosenOne" blob as the one that is probably the TANSFORM surface.
     return output;
 }
 
