@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "ofxKinect.h"
 #include "ofxOpenCv.h"
+#include "ofxXmlSettings.h"
 
 class KinectManager {
 public:
@@ -71,11 +72,14 @@ public:
     int mContourMinimumSize; // the minimum size of a contour in pixels
     bool isCurrentlyRecording;
     bool playFromRecording;
-    bool useMask = false;
+    bool useMask = true;
     
     ofImage mask, colorMask;
     ofxCvColorImage maskColorCv;
     ofxCvGrayscaleImage maskCv;
+    
+    ofxXmlSettings settings;
+    ofRectangle m_mask;
     
     ofxCvGrayscaleImage     depthThreshed; // grayscale depth image
     ofxCvGrayscaleImage     lastDepthThreshed;

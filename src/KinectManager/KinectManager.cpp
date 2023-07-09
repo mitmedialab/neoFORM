@@ -43,17 +43,30 @@ KinectManager::KinectManager(int pNearThreshold, int pFarThreshold, int pContour
 
 void KinectManager::loadAlphaMaskAndPrepForCvProcessing(){
     // type is OF_IMAGE_COLOR_ALPHA
-    mask.loadImage("mask.png");
+    //mask.loadImage("mask.png");
     
     // simple way to convert to differe image type,
     // changing the transparent areas to white
-    ofImage image;
-    image.setFromPixels(mask.getPixelsRef());
-    image.setImageType(OF_IMAGE_COLOR);
-    maskColorCv.setFromPixels(image.getPixels());
-    maskCv = maskColorCv;
+    //ofImage image;
+    //image.setFromPixels(mask.getPixelsRef());
+    //image.setImageType(OF_IMAGE_COLOR);
+    //maskColorCv.setFromPixels(image.getPixels());
+    //maskCv = maskColorCv;
     
-    //useMask = true;
+    settings.loadFile("settings.xml");
+    
+    int x_pos  = settings.getValue("x_pos", 0);
+    int y_pos  = settings.getValue("y_pos", 0);
+    int width  = settings.getValue("width", 0);
+    int height = settings.getValue("height", 0);
+    
+    if (width == 0) {
+        useMask = false;
+        
+    } else {
+        m_mask.set((float) x_pos, (float) y_pos, (float) width, (float) height);
+        useMask = true;
+    }
 }
 
 void KinectManager::baseSetup(){
@@ -106,6 +119,8 @@ void KinectManager::update() {
         // always update the depth image
         depthThreshed.setFromPixels(depthImg.getPixels());//, kinect.width, kinect.height);
         
+            
+            
         // subtract mask which is png alpha image called "mask.png"
         if(useMask) subtractMask();
                 
@@ -122,6 +137,37 @@ void KinectManager::update() {
 }
 
 void KinectManager::subtractMask(){
+    //cvAnd(depthImg.getCvImage(), maskCv.getCvImage(), depthImg.getCvImage(), NULL);
+    //mask.loadImage("mask.png");
+    
+    ofImage img;
+        
+    int counter = 0;
+    
+    int w=640;
+    int h = 480;
+    img.allocate(w, h, OF_IMAGE_COLOR);
+    img.setColor(ofColor::white);
+    for (int i = 0; i < w; i++) {
+        ofColor color= ofColor(255,255,255);
+        for (int j = 0; j < h; j++) {
+            if ((i>= (int) m_mask.position.x) and (i<= (int) m_mask.position.x + (int) m_mask.width) and (j>= (int) m_mask.position.y) and (j<= (int) m_mask.position.y + (int) m_mask.height)){
+                color= ofColor(255,255,255);
+            }
+            else{
+                color = ofColor(0,0,0);
+            }
+            
+            //ofColor color= ofColor(255,255,255);//(255-i%w,j%h,255);
+            img.setColor(i % w, j % h, color);
+        }
+    }
+    img.update();
+    
+    maskColorCv.setFromPixels(img.getPixels());
+    maskCv = maskColorCv;
+    
+    
     cvAnd(depthImg.getCvImage(), maskCv.getCvImage(), depthImg.getCvImage(), NULL);
 }
 
