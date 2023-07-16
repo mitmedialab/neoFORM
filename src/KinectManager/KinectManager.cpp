@@ -127,29 +127,30 @@ void KinectManager::update() {
             depthThreshed.setFromPixels(depthImg.getPixels());//, kinect.width, kinect.height);
             
                 
-            if (!m_configConfirmed){
+            if (!m_configConfirmed) {
                 
             // determine if we use mask
                 bool settingsExist = settings.loadFile("settings.xml");
                 cout << "Awaiting Configuration of Mask \n";
                 if (settingsExist){
-                    int x_pos  = settings.getValue("x_pos", 0);
-                    int y_pos  = settings.getValue("y_pos", 0);
                     int width  = settings.getValue("width", 0);
-                    int height = settings.getValue("height", 0);
-                    
+
                     if (width < 2){
                         useMask = false;
+                    } else {
+                        // If the settings exist and are viable, use them to set the mask.
+                        m_mask.set(
+                           (float) settings.getValue("x_pos", 0),
+                           (float) settings.getValue("y_pos", 0),
+                           (float) settings.getValue("width", 0),
+                           (float) settings.getValue("height", 0)
+                       );
                         
-                } else {
-                        m_mask.position[0] = settings.getValue("x_pos", 0);
-                        m_mask.position[1] = settings.getValue("y_pos", 0);
-                        m_mask.width = settings.getValue("width", 0);
-                        m_mask.height = settings.getValue("height", 0);
                         useMask = true;
                         m_configConfirmed=true;
                     }
                 }
+                
             }
                 
             // subtract mask which is png alpha image called "mask.png"
