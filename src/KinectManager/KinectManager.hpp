@@ -74,7 +74,6 @@ public:
     bool playFromRecording;
     bool useMask = false;
     
-    ofImage mask, colorMask;
     ofxCvColorImage maskColorCv;
     ofxCvGrayscaleImage maskCv;
     
