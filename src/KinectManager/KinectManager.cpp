@@ -37,43 +37,6 @@ KinectManager::KinectManager(int pNearThreshold, int pFarThreshold, int pContour
     
     isCurrentlyRecording = false;
     playFromRecording = false;
-    
-    loadAlphaMaskAndPrepForCvProcessing();
-}
-
-void KinectManager::loadAlphaMaskAndPrepForCvProcessing(){
-    useMask = false;
-    // type is OF_IMAGE_COLOR_ALPHA
-    //mask.loadImage("mask.png");
-    
-    // simple way to convert to differe image type,
-    // changing the transparent areas to white
-    //ofImage image;
-    //image.setFromPixels(mask.getPixelsRef());
-    //image.setImageType(OF_IMAGE_COLOR);
-    //maskColorCv.setFromPixels(image.getPixels());
-    //maskCv = maskColorCv;
-    
-   /* settings.loadFile("settings.xml");
-    
-    int x_pos  = settings.getValue("x_pos", 0);
-    int y_pos  = settings.getValue("y_pos", 0);
-    int width  = settings.getValue("width", 0);
-    int height = settings.getValue("height", 0);
-    
-    useMask = false;
-    if (width == 0) {
-        saveShapeDisplayBoundingBox();
-        //settings.loadFile("settings.xml");
-       //x_pos  = settings.getValue("x_pos", 0);
-        //y_pos  = settings.getValue("y_pos", 0);
-        //width  = settings.getValue("width", 0);
-        //height = settings.getValue("height", 0);
-        
-    }
-    m_mask.set((float) x_pos, (float) y_pos, (float) width, (float) height);
-    //useMask = true;*/
-
 }
 
 void KinectManager::baseSetup(){

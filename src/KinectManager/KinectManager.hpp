@@ -34,8 +34,6 @@ public:
     
     void setDepthClipping(int near, int far);
     
-    void loadAlphaMaskAndPrepForCvProcessing();
-    
     void subtractMask();
     
     void calculateThresholdsAndModifyImages();
