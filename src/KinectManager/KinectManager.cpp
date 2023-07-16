@@ -246,6 +246,9 @@ void KinectManager::drawContours(){
     
     // Draw solid bounding boxes for each contour blob in the contour finder
     ofColor c(255, 255, 255);
+    ofSetLineWidth(3);
+    ofNoFill();
+    
     for(int i = 0; i < contourFinder.nBlobs; i++) {
        ofRectangle r = contourFinder.blobs.at(i).boundingRect;
        //r.x += 320; r.y += 240;
