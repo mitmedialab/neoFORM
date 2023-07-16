@@ -33,28 +33,10 @@ void KinectDebugApp::drawGraphicsForShapeDisplay(int x, int y, int width, int he
     
 }
 
-// Press a key to save the current large bounding box (hopefully for the TRANSFORM) to a text file
-void KinectDebugApp::saveShapeDisplayBoundingBox(){
-    //m_BoundaryFile.open("shape_display_boundaries.txt",ofFile::WriteOnly);
-    //m_BoundaryFile << "some text";
-    
-    std::vector<int> theRectDims = m_kinectManager->getBigBoundingRectValues(m_kinectManager->getBlobs());
-    
-    
-    
-    ofxXmlSettings settings;
-    settings.loadFile("settings.xml");
-    settings.setValue("x_pos", theRectDims.at(0));
-    settings.setValue("y_pos", theRectDims.at(1));
-    settings.setValue("width", theRectDims.at(2));
-    settings.setValue("height", theRectDims.at(3));
-    settings.saveFile("settings.xml");
-}
-
 void KinectDebugApp::keyPressed(int key){
     
     if (key=='s'){
-        saveShapeDisplayBoundingBox();
+        m_kinectManager->saveShapeDisplayBoundingBox();
     }
     
     

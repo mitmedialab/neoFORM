@@ -26,10 +26,7 @@ public:
     
     // Press a key to save the current large bounding box (hopefully for the TRANSFORM) to a text file
     void keyPressed(int key);
-    
-    void saveShapeDisplayBoundingBox();
 
-    
 
 private:
     KinectManager* m_kinectManager;

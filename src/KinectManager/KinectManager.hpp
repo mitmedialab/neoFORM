@@ -50,6 +50,8 @@ public:
     
     int getImageHeight();
     
+    vector<int> saveShapeDisplayBoundingBox();
+    
     void drawContours();
     //General Kinect Fields
     
@@ -72,7 +74,7 @@ public:
     int mContourMinimumSize; // the minimum size of a contour in pixels
     bool isCurrentlyRecording;
     bool playFromRecording;
-    bool useMask = true;
+    bool useMask = false;
     
     ofImage mask, colorMask;
     ofxCvColorImage maskColorCv;
@@ -104,6 +106,8 @@ public:
     std::vector<ofRectangle> m_capturedContours;
     int m_contoursRecordedFlag = 0;
     //ofRectangle* m_capturedContours;
+    
+    bool m_configConfirmed = false; // to determine whether or not to check for config
     
 };
 

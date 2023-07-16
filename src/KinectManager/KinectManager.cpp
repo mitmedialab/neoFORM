@@ -42,6 +42,7 @@ KinectManager::KinectManager(int pNearThreshold, int pFarThreshold, int pContour
 }
 
 void KinectManager::loadAlphaMaskAndPrepForCvProcessing(){
+    useMask = false;
     // type is OF_IMAGE_COLOR_ALPHA
     //mask.loadImage("mask.png");
     
@@ -53,20 +54,26 @@ void KinectManager::loadAlphaMaskAndPrepForCvProcessing(){
     //maskColorCv.setFromPixels(image.getPixels());
     //maskCv = maskColorCv;
     
-    settings.loadFile("settings.xml");
+   /* settings.loadFile("settings.xml");
     
     int x_pos  = settings.getValue("x_pos", 0);
     int y_pos  = settings.getValue("y_pos", 0);
     int width  = settings.getValue("width", 0);
     int height = settings.getValue("height", 0);
     
+    useMask = false;
     if (width == 0) {
-        useMask = false;
+        saveShapeDisplayBoundingBox();
+        //settings.loadFile("settings.xml");
+       //x_pos  = settings.getValue("x_pos", 0);
+        //y_pos  = settings.getValue("y_pos", 0);
+        //width  = settings.getValue("width", 0);
+        //height = settings.getValue("height", 0);
         
-    } else {
-        m_mask.set((float) x_pos, (float) y_pos, (float) width, (float) height);
-        useMask = true;
     }
+    m_mask.set((float) x_pos, (float) y_pos, (float) width, (float) height);
+    //useMask = true;*/
+
 }
 
 void KinectManager::baseSetup(){
@@ -110,31 +117,62 @@ void KinectManager::update() {
         orientInputImages();
         
         
-        if (contourTrackingOn){
-        // SPECIAL UPDATE CODE FOR CONTOUR STUFFS
-        colorImg.setFromPixels(kinect.getPixels());//, kinect.width, kinect.height);
-        depthImg.setFromPixels(kinect.getDepthPixels()); //, kinect.width, kinect.height);
-        
-        lastDepthThreshed.setFromPixels(depthThreshed.getPixels());//, kinect.width, kinect.height);
-        // always update the depth image
-        depthThreshed.setFromPixels(depthImg.getPixels());//, kinect.width, kinect.height);
-        
+        if (contourTrackingOn) {
+            // SPECIAL UPDATE CODE FOR CONTOUR STUFFS
+            colorImg.setFromPixels(kinect.getPixels());//, kinect.width, kinect.height);
+            depthImg.setFromPixels(kinect.getDepthPixels()); //, kinect.width, kinect.height);
             
+            lastDepthThreshed.setFromPixels(depthThreshed.getPixels());//, kinect.width, kinect.height);
+            // always update the depth image
+            depthThreshed.setFromPixels(depthImg.getPixels());//, kinect.width, kinect.height);
             
-        // subtract mask which is png alpha image called "mask.png"
-        if(useMask) subtractMask();
+                
+            if (!m_configConfirmed){
+                
+            // determine if we use mask
+                bool settingsExist = settings.loadFile("settings.xml");
+                cout << "Awaiting Configuration of Mask \n";
+                if (settingsExist){
+                    int x_pos  = settings.getValue("x_pos", 0);
+                    int y_pos  = settings.getValue("y_pos", 0);
+                    int width  = settings.getValue("width", 0);
+                    int height = settings.getValue("height", 0);
+                    
+                    if (width < 2){
+                        useMask = false;
+                        
+                } else {
+                        m_mask.position[0] = settings.getValue("x_pos", 0);
+                        m_mask.position[1] = settings.getValue("y_pos", 0);
+                        m_mask.width = settings.getValue("width", 0);
+                        m_mask.height = settings.getValue("height", 0);
+                        useMask = true;
+                        m_configConfirmed=true;
+                    }
+                }
+            }
+                
+            // subtract mask which is png alpha image called "mask.png"
+            if(useMask) {subtractMask();}
+
+        }
                 
         // threshold calcutations convery depth map into black and white images
         calculateThresholdsAndModifyImages();
         
+            
+            cout << "CONTOUR FINDER NOW\n";
+            
         // find contours which are between the size of 20 pixels and 1/3 the w*h pixels.
         // if find holes is set to true, we will get interior contours as well.
         contourFinder.findContours(depthImg, mContourMinimumSize, (kinect.width*kinect.height)/2, 10, false);
         
         depthThreshedDiff.absDiff(lastDepthThreshed, depthThreshed);
         }
+        
+        
     }
-}
+//}
 
 void KinectManager::subtractMask(){
     //cvAnd(depthImg.getCvImage(), maskCv.getCvImage(), depthImg.getCvImage(), NULL);
@@ -290,6 +328,23 @@ std::vector<int> KinectManager::getBigBoundingRectValues(std::vector<ofRectangle
     // Return the dimensions of the "chosenOne" blob as the one that is probably the TANSFORM surface.
     return output;
 }
+
+vector<int> KinectManager::saveShapeDisplayBoundingBox(){
+    
+    std::vector<int> theRectDims = getBigBoundingRectValues(getBlobs());
+    
+    ofxXmlSettings settings;
+    settings.loadFile("settings.xml");
+    settings.setValue("x_pos", theRectDims.at(0));
+    settings.setValue("y_pos", theRectDims.at(1));
+    settings.setValue("width", theRectDims.at(2));
+    settings.setValue("height", theRectDims.at(3));
+    settings.saveFile("settings.xml");
+    
+    return theRectDims;
+    
+}
+
 
 
 std::vector<ofRectangle> KinectManager::getBlobs(){
