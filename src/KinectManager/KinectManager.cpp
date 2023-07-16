@@ -139,6 +139,7 @@ void KinectManager::update() {
 //}
 
 void KinectManager::subtractMask(){
+    // This used to be accomplished by loading a png with an alpha channel, now we are synthesizing an image based on the mask dimensions and using that.
     //cvAnd(depthImg.getCvImage(), maskCv.getCvImage(), depthImg.getCvImage(), NULL);
     //mask.loadImage("mask.png");
     
