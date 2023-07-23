@@ -50,6 +50,12 @@ public:
     
     vector<int> saveShapeDisplayBoundingBox();
     
+    //
+    //functions for spatially splicing up the bounding box
+    //
+    
+    
+    
     void drawContours();
     //General Kinect Fields
     
@@ -105,6 +111,56 @@ public:
     //ofRectangle* m_capturedContours;
     
     bool m_configConfirmed = false; // to determine whether or not to check for config
+    
+    // ***********************
+    // Transform Slicing Dimensions
+    // ***********************
+    
+    //          |-- block --|        |-- block --|        |-- block --|
+    //  _______________________________________________________________________   ___
+    //  |   z0  |    z1     |   z2   |     z3    |   z4   |    z5     |  z6   |    |
+    //  |       |           |        |           |        |           |       |    |
+    //  |  dead |  active   |  dead  |   active  |  dead  |  active   | dead  |    H
+    //  |       |           |        |           |        |           |       |    |
+    //  |_______|___________|________|___________|________|___________|_______|    |
+    //   L_outer             L_inner              R_inner              R_outer    ---
+    //  |--------------------------------- W ---------------------------------|
+    
+    float m_Transform_L_outer = 13.375; //inches
+    float m_Transform_L_inner = 13.9375; //inches
+    float m_Transform_R_inner = 14.25; //inches
+    float m_Transform_R_outer = 13.1875; //inches
+
+    float m_Transform_W = 104.75; //inches
+    float m_Transform_H = 26; //inches
+    
+    float m_Transform_block = 15.75; //inches
+    int m_Transform_block_h_pins = 24; // # of pins
+    int m_Transform_block_w_pins = 16; // # of pins
+    
+    ofPixels m_kinectCroppedTransformPixels;
+    
+    //function that maps kinect pixels to transform pins
+    //takes as input depth pixels
+    // finds whether depth pixels are in a dead or active block
+    // within the block, if active, return affected pins and heights
+    
+    //return a copy of found cropped pixels
+    ofPixels getCroppedPixels(ofPixels inputDepthPixels);
+    
+    // Calculate Block Number
+    int calculateBlockNumber(int x_pixel_coord);
+    int calculateWithinBlockX(int blockNumber, int x_pixel_coord);
+    
+    //initial mapping
+    void setupTransformedPixelMap();
+    
+    int m_kinectToTransformIndicies[1152];
+    
+    
+    
+    
+    
     
 };
 

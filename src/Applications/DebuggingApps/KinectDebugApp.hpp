@@ -21,14 +21,20 @@ public:
 
     KinectDebugApp(KinectManager* kinectManager);
     
+    void setup();
     void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     
     // Press a key to save the current large bounding box (hopefully for the TRANSFORM) to a text file
     void keyPressed(int key);
+    
+    ofImage rawSurfaceDepth;
 
 
 private:
     KinectManager* m_kinectManager;
+    
+    void updateHeights();
+    
 };
 #endif /* KinectDebugApp_hpp */
