@@ -44,6 +44,7 @@
 		7ADB04AF67C568EAFAEBA546 /* ofxKinectExtras.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01438542609FC64F1EC60EEB /* ofxKinectExtras.cpp */; };
 		7BB869C7114A607859B1D47C /* ofxMQTT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8130AFF2F6485D85D2604796 /* ofxMQTT.cpp */; };
 		7F59AC8CDAF8CF8D30E50E57 /* send_disconnect.c in Sources */ = {isa = PBXBuildFile; fileRef = 25D84EECC76A85F5598FF2B3 /* send_disconnect.c */; };
+		84AEEE292A926C7700D26E7C /* DepthDebugApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84AEEE272A926C7700D26E7C /* DepthDebugApp.cpp */; };
 		84CE66CA2A48CDED00921BAA /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84CE66C42A48CDED00921BAA /* tinyxmlparser.cpp */; };
 		84CE66CB2A48CDED00921BAA /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84CE66C52A48CDED00921BAA /* tinyxmlerror.cpp */; };
 		84CE66CC2A48CDED00921BAA /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84CE66C62A48CDED00921BAA /* tinyxml.cpp */; };
@@ -371,6 +372,8 @@
 		83C70000C4AE60283CC77EB9 /* freenect_internal.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = freenect_internal.h; path = ../../../addons/ofxKinect/libs/libfreenect/src/freenect_internal.h; sourceTree = SOURCE_ROOT; };
 		848371264443687510D5047E /* cv_cpu_dispatch.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cv_cpu_dispatch.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/cv_cpu_dispatch.h; sourceTree = SOURCE_ROOT; };
 		849E0FB3BF7726C6FFE88602 /* matx.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = matx.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv4/opencv2/core/matx.hpp; sourceTree = SOURCE_ROOT; };
+		84AEEE272A926C7700D26E7C /* DepthDebugApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DepthDebugApp.cpp; sourceTree = "<group>"; };
+		84AEEE282A926C7700D26E7C /* DepthDebugApp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DepthDebugApp.hpp; sourceTree = "<group>"; };
 		84C059AA681D7088B742D8E8 /* cuda.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cuda.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/cuda.hpp; sourceTree = SOURCE_ROOT; };
 		84CE66C32A48CDED00921BAA /* tinyxml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml.h; sourceTree = "<group>"; };
 		84CE66C42A48CDED00921BAA /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
@@ -2020,6 +2023,8 @@
 				B9A9F312297DF82000ACC2F8 /* AxisCheckerApp.hpp */,
 				B9A9F313297DF82000ACC2F8 /* KinectDebugApp.hpp */,
 				B9A9F314297DF82000ACC2F8 /* AxisCheckerApp.cpp */,
+				84AEEE272A926C7700D26E7C /* DepthDebugApp.cpp */,
+				84AEEE282A926C7700D26E7C /* DepthDebugApp.hpp */,
 			);
 			path = DebuggingApps;
 			sourceTree = "<group>";
@@ -2727,6 +2732,7 @@
 				E6342994C60A63BC4263B198 /* handle_publish.c in Sources */,
 				01991C2C7D73E179354ACC7D /* handle_pubrec.c in Sources */,
 				C1F96F941B78EDED16EC543A /* handle_pubrel.c in Sources */,
+				84AEEE292A926C7700D26E7C /* DepthDebugApp.cpp in Sources */,
 				7373FA1D6BAC0EBE8E566798 /* handle_suback.c in Sources */,
 				B9A9F321297DF82000ACC2F8 /* VideoPlayerApp.cpp in Sources */,
 				B9A9F320297DF82000ACC2F8 /* MqttTransmissionApp.cpp in Sources */,
