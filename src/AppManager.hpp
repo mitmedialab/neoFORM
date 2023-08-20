@@ -37,6 +37,9 @@
 // static applications
 #include "VideoPlayerApp.hpp"
 
+// Debugging app for the frame buffer and image slicing
+#include "DepthDebugApp.hpp"
+
 class AppManager : public ofBaseApp {
     
 public:
@@ -76,6 +79,7 @@ private:
     // debugging applications
     AxisCheckerApp *axisCheckerApp;
     KinectDebugApp *kinectDebugApp;
+    DepthDebugApp *depthDebugApp;
     
     // mqtt application
     MqttTransmissionApp *mqttApp;

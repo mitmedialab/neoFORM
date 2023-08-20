@@ -40,6 +40,10 @@ void AppManager::setup(){
     
     kinectDebugApp = new KinectDebugApp(kinectManager);
     applications["kinectDebug"] = kinectDebugApp;
+    
+    depthDebugApp = new DepthDebugApp();
+    applications["depthDebug"] = depthDebugApp;
+    
     // give applications read access to input data
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
         Application *app = iter->second;
@@ -255,6 +259,8 @@ void AppManager::keyPressed(int key) {
             setCurrentApplication("videoPlayer");
         } else if (key == '4') {
             setCurrentApplication("kinectDebug");
+        } else if (key == '5') {
+            setCurrentApplication("depthDebug");
         }
 
     // forward unreserved keys to the application
