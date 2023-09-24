@@ -34,6 +34,8 @@ public:
 private:
     KinectManager* m_kinectManager;
     
+    int m_transformStartHeight;
+    
     void updateHeights();
     
 };
