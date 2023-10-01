@@ -59,7 +59,7 @@ void KinectDebugApp::keyPressed(int key){
     
 }
 
-ofPixels KinectDebugApp::getLivePixelsFromFullSurface( ofPixels fullSurface ) {
+ofPixels KinectDebugApp::getLivePixelsFromFullTransformSurface( ofPixels fullSurface ) {
     int xAccumPixels = 0;
     
     
@@ -196,7 +196,7 @@ void KinectDebugApp::updateHeights() {
         ofPixels m_videoPixels = m_kinectManager->getCroppedPixels((m_kinectManager->depthPixels));//video.getPixels();
         
         // Extact only the actuated part of the surface from the full depthmap;
-        ofPixels livePixels = getLivePixelsFromFullSurface( m_videoPixels );
+        ofPixels livePixels = getLivePixelsFromFullTransformSurface( m_videoPixels );
 
             
         float tempSum = 0;
