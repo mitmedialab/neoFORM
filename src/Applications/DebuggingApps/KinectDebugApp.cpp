@@ -11,11 +11,47 @@
 
 KinectDebugApp::KinectDebugApp(KinectManager* kinectManager){
     m_kinectManager = kinectManager;
+    
+    // TEMP FIX: PREINITIALIZE WIDTH AND HEIGHT OF MASK
+    m_kinectManager->m_mask.width = 100;
+    m_kinectManager->m_mask.height = 100;
+    // END TEMP FIX: hope to figure this out
+
+    m_kinectManager->setupTransformedPixelMap();
+    setupDepthFloorMap();
+    
 }
 
 void KinectDebugApp::setup() {
     m_kinectManager->setupTransformedPixelMap();
+    setupDepthFloorMap();
 }
+
+void KinectDebugApp::setupDepthFloorMap() {
+    //set all pins to 0
+    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
+
+        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+            
+            // This takes the 2 dimensional coordinates and turns them into a one dimensional index for the flattened array.
+            int flattenedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
+            
+            // This takes the 1 dimensional index for the pin, and grabs the corresponding index from the uncorrected video pixel array.
+            heightsForShapeDisplay[flattenedIndex] = 0;
+        }
+    }
+    
+    // record all pins live pixels
+    ofPixels m_videoPixels = m_kinectManager->getCroppedPixels((m_kinectManager->depthPixels));//video.getPixels();
+    
+    // Extact only the actuated part of the surface from the full depthmap;
+    // save all pin lives pixels
+    rawSurfaceDepth = getLivePixelsFromFullTransformSurface( m_videoPixels );
+
+    
+    cout << "setup the depth floor map w00t";
+}
+
 void KinectDebugApp::update(float dt) {
     cout << "we updatin";
     //update();
@@ -209,15 +245,16 @@ void KinectDebugApp::updateHeights() {
                 int flattenedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
                 
                 // This takes the 1 dimensional index for the pin, and grabs the corresponding index from the uncorrected video pixel array.
-                heightsForShapeDisplay[flattenedIndex] = livePixels[flattenedIndex];//m_kinectManager->m_kinectToTransformIndicies[flattenedIndex]];
+                heightsForShapeDisplay[flattenedIndex] = livePixels[flattenedIndex];
+                //m_kinectManager->m_kinectToTransformIndicies[flattenedIndex]];
                 
                 // TEMPORARY TODO THRESHOLDER FOR ZEROS
                 
-                if (m_transformStartHeight >0){
-                    if ((livePixels[flattenedIndex] <= m_transformStartHeight +9) && ((livePixels[flattenedIndex] >= m_transformStartHeight -9))){
+                if (rawSurfaceDepth[flattenedIndex] >0){
+                    if ((livePixels[flattenedIndex] <= rawSurfaceDepth[flattenedIndex] +9) && ((livePixels[flattenedIndex] >= rawSurfaceDepth[flattenedIndex] -9))){
                         heightsForShapeDisplay[flattenedIndex] = 0;
-                    }if(livePixels[flattenedIndex] >m_transformStartHeight +9){
-                        heightsForShapeDisplay[flattenedIndex] = (int) roundf(heightsForShapeDisplay[flattenedIndex]*1.8)-m_transformStartHeight;
+                    }if(livePixels[flattenedIndex] >rawSurfaceDepth[flattenedIndex] +9){
+                        heightsForShapeDisplay[flattenedIndex] = (int) roundf(heightsForShapeDisplay[flattenedIndex]*1.8)-rawSurfaceDepth[flattenedIndex];
                     }
                    // if (heightsForShapeDisplay[flattenedIndex]>(m_transformStartHeight+50)){
                    //     heightsForShapeDisplay[flattenedIndex]=0;
