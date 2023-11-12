@@ -12,21 +12,36 @@
 #include "Application.hpp"
 #include "KinectManager.hpp"
 
+#include "ofxOpenCv.h"
+
+#include "ofxXmlSettings.h"
+
 class KinectDebugApp : public Application{
 public:
-//    KinectDebugApp();
-//    ~KinectDebugApp();
-    
+
     KinectDebugApp(KinectManager* kinectManager);
     
+    void setup();
     void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     
-    // near and far boundary values for depth data captured, specified in millimeters
-    //pair<int, int> getDepthInputBoundaries();
+    // Extracts only the actuated pixel from the full TRANSFORM surface, leaving behind the dead zones.
+    ofPixels getLivePixelsFromFullTransformSurface( ofPixels fullSurface );
+    
+    // Press a key to save the current large bounding box (hopefully for the TRANSFORM) to a text file
+    void keyPressed(int key);
+    
+    ofPixels rawSurfaceDepth;
+
+    void setupDepthFloorMap();
+    
 
 private:
     KinectManager* m_kinectManager;
-
+    
+    int m_transformStartHeight;
+    
+    void updateHeights();
+    
 };
 #endif /* KinectDebugApp_hpp */

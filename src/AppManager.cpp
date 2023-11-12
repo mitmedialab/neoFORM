@@ -18,7 +18,10 @@ void AppManager::setup(){
     setupShapeDisplayManagement();
     
     // setup external devices (e.g., kinect)
-    kinectManager = new KinectManager();
+    //kinectManager = new KinectManager();
+    // Depth thresholds for the kinect are set here.
+    kinectManager = new KinectManager(230, 70, 20);
+
     
     // zero timeOfLastUpdate tracker
     timeOfLastUpdate = elapsedTimeInSeconds();
@@ -38,6 +41,10 @@ void AppManager::setup(){
     
     kinectDebugApp = new KinectDebugApp(kinectManager);
     applications["kinectDebug"] = kinectDebugApp;
+    
+    depthDebugApp = new DepthDebugApp();
+    applications["depthDebug"] = depthDebugApp;
+    
     // give applications read access to input data
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
         Application *app = iter->second;
@@ -140,7 +147,8 @@ void AppManager::update(){
     }
 
     // Render the shape preview from the app into the graphicsForShapeDisplay frame buffer.
-   graphicsForShapeDisplay.begin();
+   
+    graphicsForShapeDisplay.begin();
     ofBackground(0);
     ofSetColor(255);
     currentApplication->drawGraphicsForShapeDisplay(0, 0, 600, 800);
@@ -253,6 +261,8 @@ void AppManager::keyPressed(int key) {
             setCurrentApplication("videoPlayer");
         } else if (key == '4') {
             setCurrentApplication("kinectDebug");
+        } else if (key == '5') {
+            setCurrentApplication("depthDebug");
         }
 
     // forward unreserved keys to the application
