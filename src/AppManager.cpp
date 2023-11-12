@@ -19,6 +19,7 @@ void AppManager::setup(){
     
     // setup external devices (e.g., kinect)
     //kinectManager = new KinectManager();
+    // Depth thresholds for the kinect are set here.
     kinectManager = new KinectManager(230, 70, 20);
 
     
@@ -146,7 +147,8 @@ void AppManager::update(){
     }
 
     // Render the shape preview from the app into the graphicsForShapeDisplay frame buffer.
-   graphicsForShapeDisplay.begin();
+   
+    graphicsForShapeDisplay.begin();
     ofBackground(0);
     ofSetColor(255);
     currentApplication->drawGraphicsForShapeDisplay(0, 0, 600, 800);

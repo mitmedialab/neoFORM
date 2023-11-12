@@ -115,7 +115,7 @@ void KinectManager::update() {
                 }
                 
             }
-                
+
             // subtract mask which is png alpha image called "mask.png"
             if(useMask) {subtractMask();}
 
