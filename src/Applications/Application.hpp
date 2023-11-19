@@ -38,6 +38,13 @@ public:
 
     double timeOfLastPinConfigsUpdate = -1;
 
+    // TRANSFORM related dead block calculations
+    int m_videoToTransformIndicies[1152];
+    int m_videoPixelSize = 2448;
+    int calculateTransformWithinBlockX(int blockNumber, int x_pixel_coord);
+    int calculateTransformBlockNumber(int x_pixel_coord);
+    void setupTransformedPixelMap();
+
 protected:
     ofPixels heightsForShapeDisplay;
     PinConfigs pinConfigsForShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
