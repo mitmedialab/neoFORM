@@ -28,21 +28,26 @@ void AppManager::setup(){
     
     // set up applications
     mqttApp = new MqttTransmissionApp();
+    mqttApp->setRefForShapeIOManager(m_serialShapeIOManager);
     applications["mqttTransmission"] = mqttApp;
     
     videoPlayerApp = new VideoPlayerApp();
+    videoPlayerApp->setRefForShapeIOManager(m_serialShapeIOManager);
     applications["videoPlayer"] = videoPlayerApp;
     videoPlayerApp->setup();
     
     // set up debugging application
     // and the debugging apps, too
     axisCheckerApp = new AxisCheckerApp();
+    axisCheckerApp->setRefForShapeIOManager(m_serialShapeIOManager);
     applications["axisChecker"] = axisCheckerApp;
     
     kinectDebugApp = new KinectDebugApp(kinectManager);
+    kinectDebugApp->setRefForShapeIOManager(m_serialShapeIOManager);
     applications["kinectDebug"] = kinectDebugApp;
     
     depthDebugApp = new DepthDebugApp();
+    depthDebugApp->setRefForShapeIOManager(m_serialShapeIOManager);
     applications["depthDebug"] = depthDebugApp;
     
     // give applications read access to input data
@@ -50,7 +55,7 @@ void AppManager::setup(){
         Application *app = iter->second;
 
         // shape display heights, if they are accessible
-        if (shapeIOManager->heightsFromShapeDisplayAvailable) {
+        if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
             app->setHeightsFromShapeDisplayRef(&heightPixelsFromShapeDisplay);
         }
     }
@@ -62,7 +67,8 @@ void AppManager::setup(){
 // initialize the shape display and set up shape display helper objects
 void AppManager::setupShapeDisplayManagement() {
     // initialize communication with the shape display
-    shapeIOManager = new TransformIOManager();
+    // This is where the particulars of the shape display are set (i.e. TRANSFORM, inFORM, or any other physical layout).
+    m_serialShapeIOManager = new TransformIOManager();
     
     printf("Setting up Shape Display Management\n");
 
@@ -75,7 +81,7 @@ void AppManager::setupShapeDisplayManagement() {
     pinConfigs.maxI = DEFAULT_MAX_I;
     pinConfigs.deadZone = DEFAULT_DEAD_ZONE;
     pinConfigs.maxSpeed = DEFAULT_MAX_SPEED;
-    shapeIOManager->setGlobalPinConfigs(pinConfigs);
+    m_serialShapeIOManager->setGlobalPinConfigs(pinConfigs);
     timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
 
     // clear height and pin config buffers
@@ -110,8 +116,8 @@ void AppManager::update(){
     timeOfLastUpdate = currentTime;
 
     // copy heights from shape display to pixels object
-    if (shapeIOManager->heightsFromShapeDisplayAvailable) {
-        shapeIOManager->getHeightsFromShapeDisplay(heightsFromShapeDisplay);
+    if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
+        m_serialShapeIOManager->getHeightsFromShapeDisplay(heightsFromShapeDisplay);
 
         // note: manually looping over all pixels is important! the underlying
         // ofPixels char array is stored as unsigned char[y][x], while the
@@ -154,9 +160,9 @@ void AppManager::update(){
     currentApplication->drawGraphicsForShapeDisplay(0, 0, 600, 800);
     graphicsForShapeDisplay.end();
     
-    shapeIOManager->sendHeightsToShapeDisplay(heightsForShapeDisplay);
+    m_serialShapeIOManager->sendHeightsToShapeDisplay(heightsForShapeDisplay);
     if (pinConfigsAreStale) {
-        shapeIOManager->setPinConfigs(pinConfigsForShapeDisplay);
+        m_serialShapeIOManager->setPinConfigs(pinConfigsForShapeDisplay);
         timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
     }
 }
@@ -231,8 +237,8 @@ void AppManager::updateDepthInputBoundaries() {
 }
 
 void AppManager::exit() {
-    // delete shapeIOManager to shut down the shape display
-    delete shapeIOManager;
+    // delete m_serialShapeIOManager to shut down the shape display
+    delete m_serialShapeIOManager;
 }
 
 // handle key presses. keys unused by app manager are forwarded to the current

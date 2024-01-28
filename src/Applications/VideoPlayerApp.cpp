@@ -8,7 +8,7 @@
 #include "VideoPlayerApp.hpp"
 
 void VideoPlayerApp::setup() {
-    setupTransformedPixelMap();
+    //setupTransformedPixelMap();
     video.load("escher-5-slow.mov");
     video.play();
 }
@@ -26,6 +26,8 @@ void VideoPlayerApp::updateHeights() {
     // Grayscale ensures that there is only one brightness value per pixel (instead of three channel RGB).
     m_videoPixels.setImageType(OF_IMAGE_GRAYSCALE);
    
+    //ofPixels onlyPinPixels = m_CustomShapeDisplayManager->getPinPixelsOnly(m_videoPixels);
+    
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
 
         for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
@@ -34,7 +36,7 @@ void VideoPlayerApp::updateHeights() {
             int flattenedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
             
             // This takes the 1 dimensional index for the pin, and grabs the corresponding index from the uncorrected video pixel array.
-            heightsForShapeDisplay[flattenedIndex] = m_videoPixels[m_videoToTransformIndicies[flattenedIndex]];
+            heightsForShapeDisplay[flattenedIndex] = m_videoPixels[getRefForShapeIOManager()->getPixelsToShapeDisplayIndicies()[flattenedIndex]];
         }
     }
 }

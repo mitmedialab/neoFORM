@@ -13,11 +13,14 @@
 #include "constants.h"
 #include "utils.hpp"
 #include "PinConfigs.h"
-
+#include "../ShapeDisplayManagers/ShapeIOManager.hpp"
+#include "../ShapeDisplayManagers/TransformIOManager.hpp"
 
 class Application {
 public:
     Application();
+    
+    Application(ShapeIOManager *theCustomShapeDisplayManager);
     
     void getHeightsForShapeDisplay(ofPixels &heights);
     void getPinConfigsForShapeDisplay(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
@@ -37,15 +40,16 @@ public:
     virtual pair<int, int> getDepthInputBoundaries() {return pair<int, int>(-1, -1);};
 
     double timeOfLastPinConfigsUpdate = -1;
-
-    // TRANSFORM related dead block calculations
-    int m_videoToTransformIndicies[1152];
-    int m_videoPixelSize = 2448;
-    int calculateTransformWithinBlockX(int blockNumber, int x_pixel_coord);
-    int calculateTransformBlockNumber(int x_pixel_coord);
-    void setupTransformedPixelMap();
-
+    
+    
+    //Dan trying to add stuff
+    void setRefForShapeIOManager(SerialShapeIOManager* customIOManager);
+    
+    //temporary way to access ref for mid transplant
+    SerialShapeIOManager* getRefForShapeIOManager();
+    
 protected:
+    
     ofPixels heightsForShapeDisplay;
     PinConfigs pinConfigsForShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
     const ofPixels *heightsFromShapeDisplay;
@@ -56,6 +60,8 @@ protected:
     bool hasPixelsFromKinect = false;
 
     ofFbo heightsDrawingBuffer;
+    
+    SerialShapeIOManager* m_CustomShapeDisplayManager;
 };
 
 
