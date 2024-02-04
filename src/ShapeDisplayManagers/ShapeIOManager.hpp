@@ -26,6 +26,8 @@ public:
     // setters for pin config values
     virtual void setPinConfigs(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) = 0;
     virtual void setGlobalPinConfigs(PinConfigs configs) = 0;
+    
+    //virtual ofPixels getPinPixelsOnly(ofPixels fullPixels);
 
     // can heights be read from the display?
     const bool heightsFromShapeDisplayAvailable = SHAPE_DISPLAY_CAN_TALK_BACK;

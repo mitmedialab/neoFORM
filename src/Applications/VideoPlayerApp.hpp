@@ -24,12 +24,6 @@ public:
 private:
     void updateHeights();
     ofVideoPlayer video;
-    int calculateBlockNumber(int x_pixel_coord);
-    int calculateWithinBlockX(int blockNumber, int x_pixel_coord);
-    void setupTransformedPixelMap();
-
-    int m_videoToTransformIndicies[1152];
-    int m_videoPixelSize = 2448;
     
     ofPixels m_videoPixels;
     

@@ -13,6 +13,22 @@ Application::Application() {
     heightsDrawingBuffer.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y);
 };
 
+/*Application::Application(ShapeIOManager *theCustomShapeDisplayManager){
+    heightsForShapeDisplay.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y, OF_IMAGE_GRAYSCALE);
+    heightsForShapeDisplay.set(0);
+    heightsDrawingBuffer.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y);
+    
+    m_CustomShapeDisplayManager = theCustomShapeDisplayManager};
+*/
+void Application::setRefForShapeIOManager(SerialShapeIOManager* customIOManager){
+    m_CustomShapeDisplayManager = customIOManager;
+}
+
+SerialShapeIOManager* Application::getRefForShapeIOManager(){
+    return m_CustomShapeDisplayManager;
+}
+
+// This is a setter not a getter. Yuck.
 void Application::getHeightsForShapeDisplay(ofPixels &heights) {
     heights = heightsForShapeDisplay;
 };

@@ -46,6 +46,13 @@ public:
 
     // the name of this shape display
     string shapeDisplayName = "Serial Shape Display";
+    
+    ofPixels getPinPixelsOnly(ofPixels snobby);
+    
+    
+    // Declare virtual method to real space pixels to dead and live transform pixels.
+    virtual int* getPixelsToShapeDisplayIndicies(){return geebsTEMP;}
+
 
 protected:
     // manage the connection to the shape display
@@ -104,6 +111,8 @@ protected:
     const int pinDiscrepancyToggleThreshold = 100;
     const float secondsUntilPinToggledOff = 1.0;
     const float secondsUntilPinToggledOn = 3.0;
+    
+    int geebsTEMP[8];
 };
 
 #endif /* SerialShapeIOManager_hpp */

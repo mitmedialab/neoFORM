@@ -67,7 +67,7 @@ private:
     void updateDepthInputBoundaries();
 
     // interfaces to the peripherals
-    ShapeIOManager *shapeIOManager;
+    SerialShapeIOManager *m_serialShapeIOManager;
     
     // external devices
     KinectManager *kinectManager;
@@ -98,7 +98,10 @@ private:
     bool showDebugGui = true;
     
     // I/O data buffers
+
+    // maybe rename to serialHeightOutput()
     unsigned char heightsForShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    // maybe rename to serialHeightInput()
     unsigned char heightsFromShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
     ofPixels heightPixelsForShapeDisplay;
     ofPixels heightPixelsFromShapeDisplay;
