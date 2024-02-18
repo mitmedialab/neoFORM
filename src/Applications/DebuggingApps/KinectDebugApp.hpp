@@ -26,7 +26,7 @@ public:
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     
     // Extracts only the actuated pixel from the full TRANSFORM surface, leaving behind the dead zones.
-    ofPixels getLivePixelsFromFullTransformSurface( ofPixels fullSurface );
+    ofPixels getActuatedPixelsFromFullTransformSurface( ofPixels fullSurface );
     
     // Press a key to save the current large bounding box (hopefully for the TRANSFORM) to a text file
     void keyPressed(int key);

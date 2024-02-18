@@ -46,7 +46,7 @@ void KinectDebugApp::setupDepthFloorMap() {
     
     // Extact only the actuated part of the surface from the full depthmap;
     // save all pin lives pixels
-    rawSurfaceDepth = getLivePixelsFromFullTransformSurface( m_videoPixels );
+    rawSurfaceDepth = getActuatedPixelsFromFullTransformSurface( m_videoPixels );
 
     
     cout << "setup the depth floor map w00t";
@@ -95,7 +95,7 @@ void KinectDebugApp::keyPressed(int key){
     
 }
 
-ofPixels KinectDebugApp::getLivePixelsFromFullTransformSurface( ofPixels fullSurface ) {
+ofPixels KinectDebugApp::getActuatedPixelsFromFullTransformSurface( ofPixels fullSurface ) {
     int xAccumPixels = 0;
     
     
@@ -232,7 +232,7 @@ void KinectDebugApp::updateHeights() {
         ofPixels m_videoPixels = m_kinectManager->getCroppedPixels((m_kinectManager->depthPixels));//video.getPixels();
         
         // Extact only the actuated part of the surface from the full depthmap;
-        ofPixels livePixels = getLivePixelsFromFullTransformSurface( m_videoPixels );
+        ofPixels livePixels = getActuatedPixelsFromFullTransformSurface( m_videoPixels );
 
             
         float tempSum = 0;
