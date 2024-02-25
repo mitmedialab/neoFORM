@@ -40,6 +40,8 @@
 // Debugging app for the frame buffer and image slicing
 #include "DepthDebugApp.hpp"
 
+#include "KinectHandWavy.hpp"
+
 class AppManager : public ofBaseApp {
     
 public:
@@ -87,6 +89,8 @@ private:
     // static applications
     VideoPlayerApp *videoPlayerApp;
     
+    // hand wavy application
+    KinectHandWavy *kinectHandWavy;
     
     // program state
     bool paused = false;

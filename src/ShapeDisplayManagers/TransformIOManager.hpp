@@ -17,6 +17,8 @@ class TransformIOManager : public SerialShapeIOManager {
 public:
     TransformIOManager();
 
+    TransformIOManager(KinectManager* kinectRef);
+
     // should pins that appear stuck be turned off at regular intervals?
     bool enableStuckPinSafetyToggle = false;
 
@@ -29,10 +31,24 @@ public:
     
     int* getPixelsToShapeDisplayIndicies();
     
+    ofPixels getKinectStream();
     
+    // Extracts only the actuated pixel from the full TRANSFORM surface, leaving behind the dead zones.
+    ofPixels getActuatedPixelsFromFullTransformSurface( ofPixels fullSurface, ofRectangle mask );
     
     //char* getShapeDisplayPinsFromVideoPixelInput(VideoPixels,videoHeight, videoWidth);
     
+    float m_Transform_L_outer = 13.375; //inches
+    float m_Transform_L_inner = 13.9375; //inches
+    float m_Transform_R_inner = 14.25; //inches
+    float m_Transform_R_outer = 13.1875; //inches
+
+    float m_Transform_W = 104.75; //inches
+    float m_Transform_H = 26; //inches
+    
+    float m_Transform_block = 15.75; //inches
+    int m_Transform_block_h_pins = 24; // # of pins
+    int m_Transform_block_w_pins = 16; // # of pins
 
 protected:
     // setup hardware-specific board configuration

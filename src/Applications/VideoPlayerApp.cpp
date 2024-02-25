@@ -36,7 +36,7 @@ void VideoPlayerApp::updateHeights() {
             int flattenedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
             
             // This takes the 1 dimensional index for the pin, and grabs the corresponding index from the uncorrected video pixel array.
-            heightsForShapeDisplay[flattenedIndex] = m_videoPixels[getRefForShapeIOManager()->getPixelsToShapeDisplayIndicies()[flattenedIndex]];
+            heightsForShapeDisplay[flattenedIndex] = m_videoPixels[m_CustomShapeDisplayManager->getPixelsToShapeDisplayIndicies()[flattenedIndex]];
         }
     }
 }
