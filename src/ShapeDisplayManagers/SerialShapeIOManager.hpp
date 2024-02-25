@@ -16,6 +16,9 @@
 #include "ShapeIOManager.hpp"
 #include "SerialShapeIO.hpp"
 
+// includes for the sensor classes, e.g., Kinect
+#include "KinectManager.hpp"
+
 class SerialPinBoard {
 public:
     unsigned char pinCoordinates[NUM_PINS_ARDUINO][2]; // what physical x and y does each pin on the board map to?
@@ -30,6 +33,7 @@ public:
 class SerialShapeIOManager : public ShapeIOManager {
 public:
     SerialShapeIOManager();
+    SerialShapeIOManager(KinectManager* kinectRef);
     ~SerialShapeIOManager();
     
     // send and receive height values
@@ -47,11 +51,17 @@ public:
     // the name of this shape display
     string shapeDisplayName = "Serial Shape Display";
     
+    // Dan and Jonathan Custom API-like commands
+    virtual ofPixels getKinectStream(){return feebsTEMP;}
+    
     ofPixels getPinPixelsOnly(ofPixels snobby);
     
     
     // Declare virtual method to real space pixels to dead and live transform pixels.
     virtual int* getPixelsToShapeDisplayIndicies(){return geebsTEMP;}
+    
+    // Virtual class for hardware specific pin layouts.
+    virtual ofPixels getActuatedPixelsFromFullTransformSurface(ofPixels fullSurfacePixels, ofRectangle mask) {};
 
 
 protected:
@@ -113,6 +123,9 @@ protected:
     const float secondsUntilPinToggledOn = 3.0;
     
     int geebsTEMP[8];
+    ofPixels feebsTEMP;
+    
+    KinectManager* m_kinectManagerRef;
 };
 
 #endif /* SerialShapeIOManager_hpp */
