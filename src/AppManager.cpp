@@ -20,7 +20,8 @@ void AppManager::setup(){
     // setup external devices (e.g., kinect)
     //kinectManager = new KinectManager();
     // Depth thresholds for the kinect are set here.
-    kinectManager = new KinectManager(230, 70, 20);
+    
+    kinectManager = new KinectManager(255, 90, 20);
 
     
     // zero timeOfLastUpdate tracker
