@@ -85,22 +85,9 @@ void KinectHandWavy::drawGraphicsForShapeDisplay(int x, int y, int width, int he
     //cv::Mat cvMatData = cv::toMat(m_kinectManager->depthImg.getCvImage());
 
     // Use OpenCV to crop the depth image to the mask dimensions
-    IplImage* iplImg = m_kinectManager->depthImg.getCvImage();
-    cv::Mat cvMatData = cv::cvarrToMat(iplImg);
     cv::Rect roi(65, 254, 490, 110); // Define your ROI (Region of Interest)
-    cv::Mat croppedDepthMat = cvMatData(roi);
+    ofxCvGrayscaleImage croppedDepthImg = cropCvGrayscale(m_kinectManager->depthImg, roi);
 
-    //croppedDepthMat.convertTo(croppedDepthMat, CV_8U);
-    
-    ofxCvGrayscaleImage croppedDepthImg;
-    croppedDepthImg.allocate(croppedDepthMat.cols, croppedDepthMat.rows);
-
-if (croppedDepthMat.isContinuous()) {
-    croppedDepthImg.setFromPixels(croppedDepthMat.data, croppedDepthMat.cols, croppedDepthMat.rows);
-} else {
-    std::vector<unsigned char> buffer(croppedDepthMat.begin<unsigned char>(), croppedDepthMat.end<unsigned char>());
-    croppedDepthImg.setFromPixels(&buffer[0], croppedDepthMat.cols, croppedDepthMat.rows);
-}
 
     //croppedDepthImg.draw(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
     
@@ -135,22 +122,9 @@ void KinectHandWavy::updateHeights() {
 
     // Temporary adaptations, but we need to actually crop out the pixels from the mask
     // Use OpenCV to crop the depth image to the mask dimensions
-    IplImage* iplImg = m_kinectManager->depthImg.getCvImage();
-    cv::Mat cvMatData = cv::cvarrToMat(iplImg);
-    cv::Rect roi(65, 254, 490, 110); // Define your ROI (Region of Interest)
-    cv::Mat croppedDepthMat = cvMatData(roi);
-
-    //croppedDepthMat.convertTo(croppedDepthMat, CV_8U);
     
-    ofxCvGrayscaleImage croppedDepthImg;
-    croppedDepthImg.allocate(croppedDepthMat.cols, croppedDepthMat.rows);
-
-if (croppedDepthMat.isContinuous()) {
-    croppedDepthImg.setFromPixels(croppedDepthMat.data, croppedDepthMat.cols, croppedDepthMat.rows);
-} else {
-    std::vector<unsigned char> buffer(croppedDepthMat.begin<unsigned char>(), croppedDepthMat.end<unsigned char>());
-    croppedDepthImg.setFromPixels(&buffer[0], croppedDepthMat.cols, croppedDepthMat.rows);
-}
+    cv::Rect roi(65, 254, 490, 110); // Define your ROI (Region of Interest);
+    ofxCvGrayscaleImage croppedDepthImg = cropCvGrayscale(m_kinectManager->depthImg, roi);
     
     
     // Add blur to the depth image.
@@ -179,4 +153,27 @@ if (croppedDepthMat.isContinuous()) {
 
 void KinectHandWavy::keyPressed(int Key) {
     
+}
+
+
+ofxCvGrayscaleImage KinectHandWavy::cropCvGrayscale(const ofxCvGrayscaleImage& inputImage, cv::Rect roi) {
+    // Convert the input image to a cv::Mat
+    IplImage* iplImg = const_cast<IplImage*>(inputImage.getCvImage());
+    cv::Mat cvMatData = cv::cvarrToMat(iplImg);
+
+    // Crop the cv::Mat
+    cv::Mat croppedMat = cvMatData(roi);
+
+    // Convert the cropped cv::Mat back to an ofxCvGrayscaleImage
+    ofxCvGrayscaleImage croppedImage;
+    croppedImage.allocate(croppedMat.cols, croppedMat.rows);
+
+    if (croppedMat.isContinuous()) {
+        croppedImage.setFromPixels(croppedMat.data, croppedMat.cols, croppedMat.rows);
+    } else {
+        std::vector<unsigned char> buffer(croppedMat.begin<unsigned char>(), croppedMat.end<unsigned char>());
+        croppedImage.setFromPixels(&buffer[0], croppedMat.cols, croppedMat.rows);
+    }
+
+    return croppedImage;
 }

@@ -30,6 +30,7 @@ public:
 
 
     void setupDepthFloorMap();
+    ofxCvGrayscaleImage cropCvGrayscale(const ofxCvGrayscaleImage& inputImage, cv::Rect roi);
 
 private:
     KinectManager* m_kinectManager;
