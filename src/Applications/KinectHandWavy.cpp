@@ -58,6 +58,73 @@ void KinectHandWavy::update(float dt) {
 }
 
 void KinectHandWavy::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
+    // Draw a preview of the depthImg from the kinect manager.
+    m_kinectManager->depthImg.draw(2, 2, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+    
+    //** draw a rectangle around the shape display pixels.
+    ofSetColor(0, 0, 255);
+    ofNoFill();
+    // Set stroke weight to 2 pixels
+    ofSetLineWidth(5);
+    
+    ofDrawRectangle(
+                    m_kinectManager->m_mask.getX(),
+                    m_kinectManager->m_mask.getY(),
+                    m_kinectManager->m_mask.getWidth(),
+                    m_kinectManager->m_mask.getHeight()
+    );
+    //** end draw a rectangle around the shape display pixels.
+
+    
+    //unset color and fill for future drawing operations
+    ofSetColor(255, 255, 255);
+    ofFill();
+    
+    // Try cropping the depthImg to the mask dimensions here for good luck
+    //ofxCvGrayscaleImage croppedDepthImg = m_kinectManager->depthImg;
+    //cv::Mat cvMatData = cv::toMat(m_kinectManager->depthImg.getCvImage());
+
+    // Use OpenCV to crop the depth image to the mask dimensions
+    IplImage* iplImg = m_kinectManager->depthImg.getCvImage();
+    cv::Mat cvMatData = cv::cvarrToMat(iplImg);
+    cv::Rect roi(65, 254, 490, 110); // Define your ROI (Region of Interest)
+    cv::Mat croppedDepthMat = cvMatData(roi);
+
+    //croppedDepthMat.convertTo(croppedDepthMat, CV_8U);
+    
+    ofxCvGrayscaleImage croppedDepthImg;
+    croppedDepthImg.allocate(croppedDepthMat.cols, croppedDepthMat.rows);
+
+if (croppedDepthMat.isContinuous()) {
+    croppedDepthImg.setFromPixels(croppedDepthMat.data, croppedDepthMat.cols, croppedDepthMat.rows);
+} else {
+    std::vector<unsigned char> buffer(croppedDepthMat.begin<unsigned char>(), croppedDepthMat.end<unsigned char>());
+    croppedDepthImg.setFromPixels(&buffer[0], croppedDepthMat.cols, croppedDepthMat.rows);
+}
+
+    //croppedDepthImg.draw(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+    
+    //croppedDepthImg.setROI(m_kinectManager->m_mask);
+    
+    
+    // Preview shape display pixels
+    //ofxCvGrayscaleImage blurredDepthImg = m_kinectManager->depthImg;
+    ofxCvGrayscaleImage blurredDepthImg = croppedDepthImg;
+    blurredDepthImg.blurGaussian(41); // <----- NOTE*!!*! THIS NEEDS TO BE 490 by 110 and is currently 640 by 480
+    
+    // Scale blurredDepthImg to 490 by 100
+    blurredDepthImg.resize(490, 110);
+    
+    // Preview the bouding box around the blurredImage rectangle
+    //ofDrawRectangle(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+    
+    blurredDepthImg.draw(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+    
+    //m_kinectManager->drawContours();
+    
+
+    // Color pixels for reference
+    //m_kinectManager->colorImg.draw(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
     
 }
 
