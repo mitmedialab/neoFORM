@@ -85,7 +85,8 @@ void KinectHandWavy::drawGraphicsForShapeDisplay(int x, int y, int width, int he
     //cv::Mat cvMatData = cv::toMat(m_kinectManager->depthImg.getCvImage());
 
     // Use OpenCV to crop the depth image to the mask dimensions
-    cv::Rect roi(65, 254, 490, 110); // Define your ROI (Region of Interest)
+    ofRectangle ofRect = m_kinectManager->m_mask; // Convert the ofRectangle to a cv::Rect
+    cv::Rect roi(ofRect.x, ofRect.y, ofRect.width, ofRect.height);
     ofxCvGrayscaleImage croppedDepthImg = cropCvGrayscale(m_kinectManager->depthImg, roi);
 
 
@@ -122,8 +123,10 @@ void KinectHandWavy::updateHeights() {
 
     // Temporary adaptations, but we need to actually crop out the pixels from the mask
     // Use OpenCV to crop the depth image to the mask dimensions
-    
-    cv::Rect roi(65, 254, 490, 110); // Define your ROI (Region of Interest);
+    // Convert the ofRectangle to a cv::Rect, this creates a new ofRetangle object but they are cheap to create.
+    ofRectangle ofRect = m_kinectManager->m_mask;
+    // Define a cv::Rect object with the same dimensions as the ofRectangle, to use as the region of interest for the crop function.
+    cv::Rect roi(ofRect.x, ofRect.y, ofRect.width, ofRect.height);
     ofxCvGrayscaleImage croppedDepthImg = cropCvGrayscale(m_kinectManager->depthImg, roi);
     
     
