@@ -61,7 +61,7 @@ public:
     virtual int* getPixelsToShapeDisplayIndicies(){return geebsTEMP;}
     
     // Virtual class for hardware specific pin layouts.
-    virtual ofPixels getActuatedPixelsFromFullTransformSurface(ofPixels fullSurfacePixels, ofRectangle mask) {};
+    virtual ofPixels getActuatedPixelsFromFullTransformSurface(ofPixels fullSurfacePixels) {};
 
 
 protected:

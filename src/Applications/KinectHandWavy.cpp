@@ -46,7 +46,7 @@ void KinectHandWavy::setupDepthFloorMap() {
     ofPixels m_videoPixels = m_kinectManager->getCroppedPixels(m_kinectManager->depthPixels);
     
     // Extract the current live pixels and save them to the rawSurfaceDepth
-    rawSurfaceDepth = m_CustomShapeDisplayManager->getActuatedPixelsFromFullTransformSurface(m_videoPixels, m_kinectManager->m_mask);
+    rawSurfaceDepth = m_CustomShapeDisplayManager->getActuatedPixelsFromFullTransformSurface(m_videoPixels);
 }
 
 void KinectHandWavy::update(float dt) {
@@ -138,7 +138,7 @@ void KinectHandWavy::updateHeights() {
     //blurredDepthImg.resize(490, 100);
     
     // Pass the current depth image to the shape display manager to get the actuated pixels.
-    ofPixels livePixels = m_CustomShapeDisplayManager->getActuatedPixelsFromFullTransformSurface( blurredDepthImg.getPixels(), m_kinectManager->m_mask );
+    ofPixels livePixels = m_CustomShapeDisplayManager->getActuatedPixelsFromFullTransformSurface( blurredDepthImg.getPixels() );
     
     // Process the inputs and updates the 'heightsForShapeDisplay' property accordingly.
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {

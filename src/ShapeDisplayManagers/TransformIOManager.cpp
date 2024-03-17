@@ -161,35 +161,35 @@ ofPixels TransformIOManager::getKinectStream(){
     return m_videoPixels;
 }
 
-ofPixels TransformIOManager::getActuatedPixelsFromFullTransformSurface( ofPixels fullSurface, ofRectangle mask ) {
+ofPixels TransformIOManager::getActuatedPixelsFromFullTransformSurface( ofPixels fullSurface ) {
     int xAccumPixels = 0;
     
     
     //dead
-    int z0PixelsW = (int) (m_Transform_L_outer*(mask.width/m_Transform_W));
+    int z0PixelsW = (int) (m_Transform_L_outer*(fullSurface.getWidth()/m_Transform_W));
     //alive
-    int z1PixelsW = (int) (m_Transform_block*(mask.width/m_Transform_W));
+    int z1PixelsW = (int) (m_Transform_block*(fullSurface.getWidth()/m_Transform_W));
     //dead
-    int z2PixelsW = (int) (m_Transform_L_inner*(mask.width/m_Transform_W));
+    int z2PixelsW = (int) (m_Transform_L_inner*(fullSurface.getWidth()/m_Transform_W));
     //alive
-    int z3PixelsW = (int) (m_Transform_block*(mask.width/m_Transform_W));
+    int z3PixelsW = (int) (m_Transform_block*(fullSurface.getWidth()/m_Transform_W));
     //dead
-    int z4PixelsW = (int) (m_Transform_R_inner*(mask.width/m_Transform_W));
+    int z4PixelsW = (int) (m_Transform_R_inner*(fullSurface.getWidth()/m_Transform_W));
     //alive
-    int z5PixelsW = (int) (m_Transform_block*(mask.width/m_Transform_W));
+    int z5PixelsW = (int) (m_Transform_block*(fullSurface.getWidth()/m_Transform_W));
     //dead
-    int z6PixelsW = (int) (m_Transform_R_outer*(mask.width/m_Transform_W));
+    int z6PixelsW = (int) (m_Transform_R_outer*(fullSurface.getWidth()/m_Transform_W));
     
     // allocate all zones
     ofPixels zone0, zone1, zone2, zone3, zone4, zone5, zone6;
     
-    zone0.allocate((int)z0PixelsW, (int)(mask.height), OF_IMAGE_GRAYSCALE);
-    zone1.allocate((int)z1PixelsW, (int)(mask.height), OF_IMAGE_GRAYSCALE);
-    zone2.allocate((int)z2PixelsW, (int)(mask.height), OF_IMAGE_GRAYSCALE);
-    zone3.allocate((int)z3PixelsW, (int)(mask.height), OF_IMAGE_GRAYSCALE);
-    zone4.allocate((int)z4PixelsW, (int)(mask.height), OF_IMAGE_GRAYSCALE);
-    zone5.allocate((int)z5PixelsW, (int)(mask.height), OF_IMAGE_GRAYSCALE);
-    zone6.allocate((int)z6PixelsW, (int)(mask.height), OF_IMAGE_GRAYSCALE);
+    zone0.allocate((int)z0PixelsW, (int)(fullSurface.getHeight()), OF_IMAGE_GRAYSCALE);
+    zone1.allocate((int)z1PixelsW, (int)(fullSurface.getHeight()), OF_IMAGE_GRAYSCALE);
+    zone2.allocate((int)z2PixelsW, (int)(fullSurface.getHeight()), OF_IMAGE_GRAYSCALE);
+    zone3.allocate((int)z3PixelsW, (int)(fullSurface.getHeight()), OF_IMAGE_GRAYSCALE);
+    zone4.allocate((int)z4PixelsW, (int)(fullSurface.getHeight()), OF_IMAGE_GRAYSCALE);
+    zone5.allocate((int)z5PixelsW, (int)(fullSurface.getHeight()), OF_IMAGE_GRAYSCALE);
+    zone6.allocate((int)z6PixelsW, (int)(fullSurface.getHeight()), OF_IMAGE_GRAYSCALE);
     
     // for video cropping, need to know x offset
     int z0start = 0;
@@ -201,13 +201,13 @@ ofPixels TransformIOManager::getActuatedPixelsFromFullTransformSurface( ofPixels
     int z6start = z5PixelsW + z5start;
     
     //croppage to video slices
-    fullSurface.cropTo(zone0, z0start,0, (int)z0PixelsW, (int)mask.height); //dead
-    fullSurface.cropTo(zone1, z1start,0, (int)z1PixelsW, (int)mask.height); //alive
-    fullSurface.cropTo(zone2, z2start,0, (int)z2PixelsW, (int)mask.height); //dead
-    fullSurface.cropTo(zone3, z3start,0, (int)z3PixelsW, (int)mask.height); //alive
-    fullSurface.cropTo(zone4, z4start,0, (int)z4PixelsW, (int)mask.height); //dead
-    fullSurface.cropTo(zone5, z5start,0, (int)z5PixelsW, (int)mask.height); //alive
-    fullSurface.cropTo(zone6, z6start,0, (int)z6PixelsW, (int)mask.height); //dead
+    fullSurface.cropTo(zone0, z0start,0, (int)z0PixelsW, (int)fullSurface.getHeight()); //dead
+    fullSurface.cropTo(zone1, z1start,0, (int)z1PixelsW, (int)fullSurface.getHeight()); //alive
+    fullSurface.cropTo(zone2, z2start,0, (int)z2PixelsW, (int)fullSurface.getHeight()); //dead
+    fullSurface.cropTo(zone3, z3start,0, (int)z3PixelsW, (int)fullSurface.getHeight()); //alive
+    fullSurface.cropTo(zone4, z4start,0, (int)z4PixelsW, (int)fullSurface.getHeight()); //dead
+    fullSurface.cropTo(zone5, z5start,0, (int)z5PixelsW, (int)fullSurface.getHeight()); //alive
+    fullSurface.cropTo(zone6, z6start,0, (int)z6PixelsW, (int)fullSurface.getHeight()); //dead
     
     //draw cropped videoslices
     //DeadandAliveBlocks.draw(zone0,0,0);
@@ -215,9 +215,9 @@ ofPixels TransformIOManager::getActuatedPixelsFromFullTransformSurface( ofPixels
     // Create image objects for each of the live zones.
     ofImage imgZone1, imgZone3, imgZone5;
     
-    imgZone1.allocate(z0PixelsW, (int)mask.height, OF_IMAGE_GRAYSCALE);
-    imgZone3.allocate(z3PixelsW, (int)mask.height, OF_IMAGE_GRAYSCALE);
-    imgZone5.allocate(z5PixelsW, (int)mask.height, OF_IMAGE_GRAYSCALE);
+    imgZone1.allocate(z1PixelsW, (int)fullSurface.getHeight(), OF_IMAGE_GRAYSCALE);
+    imgZone3.allocate(z3PixelsW, (int)fullSurface.getHeight(), OF_IMAGE_GRAYSCALE);
+    imgZone5.allocate(z5PixelsW, (int)fullSurface.getHeight(), OF_IMAGE_GRAYSCALE);
     
     imgZone1.setFromPixels(zone1);
     imgZone3.setFromPixels(zone3);
@@ -226,7 +226,7 @@ ofPixels TransformIOManager::getActuatedPixelsFromFullTransformSurface( ofPixels
     // Create a frame buffer to deal with the spacing of gray "dead" zones and white "alive pin zones" on the display
     // and ensure that the mapping of the cropped kinect depth pixels places their mapping in the right locations on the shape display
     ofFbo DeadandAliveBlocks;
-    DeadandAliveBlocks.allocate((int) (z1PixelsW+z3PixelsW+z5PixelsW), (int) mask.height, GL_RGB);
+    DeadandAliveBlocks.allocate((int) (z1PixelsW+z3PixelsW+z5PixelsW), (int) fullSurface.getHeight(), GL_RGB);
     //DeadandAliveBlocks.activateAllDrawBuffers();
     DeadandAliveBlocks.begin();
     
@@ -246,7 +246,7 @@ ofPixels TransformIOManager::getActuatedPixelsFromFullTransformSurface( ofPixels
     //DeadandAliveBlocks.draw(500, 500);
     
     ofPixels liveZonesPix;
-    liveZonesPix.allocate((int) (z1PixelsW+z3PixelsW+z5PixelsW), (int)mask.height, OF_IMAGE_GRAYSCALE);
+    liveZonesPix.allocate((int) (z1PixelsW+z3PixelsW+z5PixelsW), (int)fullSurface.getHeight(), OF_IMAGE_GRAYSCALE);
     //liveZonesPix.setImageType(OF_IMAGE_GRAYSCALE);
         
     DeadandAliveBlocks.readToPixels(liveZonesPix, 0);

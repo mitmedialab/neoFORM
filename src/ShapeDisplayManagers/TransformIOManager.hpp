@@ -34,7 +34,7 @@ public:
     ofPixels getKinectStream();
     
     // Extracts only the actuated pixel from the full TRANSFORM surface, leaving behind the dead zones.
-    ofPixels getActuatedPixelsFromFullTransformSurface( ofPixels fullSurface, ofRectangle mask );
+    ofPixels getActuatedPixelsFromFullTransformSurface( ofPixels fullSurface );
     
     //char* getShapeDisplayPinsFromVideoPixelInput(VideoPixels,videoHeight, videoWidth);
     
