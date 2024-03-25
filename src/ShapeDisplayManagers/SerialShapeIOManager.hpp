@@ -62,6 +62,10 @@ public:
     
     // Virtual class for hardware specific pin layouts.
     virtual ofPixels getActuatedPixelsFromFullTransformSurface(ofPixels fullSurfacePixels) {};
+    virtual ofPixels cropToActiveSurface(ofPixels fullSurface) {};
+    
+    // Virtual class for hardware specific pin layouts.
+    virtual std::vector<ofRectangle> createSections(float pixelsPerInch) {};
 
 
 protected:

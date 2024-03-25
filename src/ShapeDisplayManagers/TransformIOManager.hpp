@@ -46,6 +46,12 @@ public:
     float m_Transform_W = 104.75; //inches
     float m_Transform_H = 26; //inches
     
+    // These numbers represent the start points (in inches) of the 3 active zones of the TRANSFORM surface.
+    std::vector<float> m_activeZoneXstarts = {13.375, 43.0625, 73.0625};
+
+    std::vector<ofRectangle> createSections( float pixelsPerInch );
+    ofPixels cropToActiveSurface(ofPixels fullSurface);
+
     float m_Transform_block = 15.75; //inches
     int m_Transform_block_h_pins = 24; // # of pins
     int m_Transform_block_w_pins = 16; // # of pins
@@ -65,6 +71,7 @@ protected:
     // Send in an uncorrected pixel matrix that is full width (including dead blocks) and get back a corrected pixel matrix with only active pixels.
     ofPixels getPixelsWithoutDeadBlocks(ofPixels fullPixelMatrix);
     
+    ofPixels combineActiveZones(ofPixels fullSurface, std::vector<ofRectangle> sections);
     
 };
 
