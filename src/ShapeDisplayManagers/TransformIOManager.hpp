@@ -43,11 +43,27 @@ public:
     float m_Transform_R_inner = 14.25; //inches
     float m_Transform_R_outer = 13.1875; //inches
 
+    // ***********************
+    // Transform Slicing Dimensions
+    // ***********************
+    
+    //          |-- block --|        |-- block --|        |-- block --|
+    //  _______________________________________________________________________   ___
+    //  |   z0  |    z1     |   z2   |     z3    |   z4   |    z5     |  z6   |    |
+    //  |       |           |        |           |        |           |       |    |
+    //  |  dead |  active   |  dead  |   active  |  dead  |  active   | dead  |    H
+    //  |       |           |        |           |        |           |       |    |
+    //  |_______|___________|________|___________|________|___________|_______|    |
+    //          |                    |                    |                       ___
+    //          |<-- X start 1       |<-- X start 2       |<-- X start 3
+    //
+    //  |--------------------------------- W ---------------------------------|
+    
     float m_Transform_W = 104.75; //inches
     float m_Transform_H = 26; //inches
     
     // These numbers represent the start points (in inches) of the 3 active zones of the TRANSFORM surface.
-    std::vector<float> m_activeZoneXstarts = {13.375, 43.0625, 73.0625};
+    std::vector<float> m_activeZoneXstarts = {13.375, 44, 75};
 
     std::vector<ofRectangle> createSections( float pixelsPerInch );
     ofPixels cropToActiveSurface(ofPixels fullSurface);
