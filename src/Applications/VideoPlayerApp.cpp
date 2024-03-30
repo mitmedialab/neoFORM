@@ -28,7 +28,8 @@ void VideoPlayerApp::updateHeights() {
    
     //ofPixels onlyPinPixels = m_CustomShapeDisplayManager->getPinPixelsOnly(m_videoPixels);
     
-    ofPixels livePixels = m_CustomShapeDisplayManager->getActuatedPixelsFromFullTransformSurface(m_videoPixels);
+    // Pass the current video frame to the shape display manager to get the actuated pixels.
+    ofPixels livePixels = m_CustomShapeDisplayManager->cropToActiveSurface(m_videoPixels);
     
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
 

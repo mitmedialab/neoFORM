@@ -138,7 +138,7 @@ void KinectHandWavy::updateHeights() {
     //blurredDepthImg.resize(490, 100);
     
     // Pass the current depth image to the shape display manager to get the actuated pixels.
-    ofPixels livePixels = m_CustomShapeDisplayManager->getActuatedPixelsFromFullTransformSurface( blurredDepthImg.getPixels() );
+    ofPixels livePixels = m_CustomShapeDisplayManager->cropToActiveSurface( blurredDepthImg.getPixels() );
     
     // Process the inputs and updates the 'heightsForShapeDisplay' property accordingly.
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
