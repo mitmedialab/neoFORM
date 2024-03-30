@@ -29,7 +29,6 @@ public:
     void keyPressed(int key);
 
 
-    void setupDepthFloorMap();
     ofxCvGrayscaleImage cropCvGrayscale(const ofxCvGrayscaleImage& inputImage, cv::Rect roi);
 
 private:
