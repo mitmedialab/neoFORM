@@ -27,21 +27,7 @@ public:
     
     void sendHeightsToShapeDisplay();
     
-    ofPixels getPinPixelsOnly(ofPixels fullPixels);
-    
-    int* getPixelsToShapeDisplayIndicies();
-    
     ofPixels getKinectStream();
-    
-    // Extracts only the actuated pixel from the full TRANSFORM surface, leaving behind the dead zones.
-    ofPixels getActuatedPixelsFromFullTransformSurface( ofPixels fullSurface );
-    
-    //char* getShapeDisplayPinsFromVideoPixelInput(VideoPixels,videoHeight, videoWidth);
-    
-    float m_Transform_L_outer = 13.375; //inches
-    float m_Transform_L_inner = 13.9375; //inches
-    float m_Transform_R_inner = 14.25; //inches
-    float m_Transform_R_outer = 13.1875; //inches
 
     // ***********************
     // Transform Slicing Dimensions
@@ -75,17 +61,6 @@ public:
 protected:
     // setup hardware-specific board configuration
     void configureBoards();
-    
-    
-    // TRANSFORM related dead block calculations
-    int m_videoToTransformIndicies[1152];
-    int m_videoPixelSize = 2448;
-    int calculateTransformWithinBlockX(int blockNumber, int x_pixel_coord);
-    int calculateTransformBlockNumber(int x_pixel_coord);
-    void setupTransformedPixelMap();
-    
-    // Send in an uncorrected pixel matrix that is full width (including dead blocks) and get back a corrected pixel matrix with only active pixels.
-    ofPixels getPixelsWithoutDeadBlocks(ofPixels fullPixelMatrix);
     
     ofPixels combineActiveZones(ofPixels fullSurface, std::vector<ofRectangle> sections);
     
