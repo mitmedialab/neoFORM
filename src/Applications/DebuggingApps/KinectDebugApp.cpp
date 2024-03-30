@@ -17,13 +17,11 @@ KinectDebugApp::KinectDebugApp(KinectManager* kinectManager){
     m_kinectManager->m_mask.height = 100;
     // END TEMP FIX: hope to figure this out
 
-    m_kinectManager->setupTransformedPixelMap();
     setupDepthFloorMap();
     
 }
 
 void KinectDebugApp::setup() {
-    m_kinectManager->setupTransformedPixelMap();
     setupDepthFloorMap();
 }
 

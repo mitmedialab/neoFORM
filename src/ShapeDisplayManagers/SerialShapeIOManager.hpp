@@ -54,14 +54,7 @@ public:
     // Dan and Jonathan Custom API-like commands
     virtual ofPixels getKinectStream(){return feebsTEMP;}
     
-    ofPixels getPinPixelsOnly(ofPixels snobby);
-    
-    
-    // Declare virtual method to real space pixels to dead and live transform pixels.
-    virtual int* getPixelsToShapeDisplayIndicies(){return geebsTEMP;}
-    
     // Virtual class for hardware specific pin layouts.
-    virtual ofPixels getActuatedPixelsFromFullTransformSurface(ofPixels fullSurfacePixels) {};
     virtual ofPixels cropToActiveSurface(ofPixels fullSurface) {};
     
     // Virtual class for hardware specific pin layouts.

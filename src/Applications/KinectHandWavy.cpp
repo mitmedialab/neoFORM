@@ -23,30 +23,7 @@ KinectHandWavy::KinectHandWavy(SerialShapeIOManager *theSerialShapeIOManager, Ki
 
 
 void KinectHandWavy::setup() {
-    m_kinectManager->setupTransformedPixelMap();
-    
     cout << "hello there hand wavy";
-}
-
-void KinectHandWavy::setupDepthFloorMap() {
-    //set all pins to 0
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            
-            // This takes the 2 dimensional coordinates and turns them into a one dimensional index for the flattened array.
-            int flattenedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
-            
-            // This takes the 1 dimensional index for the pin, and grabs the corresponding index from the uncorrected video pixel array.
-            heightsForShapeDisplay[flattenedIndex] = 0;
-        }
-    }
-    
-    // Record pins
-    ofPixels m_videoPixels = m_kinectManager->getCroppedPixels(m_kinectManager->depthPixels);
-    
-    // Extract the current live pixels and save them to the rawSurfaceDepth
-    rawSurfaceDepth = m_CustomShapeDisplayManager->getActuatedPixelsFromFullTransformSurface(m_videoPixels);
 }
 
 void KinectHandWavy::update(float dt) {

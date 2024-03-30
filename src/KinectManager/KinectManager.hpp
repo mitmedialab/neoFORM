@@ -148,19 +148,6 @@ public:
     //return a copy of found cropped pixels
     ofPixels getCroppedPixels(ofPixels inputDepthPixels);
     
-    // Calculate Block Number
-    int calculateBlockNumber(int x_pixel_coord);
-    int calculateWithinBlockX(int blockNumber, int x_pixel_coord);
-    
-    //initial mapping
-    void setupTransformedPixelMap();
-    
-    int m_kinectToTransformIndicies[1152];
-    
-    
-    
-    
-    
     
 };
 
