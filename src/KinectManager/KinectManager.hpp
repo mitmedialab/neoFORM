@@ -34,9 +34,7 @@ public:
     
     void setDepthClipping(int near, int far);
     
-    void subtractMask();
-    
-    void calculateThresholdsAndModifyImages();
+    void calculateThresholdsAndModifyImages(ofxCvGrayscaleImage& inputImage);
     
     int numAvailableDevices();
     
@@ -92,6 +90,7 @@ public:
     ofxCvColorImage         colorImg;
     
     ofxCvGrayscaleImage     depthImg; // grayscale depth image
+    ofxCvGrayscaleImage     croppedDepthImg; // cropped grayscale depth image
     ofxCvGrayscaleImage     grayThreshNear; // the near thresholded image
     ofxCvGrayscaleImage     grayThreshFar; // the far thresholded image
     
@@ -110,7 +109,7 @@ public:
     int m_contoursRecordedFlag = 0;
     //ofRectangle* m_capturedContours;
     
-    bool m_configConfirmed = false; // to determine whether or not to check for config
+    
     
     // ***********************
     // Transform Slicing Dimensions
@@ -144,6 +143,8 @@ public:
     //takes as input depth pixels
     // finds whether depth pixels are in a dead or active block
     // within the block, if active, return affected pins and heights
+    
+    ofxCvGrayscaleImage cropCvGrayscale(const ofxCvGrayscaleImage& inputImage, cv::Rect roi);
     
     //return a copy of found cropped pixels
     ofPixels getCroppedPixels(ofPixels inputDepthPixels);
