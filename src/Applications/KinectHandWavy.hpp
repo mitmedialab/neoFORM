@@ -13,7 +13,6 @@
 #include "KinectManager.hpp"
 
 #include "ofxXmlSettings.h"
-#include <opencv2/imgproc.hpp>
 
 class KinectHandWavy : public Application{
 public:
@@ -27,9 +26,6 @@ public:
     
     // Press a key to save the current large bounding box (hopefully for the TRANSFORM) to a text file
     void keyPressed(int key);
-
-
-    ofxCvGrayscaleImage cropCvGrayscale(const ofxCvGrayscaleImage& inputImage, cv::Rect roi);
 
 private:
     KinectManager* m_kinectManager;

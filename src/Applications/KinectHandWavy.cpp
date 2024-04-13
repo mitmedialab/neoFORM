@@ -121,26 +121,3 @@ void KinectHandWavy::updateHeights() {
 void KinectHandWavy::keyPressed(int Key) {
     
 }
-
-
-ofxCvGrayscaleImage KinectHandWavy::cropCvGrayscale(const ofxCvGrayscaleImage& inputImage, cv::Rect roi) {
-    // Convert the input image to a cv::Mat
-    IplImage* iplImg = const_cast<IplImage*>(inputImage.getCvImage());
-    cv::Mat cvMatData = cv::cvarrToMat(iplImg);
-
-    // Crop the cv::Mat
-    cv::Mat croppedMat = cvMatData(roi);
-
-    // Convert the cropped cv::Mat back to an ofxCvGrayscaleImage
-    ofxCvGrayscaleImage croppedImage;
-    croppedImage.allocate(croppedMat.cols, croppedMat.rows);
-
-    if (croppedMat.isContinuous()) {
-        croppedImage.setFromPixels(croppedMat.data, croppedMat.cols, croppedMat.rows);
-    } else {
-        std::vector<unsigned char> buffer(croppedMat.begin<unsigned char>(), croppedMat.end<unsigned char>());
-        croppedImage.setFromPixels(&buffer[0], croppedMat.cols, croppedMat.rows);
-    }
-
-    return croppedImage;
-}
