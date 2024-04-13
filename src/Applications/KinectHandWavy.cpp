@@ -94,19 +94,6 @@ void KinectHandWavy::drawGraphicsForShapeDisplay(int x, int y, int width, int he
 }
 
 void KinectHandWavy::updateHeights() {
-    if (m_kinectManager->useMask == false) {
-        return;
-    }
-
-    // Temporary adaptations, but we need to actually crop out the pixels from the mask
-    // Use OpenCV to crop the depth image to the mask dimensions
-    // Convert the ofRectangle to a cv::Rect, this creates a new ofRetangle object but they are cheap to create.
-    ofRectangle ofRect = m_kinectManager->m_mask;
-    // Define a cv::Rect object with the same dimensions as the ofRectangle, to use as the region of interest for the crop function.
-    cv::Rect roi(ofRect.x, ofRect.y, ofRect.width, ofRect.height);
-    ofxCvGrayscaleImage croppedDepthImg = cropCvGrayscale(m_kinectManager->depthImg, roi);
-    
-    
     // Add blur to the depth image.
     ofxCvGrayscaleImage blurredDepthImg = croppedDepthImg;
     blurredDepthImg.blurGaussian(41);
@@ -133,27 +120,4 @@ void KinectHandWavy::updateHeights() {
 
 void KinectHandWavy::keyPressed(int Key) {
     
-}
-
-
-ofxCvGrayscaleImage KinectHandWavy::cropCvGrayscale(const ofxCvGrayscaleImage& inputImage, cv::Rect roi) {
-    // Convert the input image to a cv::Mat
-    IplImage* iplImg = const_cast<IplImage*>(inputImage.getCvImage());
-    cv::Mat cvMatData = cv::cvarrToMat(iplImg);
-
-    // Crop the cv::Mat
-    cv::Mat croppedMat = cvMatData(roi);
-
-    // Convert the cropped cv::Mat back to an ofxCvGrayscaleImage
-    ofxCvGrayscaleImage croppedImage;
-    croppedImage.allocate(croppedMat.cols, croppedMat.rows);
-
-    if (croppedMat.isContinuous()) {
-        croppedImage.setFromPixels(croppedMat.data, croppedMat.cols, croppedMat.rows);
-    } else {
-        std::vector<unsigned char> buffer(croppedMat.begin<unsigned char>(), croppedMat.end<unsigned char>());
-        croppedImage.setFromPixels(&buffer[0], croppedMat.cols, croppedMat.rows);
-    }
-
-    return croppedImage;
 }
