@@ -36,6 +36,8 @@ private:
     
     ofPixels rawSurfaceDepth;
     
+    ofxCvGrayscaleImage getBlurredDepthImg();
+    
 };
 
 

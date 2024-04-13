@@ -95,11 +95,7 @@ void KinectHandWavy::drawGraphicsForShapeDisplay(int x, int y, int width, int he
 
 void KinectHandWavy::updateHeights() {
     // Add blur to the depth image.
-    ofxCvGrayscaleImage blurredDepthImg = croppedDepthImg;
-    blurredDepthImg.blurGaussian(41);
-    
-    // Scale blurredDepthImg to 490 by 100 <- hardcoded only out of sheer desperation.
-    //blurredDepthImg.resize(490, 100);
+    ofxCvGrayscaleImage blurredDepthImg = getBlurredDepthImg();
     
     // Pass the current depth image to the shape display manager to get the actuated pixels.
     ofPixels livePixels = m_CustomShapeDisplayManager->cropToActiveSurface( blurredDepthImg.getPixels() );
@@ -116,6 +112,13 @@ void KinectHandWavy::updateHeights() {
             heightsForShapeDisplay[flattenedIndex] = livePixels[flattenedIndex];
         }
     }
+}
+
+ofxCvGrayscaleImage KinectHandWavy::getBlurredDepthImg() {
+    ofxCvGrayscaleImage blurredDepthImg = m_kinectManager->croppedDepthImg;
+    blurredDepthImg.blurGaussian(41);
+    
+    return blurredDepthImg;
 }
 
 void KinectHandWavy::keyPressed(int Key) {
