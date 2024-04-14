@@ -38,6 +38,10 @@ private:
     
     ofxCvGrayscaleImage getBlurredDepthImg();
     
+    // Preview utility functions
+    void drawPreviewMaskRectangle();
+    void drawPreviewActuatedSections();
+    
 };
 
 

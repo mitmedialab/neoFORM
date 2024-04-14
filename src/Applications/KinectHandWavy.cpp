@@ -33,64 +33,78 @@ void KinectHandWavy::update(float dt) {
     updateHeights();
     
 }
-
+// This is responsible for drawing the on screen preview of the app's behavior.
 void KinectHandWavy::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
-    // Draw a preview of the depthImg from the kinect manager.
-    m_kinectManager->depthImg.draw(2, 2, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+    //*** Draw the color pixels for reference.
+    m_kinectManager->colorImg.draw(2, 2, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
     
-    //** draw a rectangle around the shape display pixels.
+    //*** Overlay the depth image on top of the color image.
+    // Set the color to white with 50% opacity
+    ofSetColor(255, 255, 255, 127);
+
+    // Draw the depth image
+    m_kinectManager->depthImg.draw(2, 2, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+
+    // Reset the color to fully opaque white
+    ofSetColor(255, 255, 255, 255);
+
+    //*** Draw the mask rectangle
+    drawPreviewMaskRectangle();
+
+    //*** Preview shape display pixels
+    ofxCvGrayscaleImage blurredDepthImg = getBlurredDepthImg();
+    blurredDepthImg.draw(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+
+    //*** Contours are disabled, but maybe they will be useful in the future.
+    //m_kinectManager->drawContours();
+    
+    //*** Draw preview of the actuated pixel regions (sections).
+    drawPreviewActuatedSections();
+}
+
+// Draw a rectangle around the shape display pixels based on the mask info from settings.xml
+void KinectHandWavy::drawPreviewMaskRectangle() {
+    // Set the drawing parameters
     ofSetColor(0, 0, 255);
     ofNoFill();
-    // Set stroke weight to 2 pixels
     ofSetLineWidth(5);
     
+    // Draw the rectangle with the dimensions of the mask.
     ofDrawRectangle(
                     m_kinectManager->m_mask.getX(),
                     m_kinectManager->m_mask.getY(),
                     m_kinectManager->m_mask.getWidth(),
                     m_kinectManager->m_mask.getHeight()
     );
-    //** end draw a rectangle around the shape display pixels.
-
     
-    //unset color and fill for future drawing operations
+    // Unset color and fill for future drawing operations
     ofSetColor(255, 255, 255);
     ofFill();
-    
-    // Try cropping the depthImg to the mask dimensions here for good luck
-    //ofxCvGrayscaleImage croppedDepthImg = m_kinectManager->depthImg;
-    //cv::Mat cvMatData = cv::toMat(m_kinectManager->depthImg.getCvImage());
+}
 
-    // Use OpenCV to crop the depth image to the mask dimensions
-    ofRectangle ofRect = m_kinectManager->m_mask; // Convert the ofRectangle to a cv::Rect
-    cv::Rect roi(ofRect.x, ofRect.y, ofRect.width, ofRect.height);
-    ofxCvGrayscaleImage croppedDepthImg = cropCvGrayscale(m_kinectManager->depthImg, roi);
+// Draw a semi-transparent rectangle over each of the three the actuated sections.
+void KinectHandWavy::drawPreviewActuatedSections() {
+    // Get the actuated section dimensions from the CustomShapeDisplayManager
+    float pixelsPerInch = m_kinectManager->m_mask.getWidth() / 104.75 ; // <-- this is a problem, the transform width (104.75) needs to be available from the apps.
+    std::vector<ofRectangle> sections = m_CustomShapeDisplayManager->createSections(pixelsPerInch);
+    
+    // Create a frame buffer with the same dimensions as the cropped signal.
+    ofFbo fbo;
+    fbo.allocate(m_kinectManager->m_mask.getWidth(), m_kinectManager->m_mask.getHeight(), GL_RGBA); // GL_RGBA for transparency
 
+    // Begin drawing into the frame buffer
+    fbo.begin();
+    ofClear(0, 0, 0, 0); // Clear the buffer with transparent black
 
-    //croppedDepthImg.draw(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
-    
-    //croppedDepthImg.setROI(m_kinectManager->m_mask);
-    
-    
-    // Preview shape display pixels
-    //ofxCvGrayscaleImage blurredDepthImg = m_kinectManager->depthImg;
-    ofxCvGrayscaleImage blurredDepthImg = croppedDepthImg;
-    blurredDepthImg.blurGaussian(41); // <----- NOTE*!!*! THIS NEEDS TO BE 490 by 110 and is currently 640 by 480
-    
-    // Scale blurredDepthImg to 490 by 100
-    blurredDepthImg.resize(490, 110);
-    
-    // Preview the bouding box around the blurredImage rectangle
-    //ofDrawRectangle(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
-    
-    blurredDepthImg.draw(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
-    
-    //m_kinectManager->drawContours();
-    
+    // Draw each of the section rectangles into the frame buffer
+    for (const auto& section : sections) {
+        ofSetColor(100,100,255,200);
+        ofDrawRectangle(section);
+    }
 
-    // Color pixels for reference
-    //m_kinectManager->colorImg.draw(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
-    
+    // End drawing into the frame buffer
+    fbo.end();
+    fbo.draw(m_kinectManager->m_mask);
 }
 
 void KinectHandWavy::updateHeights() {
