@@ -110,21 +110,7 @@ public:
     //ofRectangle* m_capturedContours;
     
     
-    
-    // ***********************
-    // Transform Slicing Dimensions
-    // ***********************
-    
-    //          |-- block --|        |-- block --|        |-- block --|
-    //  _______________________________________________________________________   ___
-    //  |   z0  |    z1     |   z2   |     z3    |   z4   |    z5     |  z6   |    |
-    //  |       |           |        |           |        |           |       |    |
-    //  |  dead |  active   |  dead  |   active  |  dead  |  active   | dead  |    H
-    //  |       |           |        |           |        |           |       |    |
-    //  |_______|___________|________|___________|________|___________|_______|    |
-    //   L_outer             L_inner              R_inner              R_outer    ---
-    //  |--------------------------------- W ---------------------------------|
-    
+    // temp, need to remove
     float m_Transform_L_outer = 13.375; //inches
     float m_Transform_L_inner = 13.9375; //inches
     float m_Transform_R_inner = 14.25; //inches
