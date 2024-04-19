@@ -47,6 +47,37 @@ void VideoPlayerApp::updateHeights() {
 void VideoPlayerApp::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
     // Draw the video file.
     video.draw(30, 300, 544, 128);
+    
+    // Get the width in inches of the the full transform surface.
+    float transformWidth = ((TransformIOManager*)m_CustomShapeDisplayManager)->m_Transform_W;
+    
+    // Calculate the pixels per inch conversion rate.
+    float pixelsPerInch = video.getWidth() / transformWidth;
+    
+    // Create the actuated pixel sections.
+    std::vector<ofRectangle> sections = m_CustomShapeDisplayManager->createSections(pixelsPerInch);
+    
+   // Create a frame buffer with the same dimensions as the video
+    ofFbo fbo;
+    fbo.allocate(video.getWidth(), video.getHeight(), GL_RGBA); // GL_RGBA for transparency
+
+    // Begin drawing into the frame buffer
+    fbo.begin();
+    ofClear(0, 0, 0, 0); // Clear the buffer with transparent black
+
+    // Draw the rectangles into the frame buffer
+    for (int i = 0; i < sections.size(); i++) {
+        ofRectangle section = sections[i];
+        
+        ofSetColor(100,100,255,200);
+        ofDrawRectangle(section);
+    }
+
+    // End drawing into the frame buffer
+    fbo.end();
+
+    // Draw the frame buffer at the same position and scale as the video
+    fbo.draw(30, 300, 544, 128);
 }
 
 string VideoPlayerApp::appInstructionsText() {
