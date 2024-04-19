@@ -13,8 +13,8 @@ KinectDebugApp::KinectDebugApp(KinectManager* kinectManager){
     m_kinectManager = kinectManager;
     
     // TEMP FIX: PREINITIALIZE WIDTH AND HEIGHT OF MASK
-    m_kinectManager->m_mask.width = 100;
-    m_kinectManager->m_mask.height = 100;
+    //m_kinectManager->m_mask.width = 100;
+    //m_kinectManager->m_mask.height = 100;
     // END TEMP FIX: hope to figure this out
 
     setupDepthFloorMap();
