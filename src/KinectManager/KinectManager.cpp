@@ -19,14 +19,37 @@ KinectManager::KinectManager(int pNearThreshold, int pFarThreshold, int pContour
     
     contourTrackingOn = true;
 
+    // determine if we use mask
+    bool settingsExist = settings.loadFile("settings.xml");
+    cout << "Awaiting Configuration of Mask \n";
+    if (settingsExist){
+        int width  = settings.getValue("width", 0);
+
+        if (width > 2){
+            // If the settings exist and are viable, use them to set the mask.
+            m_mask.set(
+               (float) settings.getValue("x_pos", 0),
+               (float) settings.getValue("y_pos", 0),
+               (float) settings.getValue("width", 0),
+               (float) settings.getValue("height", 0)
+           );
+        } else {
+            // Otherwise set the mask to the native kinect image dimensions (effectively no mask).
+            m_mask.set(0, 0, kinect.width, kinect.height);
+        }
+    }
+    
     
     colorImg.allocate(kinect.width, kinect.height);
     depthImg.allocate(kinect.width, kinect.height);
-    grayThreshNear.allocate(kinect.width, kinect.height);
-    grayThreshFar.allocate(kinect.width, kinect.height);
-    depthThreshed.allocate(kinect.width, kinect.height);
-    lastDepthThreshed.allocate(kinect.width, kinect.height);
-    depthThreshedDiff.allocate(kinect.width, kinect.height);
+
+    grayThreshNear.allocate(m_mask.width, m_mask.height);
+    grayThreshFar.allocate(m_mask.width, m_mask.height);
+    depthThreshed.allocate(m_mask.width, m_mask.height);
+    lastDepthThreshed.allocate(m_mask.width, m_mask.height);
+    depthThreshedDiff.allocate(m_mask.width, m_mask.height);
+                               
+    // These may not be in use
     fbo.allocate(kinect.width*2, kinect.height, GL_RGB);
     recordingImage.allocate(kinect.width*2, kinect.height, OF_IMAGE_COLOR);
     playingImage.allocate(kinect.width*2, kinect.height, OF_IMAGE_COLOR);
@@ -85,44 +108,16 @@ void KinectManager::update() {
             colorImg.setFromPixels(kinect.getPixels());//, kinect.width, kinect.height);
             depthImg.setFromPixels(kinect.getDepthPixels()); //, kinect.width, kinect.height);
             
+            cv::Rect roi = cv::Rect(m_mask.position.x, m_mask.position.y, m_mask.width, m_mask.height);
+            croppedDepthImg = cropCvGrayscale(depthImg, roi);
+            
             lastDepthThreshed.setFromPixels(depthThreshed.getPixels());//, kinect.width, kinect.height);
             // always update the depth image
-            depthThreshed.setFromPixels(depthImg.getPixels());//, kinect.width, kinect.height);
+            depthThreshed.setFromPixels(croppedDepthImg.getPixels());//, kinect.width, kinect.height);
             
-                
-            if (!m_configConfirmed) {
-                
-            // determine if we use mask
-                bool settingsExist = settings.loadFile("settings.xml");
-                cout << "Awaiting Configuration of Mask \n";
-                if (settingsExist){
-                    int width  = settings.getValue("width", 0);
-
-                    if (width < 2){
-                        useMask = false;
-                    } else {
-                        // If the settings exist and are viable, use them to set the mask.
-                        m_mask.set(
-                           (float) settings.getValue("x_pos", 0),
-                           (float) settings.getValue("y_pos", 0),
-                           (float) settings.getValue("width", 0),
-                           (float) settings.getValue("height", 0)
-                       );
-                        
-                        useMask = true;
-                        m_configConfirmed=true;
-                    }
-                }
-                
-            }
-
-            // subtract mask which is png alpha image called "mask.png"
-            if(useMask) {subtractMask();}
-
+            // threshold calcutations convery depth map into black and white images
+            calculateThresholdsAndModifyImages(croppedDepthImg);
         }
-                
-        // threshold calcutations convery depth map into black and white images
-        calculateThresholdsAndModifyImages();
         
             
             cout << "CONTOUR FINDER NOW\n";
@@ -138,64 +133,33 @@ void KinectManager::update() {
     }
 //}
 
-void KinectManager::subtractMask(){
-    // This used to be accomplished by loading a png with an alpha channel, now we are synthesizing an image based on the mask dimensions and using that.
-    //cvAnd(depthImg.getCvImage(), maskCv.getCvImage(), depthImg.getCvImage(), NULL);
-    //mask.loadImage("mask.png");
-    
-    ofImage img;
-        
-    int counter = 0;
-    
-    int w=640;
-    int h = 480;
-    img.allocate(w, h, OF_IMAGE_COLOR);
-    img.setColor(ofColor::white);
-    for (int i = 0; i < w; i++) {
-        ofColor color= ofColor(255,255,255);
-        for (int j = 0; j < h; j++) {
-            if ((i>= (int) m_mask.position.x) and (i<= (int) m_mask.position.x + (int) m_mask.width) and (j>= (int) m_mask.position.y) and (j<= (int) m_mask.position.y + (int) m_mask.height)){
-                color= ofColor(255,255,255);
-            }
-            else{
-                color = ofColor(0,0,0);
-            }
-            
-            //ofColor color= ofColor(255,255,255);//(255-i%w,j%h,255);
-            img.setColor(i % w, j % h, color);
-        }
-    }
-    img.update();
-    
-    maskColorCv.setFromPixels(img.getPixels());
-    maskCv = maskColorCv;
-    
-    
-    cvAnd(depthImg.getCvImage(), maskCv.getCvImage(), depthImg.getCvImage(), NULL);
+ofxCvGrayscaleImage KinectManager::cropCvGrayscale(const ofxCvGrayscaleImage& inputImage, cv::Rect roi) {
+    // Convert the input image to ofPixels
+    ofPixels inputPixels = inputImage.getPixels();
+
+    // Crop the pixels
+    inputPixels.crop(roi.x, roi.y, roi.width, roi.height);
+
+    // Create a new ofxCvGrayscaleImage and set it from the cropped pixels
+    ofxCvGrayscaleImage croppedImage;
+    croppedImage.setFromPixels(inputPixels);
+
+    return croppedImage;
 }
 
-void KinectManager::calculateThresholdsAndModifyImages(){
-    depthImg.erode_3x3();
-    depthImg.dilate_3x3();
+void KinectManager::calculateThresholdsAndModifyImages(ofxCvGrayscaleImage& inputImage){
+    inputImage.erode_3x3();
+    inputImage.dilate_3x3();
     
     // we do two thresholds - one for the far plane and one for the near plane
     // we then do a cvAnd to get the pixels which are a union of the two thresholds
-    grayThreshNear = depthImg;
-    grayThreshFar = depthImg;
+    grayThreshNear = inputImage;
+    grayThreshFar = inputImage;
     grayThreshNear.threshold(mNearThreshold, true);
     grayThreshFar.threshold(mFarThreshold);
-    cvAnd(grayThreshNear.getCvImage(), grayThreshFar.getCvImage(), depthImg.getCvImage(), NULL);
+    cvAnd(grayThreshNear.getCvImage(), grayThreshFar.getCvImage(), inputImage.getCvImage(), NULL);
     
     // find depth map excluding thresholded data
-    // this causes the 10 finger effect and could be related to our discussion
-    // today about dynamic thresholding
-    //
-    // if we threshold with the near value, and the user moves the hand just past the near point
-    // and thus out of range
-    // their hand will be black (since black is used for out of range areas)
-    // however since their hands shadow is also black this will cause the 10 finger effect.
-    //
-    //cvAnd(grayThreshNear.getCvImage(), depthThreshed.getCvImage(), depthThreshed.getCvImage(), NULL);
     cvAnd(grayThreshFar.getCvImage(), depthThreshed.getCvImage(), depthThreshed.getCvImage(), NULL);
 }
 
@@ -327,158 +291,3 @@ ofPixels KinectManager::getCroppedPixels(ofPixels inputDepthPixels){
     
     return bobu;
 }
-
-// Calculate Block Number
-int KinectManager::calculateBlockNumber(int x_pixel_coord){
-    //note: int divison returns a truncated result that looks like a floor:
-    // 1/2 would return 0, 4/2.5 would return 1
-    int blockNumber = -1;
-    
-    float pixel_size_Lo_W = (m_Transform_L_outer/m_Transform_W)*m_mask.width;
-    float pixel_size_Li_W = (m_Transform_L_inner/m_Transform_W)*m_mask.width;
-    float pixel_size_Ro_W = (m_Transform_R_outer/m_Transform_W)*m_mask.width;
-    float pixel_size_Ri_W = (m_Transform_R_inner/m_Transform_W)*m_mask.width;
-    
-    float pixel_size_Lo_H = (m_Transform_L_outer/m_Transform_H)*m_mask.height;
-    float pixel_size_Li_H = (m_Transform_L_inner/m_Transform_H)*m_mask.height;
-    float pixel_size_Ro_H = (m_Transform_R_outer/m_Transform_H)*m_mask.height;
-    float pixel_size_Ri_H = (m_Transform_R_inner/m_Transform_H)*m_mask.height;
-    
-    float pixel_size_block_H = (m_Transform_block/m_Transform_H)*m_mask.height;
-    float pixel_size_block_W = (m_Transform_block/m_Transform_W)*m_mask.width;
- 
-    float WpixelSizes[7] =
-    {
-        pixel_size_Lo_W,
-        pixel_size_block_W,
-        pixel_size_Li_W,
-        pixel_size_block_W,
-        pixel_size_Ro_W,
-        pixel_size_block_W,
-        pixel_size_Ri_W
-        
-    };
-    
-    float HpixelSizes[7] =
-    {
-        pixel_size_Lo_H,
-        pixel_size_block_H,
-        pixel_size_Li_H,
-        pixel_size_block_H,
-        pixel_size_Ro_H,
-        pixel_size_block_H,
-        pixel_size_Ri_H
-    };
-    
-    //determine block
-    for (int x = 0; x < 7; x++) {
-        if (((float)x_pixel_coord>WpixelSizes[x]) && (float)x_pixel_coord<=WpixelSizes[x+1]){
-            blockNumber = x;
-        }
-    }
-    
-    return blockNumber;
-    
-    
-    //vector<float> pixelSizeW = new vector<float>();
-    
-//float WpixelSizes[4] = [pixel_size_Lo_W,pixel_size_Li_W, pixel_size_Ro_W, pixel_size_Ri_W];
-    
-    
-    
-    // to transform pixels and get zone, multiply it by cropped total kinect pixels width
-    
-   // if ((x_pixel_coord >= 0) && ((x_pixel_coord < pixel_size_Lo_W)){
-        
-  //  }
-    
-    
-    
- //   int blockNum = ((x_pixel_coord+5)/16)+1;
-    
-  //  return blockNum;
-    
-}
-
-
-int KinectManager::calculateWithinBlockX(int blockNumber, int x_pixel_coord){
-    int blockDead = blockNumber%2;
-        //48 pins total wide
-        // x number of pixels wide
-        //divide for ratio
-        int TRANSFORM_x = (int)((48.0/m_mask.width)*(float)(x_pixel_coord));
-        
-        if (blockDead){
-            //we discard the dead block
-            TRANSFORM_x = 0;
-        }
-        
-        return TRANSFORM_x;
-}
-
-//scale pixels for map of pixels to pins
-// Runs only once on initialization.
-// Fills the m_videoToTransformIndicies array with a map between flattened TRANSFORM pin numbers
-// and flattened video pixels.
-// m_videoToTransformIndicies(flattened TRANSFORM pixel index) = (flattened video pixel index)
-// To assign TRANSFORM pixel video pixels values in the update, do something like
-// (pseudocode) ==> TRANSFORM_Pin_Height(pin1) = m_video_toTransformIndicies(pin1);
-void KinectManager::setupTransformedPixelMap(){
-    int counter = 0;
-    
-    int buckets [1152];
-    
-    float widthRatio = 48.0/m_mask.width;
-    float heightRatio = 24.0/m_mask.height;
-    
-    
-    
-    
-    //linspace average out pixels
-    for (int y = 0; y < m_mask.height; y++) {
-        for (int x = 0; x < m_mask.width; x++) {
-            
-            //returns the pin in x
-            int blockAliveXCoord = calculateWithinBlockX(calculateBlockNumber(x),x);
-            
-            if (blockAliveXCoord){
-                //y is row number
-                //y=0 is first row
-                //y=1 is second row
-                
-                
-                int roundedY = (int)round((float)y*heightRatio);
-                
-                
-                //m_kinectToTransformIndicies[counter] = 48*y+x;
-                m_kinectToTransformIndicies[48*roundedY+blockAliveXCoord] = 48*roundedY+blockAliveXCoord;
-                
-                counter++;
-                cout << "one made it \n";
-            }
-        }
-    }
-    
- //   float scaledW = 102.0/m_Transform_W;
- //   float scaledH = 24.0/m_Transform_H;
-    
-    // Iterate over all pixels in the KINECT frame.
-  /*  for (int y = 0; y < 24; y++) {
-        for (int x = 0; x < 102; x++) {
-            int blockAliveXCoord = calculateWithinBlockX(calculateBlockNumber(x),x);
-            
-            if (blockAliveXCoord){
-                m_kinectToTransformIndicies[counter] = 102*y+x;
-                counter++;
-                cout << "one made it \n";
-            }
-        }
-    }*/
-}
-// if pixels in active regions, return a hit
-
-
-
-
-
-

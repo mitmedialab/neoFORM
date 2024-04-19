@@ -20,7 +20,7 @@ class Application {
 public:
     Application();
     
-    Application(ShapeIOManager *theCustomShapeDisplayManager);
+    Application(SerialShapeIOManager *theCustomShapeDisplayManager);
     
     void getHeightsForShapeDisplay(ofPixels &heights);
     void getPinConfigsForShapeDisplay(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
@@ -44,9 +44,6 @@ public:
     
     //Dan trying to add stuff
     void setRefForShapeIOManager(SerialShapeIOManager* customIOManager);
-    
-    //temporary way to access ref for mid transplant
-    SerialShapeIOManager* getRefForShapeIOManager();
     
 protected:
     

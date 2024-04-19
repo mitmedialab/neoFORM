@@ -11,7 +11,11 @@
 // configuration
 TransformIOManager::TransformIOManager() {
     configureBoards();
-    setupTransformedPixelMap();
+}
+
+TransformIOManager::TransformIOManager(KinectManager* kinectRef) {
+    configureBoards();
+    m_kinectManagerRef = kinectRef;
 }
 
 // setup transFORM-specific board configuration
@@ -67,78 +71,111 @@ void TransformIOManager::configureBoards() {
     boardsAreConfigured = true;
 }
 
-// Dead/Alive block calculations: may move to a hardware specific class.
-int TransformIOManager::calculateTransformWithinBlockX(int blockNumber, int x_pixel_coord) {
-    int blockDead = blockNumber%2;
+ofPixels TransformIOManager::getKinectStream(){
+    m_kinectManagerRef->update();
     
-    // Find actual location on TRANSFORM grid from video
-    // NOTE TRANSFORM display is 48 pixels wide.
-    // NOTE video pixels are 102 wide with 5 pixel buffer on left side. (hence 107 below)
-    // right side also has a 5 pixel buffer, but doesn't matter for our caculation
-    int TRANSFORM_x = (int)((48.0/107.0)*(float)(x_pixel_coord+5));
+    //basic test
+    // Uses the opencv cropped contour rectangle to crop the kinect depth pixels to only be in the size and shape of the transform
+    ofPixels m_videoPixels = m_kinectManagerRef->getCroppedPixels((m_kinectManagerRef->depthPixels));//video.getPixels();
+
     
-    if (blockDead){
-        //we discard the dead block
-        TRANSFORM_x = 0;
+    return m_videoPixels;
+}
+
+// This function takes the full surface image and removes all of the non-active zones, so only
+// the active zones are left. It does this by defining rectangles for each of the active zones,
+// isolating them, and then re-combining them into a single image.
+ofPixels TransformIOManager::cropToActiveSurface( ofPixels fullSurface ) {
+    // Get the conversion factor for going from the physical dimension of the surface
+    // to the pixel dimension of the image.
+    float pixelsPerInch = fullSurface.getWidth() / m_Transform_W;
+    
+    // Create rectangles representing the active zones in the fullSurface image.
+    std::vector<ofRectangle> sections = createSections(pixelsPerInch);
+    
+    // Crop the full surface to just the active zones
+    ofPixels combinedActiveZones = combineActiveZones(fullSurface, sections);
+    
+    // Scale and rotate the combined active zones
+    combinedActiveZones.resize(48, 24);
+    combinedActiveZones.rotate90(2);
+    
+    // Return the cropped and transformed image
+    return combinedActiveZones;
+    
+}
+
+// Takes the full surface image, and an array of rectangles representing the active zones,
+// and returns a new image containing only the active zones.
+ofPixels TransformIOManager::combineActiveZones(ofPixels fullSurface, std::vector<ofRectangle> sections) {
+    // Calculate the width of the combined active zones
+    int combinedActiveZonesWidth = 0;
+    for (const ofRectangle& section : sections) {
+        combinedActiveZonesWidth += static_cast<int>(round(section.width));
+    }
+
+    // Create a framebuffer with the correct size to hold the pasted zones.
+    ofFbo framebuffer;
+    framebuffer.allocate(combinedActiveZonesWidth, fullSurface.getHeight(), GL_RGB);
+
+    // Start the x position at the x position of the first section
+    int x = 0;
+
+    // Begin drawing into the framebuffer
+    framebuffer.begin();
+
+    // Create an image to hold the current cropped zone
+    ofImage zoneImage;
+
+    // Loop over the sections
+    for (const ofRectangle& section : sections) {
+        // Crop the section directly from fullSurface
+        ofPixels zone;
+        fullSurface.cropTo(
+            zone,
+            static_cast<int>(round(section.x)),
+            static_cast<int>(round(section.y)),
+            static_cast<int>(round(section.width)),
+            static_cast<int>(round(section.height))
+        );
+
+        // Create an image from the cropped pixels
+        zoneImage.setFromPixels(zone);
+
+        // Draw the image at the correct x position for the section into the framebuffer.
+        zoneImage.draw(x, 0);
+        
+        // Increment the x position by the width of the section, to make sure everything is consistently spaced.
+        x += static_cast<int>(round(section.width));
+    }
+
+    // End drawing into the framebuffer
+    framebuffer.end();
+
+    // Extract the pixels from the framebuffer
+    ofPixels combinedActiveZones;
+    framebuffer.readToPixels(combinedActiveZones);
+    combinedActiveZones.setImageType(OF_IMAGE_GRAYSCALE);
+
+    // Return the combined active zones as a grayscale ofPixels object.
+    return combinedActiveZones;
+}
+
+// This function takes the current scaling factor and creates an array of rectangles
+// which represent the active zones on the TRANSFORM display.
+std::vector<ofRectangle> TransformIOManager::createSections(float pixelsPerInch) {
+    std::vector<ofRectangle> sections;
+
+    // Calculate the pixel widths and heights of the active regions
+    float activeRegionWidth = (m_Transform_block * pixelsPerInch);
+    float activeRegionHeight = (m_Transform_H * pixelsPerInch);
+
+    // Loop over the x positions to create the active region rectangles
+    for (float activeXstart : m_activeZoneXstarts) {
+        float activePixelX = activeXstart * pixelsPerInch;
+        ofRectangle activeRegion(activePixelX, 0, activeRegionWidth, activeRegionHeight);
+        sections.push_back(activeRegion);
     }
     
-    return TRANSFORM_x;
-}
-
-// Given an x coordinate from the video (102 pixels wide),
-// We chop in into 6 segments
-// Segments that are used for actuation are 2, 4, 6
-// Other segments are not used by TRANSFORM
-// so 102 divided into 6 segments, means each segment is 17 pixels wide
-// + 5 pixels on each border
-// The returned block number is the number of the block where the
-// video pixel input to the function ends up.
-// blocks 1,3,5, useless
-// blocks 2,4,6 used in transform
-int TransformIOManager::calculateTransformBlockNumber(int x_pixel_coord){
-    //note: int divison returns a truncated result that looks like a floor:
-    // 1/2 would return 0, 4/2.5 would return 1
-    int blockNum = ((x_pixel_coord+5)/16)+1;
-    
-    return blockNum;
-}
-
-// Runs only once on initialization.
-// Fills the m_videoToTransformIndicies array with a map between flattened TRANSFORM pin numbers
-// and flattened video pixels.
-// m_videoToTransformIndicies(flattened TRANSFORM pixel index) = (flattened video pixel index)
-// To assign TRANSFORM pixel video pixels values in the update, do something like
-// (pseudocode) ==> TRANSFORM_Pin_Height(pin1) = m_video_toTransformIndicies(pin1);
-void TransformIOManager::setupTransformedPixelMap(){
-    int counter = 0;
-    
-    // Iterate over all pixels in the video frame.
-    for (int y = 0; y < 24; y++) {
-        for (int x = 0; x < 102; x++) {
-            int blockAliveXCoord = calculateTransformWithinBlockX(calculateTransformBlockNumber(x),x);
-            
-            if (blockAliveXCoord){
-                m_videoToTransformIndicies[counter] = 102*y+x;
-                counter++;
-                cout << "one made it \n";
-            }
-        }
-    }
-}
-
-
-ofPixels TransformIOManager::getPinPixelsOnly(ofPixels fullPixels){
-    ofPixels lalalala;
-    return lalalala;
-}
-
-
-int* TransformIOManager::getPixelsToShapeDisplayIndicies(){
-    return m_videoToTransformIndicies;
-}
-
-//DAN AND JONTHAN
-ofPixels SerialShapeIOManager::getPinPixelsOnly(ofPixels snobby){
-    cout << "get me transformey pixels matey\n";
-    return snobby;
+    return sections;
 }

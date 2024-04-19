@@ -20,7 +20,8 @@ void AppManager::setup(){
     // setup external devices (e.g., kinect)
     //kinectManager = new KinectManager();
     // Depth thresholds for the kinect are set here.
-    kinectManager = new KinectManager(230, 70, 20);
+    
+    kinectManager = new KinectManager(255, 90, 20);
 
     
     // zero timeOfLastUpdate tracker
@@ -50,6 +51,9 @@ void AppManager::setup(){
     depthDebugApp->setRefForShapeIOManager(m_serialShapeIOManager);
     applications["depthDebug"] = depthDebugApp;
     
+    kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
+    applications["kinectHandWavy"] = kinectHandWavy;
+    
     // give applications read access to input data
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
         Application *app = iter->second;
@@ -68,7 +72,7 @@ void AppManager::setup(){
 void AppManager::setupShapeDisplayManagement() {
     // initialize communication with the shape display
     // This is where the particulars of the shape display are set (i.e. TRANSFORM, inFORM, or any other physical layout).
-    m_serialShapeIOManager = new TransformIOManager();
+    m_serialShapeIOManager = new TransformIOManager(kinectManager);
     
     printf("Setting up Shape Display Management\n");
 
@@ -268,7 +272,7 @@ void AppManager::keyPressed(int key) {
         } else if (key == '4') {
             setCurrentApplication("kinectDebug");
         } else if (key == '5') {
-            setCurrentApplication("depthDebug");
+            setCurrentApplication("kinectHandWavy");
         }
 
     // forward unreserved keys to the application

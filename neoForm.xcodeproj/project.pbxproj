@@ -45,6 +45,7 @@
 		7BB869C7114A607859B1D47C /* ofxMQTT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8130AFF2F6485D85D2604796 /* ofxMQTT.cpp */; };
 		7F59AC8CDAF8CF8D30E50E57 /* send_disconnect.c in Sources */ = {isa = PBXBuildFile; fileRef = 25D84EECC76A85F5598FF2B3 /* send_disconnect.c */; };
 		84AEEE292A926C7700D26E7C /* DepthDebugApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84AEEE272A926C7700D26E7C /* DepthDebugApp.cpp */; };
+		84B1DD002B792D8500DE7B7B /* KinectHandWavy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84B1DCFE2B792D8500DE7B7B /* KinectHandWavy.cpp */; };
 		84CE66CA2A48CDED00921BAA /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84CE66C42A48CDED00921BAA /* tinyxmlparser.cpp */; };
 		84CE66CB2A48CDED00921BAA /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84CE66C52A48CDED00921BAA /* tinyxmlerror.cpp */; };
 		84CE66CC2A48CDED00921BAA /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84CE66C62A48CDED00921BAA /* tinyxml.cpp */; };
@@ -374,6 +375,8 @@
 		849E0FB3BF7726C6FFE88602 /* matx.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = matx.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv4/opencv2/core/matx.hpp; sourceTree = SOURCE_ROOT; };
 		84AEEE272A926C7700D26E7C /* DepthDebugApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DepthDebugApp.cpp; sourceTree = "<group>"; };
 		84AEEE282A926C7700D26E7C /* DepthDebugApp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DepthDebugApp.hpp; sourceTree = "<group>"; };
+		84B1DCFE2B792D8500DE7B7B /* KinectHandWavy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KinectHandWavy.cpp; sourceTree = "<group>"; };
+		84B1DCFF2B792D8500DE7B7B /* KinectHandWavy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = KinectHandWavy.hpp; sourceTree = "<group>"; };
 		84C059AA681D7088B742D8E8 /* cuda.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cuda.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/cuda.hpp; sourceTree = SOURCE_ROOT; };
 		84CE66C32A48CDED00921BAA /* tinyxml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml.h; sourceTree = "<group>"; };
 		84CE66C42A48CDED00921BAA /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
@@ -2011,6 +2014,8 @@
 				B9A9F30D297DF82000ACC2F8 /* VideoPlayerApp.hpp */,
 				B9A9F30E297DF82000ACC2F8 /* Application.cpp */,
 				B9A9F30F297DF82000ACC2F8 /* AxisChecker.hpp */,
+				84B1DCFE2B792D8500DE7B7B /* KinectHandWavy.cpp */,
+				84B1DCFF2B792D8500DE7B7B /* KinectHandWavy.hpp */,
 				B9A9F310297DF82000ACC2F8 /* DebuggingApps */,
 			);
 			path = Applications;
@@ -2715,6 +2720,7 @@
 				B9A9F318297DF82000ACC2F8 /* KinectManager.cpp in Sources */,
 				255A7B680DC81E543C875794 /* usb_libusb10.c in Sources */,
 				7ADB04AF67C568EAFAEBA546 /* ofxKinectExtras.cpp in Sources */,
+				84B1DD002B792D8500DE7B7B /* KinectHandWavy.cpp in Sources */,
 				686B0DF6249B52E1A85B39EC /* ofxKinect.cpp in Sources */,
 				69578CC6A029D58E3A0F0D33 /* actions.c in Sources */,
 				E799FB8AA5686B6DA52C2225 /* alias_mosq.c in Sources */,
