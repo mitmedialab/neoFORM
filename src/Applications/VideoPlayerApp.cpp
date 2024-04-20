@@ -25,9 +25,7 @@ void VideoPlayerApp::updateHeights() {
     
     // Grayscale ensures that there is only one brightness value per pixel (instead of three channel RGB).
     m_videoPixels.setImageType(OF_IMAGE_GRAYSCALE);
-   
-    //ofPixels onlyPinPixels = m_CustomShapeDisplayManager->getPinPixelsOnly(m_videoPixels);
-    
+
     // Pass the current video frame to the shape display manager to get the actuated pixels.
     ofPixels livePixels = m_CustomShapeDisplayManager->cropToActiveSurface(m_videoPixels);
     
