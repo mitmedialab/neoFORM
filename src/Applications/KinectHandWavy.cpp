@@ -84,8 +84,13 @@ void KinectHandWavy::drawPreviewMaskRectangle() {
 
 // Draw a semi-transparent rectangle over each of the three the actuated sections.
 void KinectHandWavy::drawPreviewActuatedSections() {
+    
+    // Get the width in inches of the the full transform surface (need to cast shape display manager object first).
+    float transformWidth = ((TransformIOManager*)m_CustomShapeDisplayManager)->m_Transform_W;
+    
     // Get the actuated section dimensions from the CustomShapeDisplayManager
-    float pixelsPerInch = m_kinectManager->m_mask.getWidth() / 104.75 ; // <-- this is a problem, the transform width (104.75) needs to be available from the apps.
+    float pixelsPerInch = m_kinectManager->m_mask.getWidth() / transformWidth;
+    
     std::vector<ofRectangle> sections = m_CustomShapeDisplayManager->createSections(pixelsPerInch);
     
     // Create a frame buffer with the same dimensions as the cropped signal.
