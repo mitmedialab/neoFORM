@@ -46,6 +46,11 @@ void VideoPlayerApp::drawGraphicsForShapeDisplay(int x, int y, int width, int he
     // Draw the current video frame as a base; .
     video.draw(30, 300, 544, 128);
     
+    // Draw the preview of the actuated pixels sections.
+    drawSectionPreviewFrameBuffer(30, 300, 544, 128);
+}
+
+void VideoPlayerApp::drawSectionPreviewFrameBuffer(int x, int y, int width, int height) {
     // Get the width in inches of the the full transform surface.
     float transformWidth = ((TransformIOManager*)m_CustomShapeDisplayManager)->m_Transform_W;
     
@@ -75,7 +80,7 @@ void VideoPlayerApp::drawGraphicsForShapeDisplay(int x, int y, int width, int he
     previewFrameBuffer.end();
 
     // Draw the frame buffer at the same position and scale as the video
-    previewFrameBuffer.draw(30, 300, 544, 128);
+    previewFrameBuffer.draw(x, y, width, height);
 }
 
 string VideoPlayerApp::appInstructionsText() {

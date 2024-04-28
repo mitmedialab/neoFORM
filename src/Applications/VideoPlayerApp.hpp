@@ -16,6 +16,8 @@ public:
     void setup();
     void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
+    void drawSectionPreviewFrameBuffer(int x, int y, int width, int height);
+    
     string appInstructionsText();
     void keyPressed(int key);
 
