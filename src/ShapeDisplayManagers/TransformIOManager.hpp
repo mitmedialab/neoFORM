@@ -49,7 +49,7 @@ public:
     float m_Transform_H = 26; //inches
     
     // These numbers represent the start points (in inches) of the 3 active zones of the TRANSFORM surface.
-    std::vector<float> m_activeZoneXstarts = {13.375, 44, 75};
+    std::vector<float> m_activeZoneXstarts = {10, 43.75, 77};
 
     std::vector<ofRectangle> createSections( float pixelsPerInch );
     ofPixels cropToActiveSurface(ofPixels fullSurface);
