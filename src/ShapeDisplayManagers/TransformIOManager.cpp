@@ -13,8 +13,8 @@ TransformIOManager::TransformIOManager() {
     configureBoards();
 }
 
-TransformIOManager::TransformIOManager(KinectManager* kinectRef) {
-    configureBoards();
+// Secondary Constructor delegates to the primary constructor and adds the kinect reference.
+TransformIOManager::TransformIOManager(KinectManager* kinectRef) : TransformIOManager() {
     m_kinectManagerRef = kinectRef;
 }
 
