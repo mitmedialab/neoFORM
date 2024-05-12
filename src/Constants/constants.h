@@ -49,15 +49,6 @@ using namespace std;
 
 #define SHAPE_DISPLAY_CAN_TALK_BACK 1
 
-#define PINBLOCK_0_X_OFFSET 13
-#define PINBLOCK_0_WIDTH 16
-
-#define PINBLOCK_1_X_OFFSET 43
-#define PINBLOCK_1_WIDTH 16
-
-#define PINBLOCK_2_X_OFFSET 73
-#define PINBLOCK_2_WIDTH 16
-
 // shape display derived dimensions, for convenience
 #define SHAPE_DISPLAY_SIZE_2D (SHAPE_DISPLAY_SIZE_X * SHAPE_DISPLAY_SIZE_Y)
 
