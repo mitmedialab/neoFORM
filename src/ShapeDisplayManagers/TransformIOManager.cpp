@@ -23,6 +23,9 @@ TransformIOManager::TransformIOManager() {
     deadZone = 2;
     maxSpeed = 200;
 
+    // Connect to shape display.
+    connectToDisplay();
+    
     configureBoards();
 }
 

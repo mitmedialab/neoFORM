@@ -36,9 +36,6 @@ SerialShapeIOManager::SerialShapeIOManager() {
             pinStuckSinceTime[x][y] = timeOfLastConfigsRefresh;
         }
     }
-
-    // connect to shape display
-    connectToDisplay();
 }
 
 SerialShapeIOManager::SerialShapeIOManager(KinectManager* kinectRef) {
