@@ -123,6 +123,14 @@ protected:
     ofPixels feebsTEMP;
     
     KinectManager* m_kinectManagerRef;
+    
+    // Shape display hardware constants (previously defined using #define preprocessor statements.
+    // These values are designed to be overridden by their respective individual shape display sub-classes (Transform, Inform, Cooperform, ets.)
+    
+    int pinHeightMin;
+    int pinHeightMax;
+    int pinHeightRange;
+    
 };
 
 #endif /* SerialShapeIOManager_hpp */

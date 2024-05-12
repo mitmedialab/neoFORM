@@ -10,6 +10,12 @@
 // Create new transformIOManager instance, setting up transFORM-specific board
 // configuration
 TransformIOManager::TransformIOManager() {
+    // Set the Transform specific hardware parameters here.
+    
+    pinHeightMin = 50;
+    pinHeightMax = 210;
+    pinHeightRange = pinHeightMax - pinHeightMin;
+    
     configureBoards();
 }
 
