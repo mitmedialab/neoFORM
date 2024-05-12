@@ -65,9 +65,6 @@ const string SERIAL_PORTS[NUM_SERIAL_CONNECTIONS] = {
 
 #define SHAPE_DISPLAY_CAN_TALK_BACK 1
 
-#define HEIGHT_MIN 50
-#define HEIGHT_MAX 210
-
 #define PINBLOCK_0_X_OFFSET 13
 #define PINBLOCK_0_WIDTH 16
 
@@ -79,7 +76,6 @@ const string SERIAL_PORTS[NUM_SERIAL_CONNECTIONS] = {
 
 // shape display derived dimensions, for convenience
 #define SHAPE_DISPLAY_SIZE_2D (SHAPE_DISPLAY_SIZE_X * SHAPE_DISPLAY_SIZE_Y)
-#define HEIGHT_RANGE (HEIGHT_MAX - HEIGHT_MIN)
 
 // TRANSFORM pin config defaults
 #define DEFAULT_GAIN_P 1.5
