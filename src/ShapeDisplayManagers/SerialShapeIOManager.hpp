@@ -138,6 +138,7 @@ protected:
     int pinHeightMax;
     int pinHeightRange;
     
+    // Pin configs, maybe split out into a single array instead of separate values.
     float gainP;
     float gainI;
     int maxI;
