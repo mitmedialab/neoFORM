@@ -145,6 +145,9 @@ protected:
     int deadZone;
     int maxSpeed;
     
+    // Serial connection id strings
+    std::vector<std::string> serialPorts;
+
 };
 
 #endif /* SerialShapeIOManager_hpp */

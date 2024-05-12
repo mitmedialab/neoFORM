@@ -40,23 +40,7 @@ using namespace std;
 #define NUM_PINS_ARDUINO 6
 
 #define NUM_SERIAL_CONNECTIONS 6
-#define SERIAL_PORT_0 "/dev/tty.usbserial-A702YMNV"
-#define SERIAL_PORT_1 "/dev/tty.usbserial-A702YLM2"
-#define SERIAL_PORT_2 "/dev/tty.usbserial-A702YMNT"
-#define SERIAL_PORT_3 "/dev/tty.usbserial-A702YLM6"
-#define SERIAL_PORT_4 "/dev/tty.usbserial-A702YLM9"
-#define SERIAL_PORT_5 "/dev/tty.usbserial-A30011Hp"
 
-
-
-const string SERIAL_PORTS[NUM_SERIAL_CONNECTIONS] = {
-    SERIAL_PORT_0,
-    SERIAL_PORT_1,
-    SERIAL_PORT_2,
-    SERIAL_PORT_3,
-    SERIAL_PORT_4,
-    SERIAL_PORT_5
-};
 
 // Shape display table
 // -------------------

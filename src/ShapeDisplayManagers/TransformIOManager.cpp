@@ -22,6 +22,15 @@ TransformIOManager::TransformIOManager() {
     maxI     = 25;
     deadZone = 2;
     maxSpeed = 200;
+    
+    // Add serial connection strings to the vector of serial connections.
+    serialPorts.push_back("/dev/tty.usbserial-A702YMNV");
+    serialPorts.push_back("/dev/tty.usbserial-A702YLM2");
+    serialPorts.push_back("/dev/tty.usbserial-A702YMNT");
+    serialPorts.push_back("/dev/tty.usbserial-A702YLM6");
+    serialPorts.push_back("/dev/tty.usbserial-A702YLM9");
+    serialPorts.push_back("/dev/tty.usbserial-A30011Hp");
+    
 
     // Connect to shape display.
     connectToDisplay();

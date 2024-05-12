@@ -106,7 +106,7 @@ void SerialShapeIOManager::disconnectFromDisplay(bool clearHeights) {
 // destroyed.
 void SerialShapeIOManager::openSerialConnections() {
     for (int i = 0; i < NUM_SERIAL_CONNECTIONS; i++) {
-        serialConnections[i] = new SerialShapeIO(SERIAL_PORTS[i], SERIAL_BAUD_RATE, heightsFromShapeDisplayAvailable);
+        serialConnections[i] = new SerialShapeIO(serialPorts[i], SERIAL_BAUD_RATE, heightsFromShapeDisplayAvailable);
     }
 }
 
