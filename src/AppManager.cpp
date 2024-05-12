@@ -80,11 +80,11 @@ void AppManager::setupShapeDisplayManagement() {
     // initialize shape display pin configs
     PinConfigs pinConfigs;
     pinConfigs.timeOfUpdate = elapsedTimeInSeconds();
-    pinConfigs.gainP = DEFAULT_GAIN_P;
-    pinConfigs.gainI = DEFAULT_GAIN_I;
-    pinConfigs.maxI = DEFAULT_MAX_I;
-    pinConfigs.deadZone = DEFAULT_DEAD_ZONE;
-    pinConfigs.maxSpeed = DEFAULT_MAX_SPEED;
+    pinConfigs.gainP = m_serialShapeIOManager->getGainP();
+    pinConfigs.gainI = m_serialShapeIOManager->getGainI();
+    pinConfigs.maxI  = m_serialShapeIOManager->getMaxI();
+    pinConfigs.deadZone = m_serialShapeIOManager->getDeadZone();
+    pinConfigs.maxSpeed = m_serialShapeIOManager->getMaxSpeed();
     m_serialShapeIOManager->setGlobalPinConfigs(pinConfigs);
     timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
 

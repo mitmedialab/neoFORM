@@ -77,13 +77,5 @@ const string SERIAL_PORTS[NUM_SERIAL_CONNECTIONS] = {
 // shape display derived dimensions, for convenience
 #define SHAPE_DISPLAY_SIZE_2D (SHAPE_DISPLAY_SIZE_X * SHAPE_DISPLAY_SIZE_Y)
 
-// TRANSFORM pin config defaults
-#define DEFAULT_GAIN_P 1.5
-#define DEFAULT_GAIN_I 0.045
-#define DEFAULT_MAX_I 25
-#define DEFAULT_DEAD_ZONE 2
-#define DEFAULT_MAX_SPEED 200
-
-
 #endif /* constants_h */
 

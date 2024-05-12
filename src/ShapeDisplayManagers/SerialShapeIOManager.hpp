@@ -60,6 +60,13 @@ public:
     // Virtual class for hardware specific pin layouts.
     virtual std::vector<ofRectangle> createSections(float pixelsPerInch) {};
 
+    // Public getters for protected hardware constants, these are specific to the pin configs so might be abstracted into a single array of values.
+    float getGainP()    const { return gainP; }
+    float getGainI()    const { return gainI; }
+    int   getMaxI()     const { return maxI; }
+    int   getDeadZone() const { return deadZone; }
+    int   getMaxSpeed() const { return maxSpeed; }
+    
 
 protected:
     // manage the connection to the shape display
@@ -130,6 +137,12 @@ protected:
     int pinHeightMin;
     int pinHeightMax;
     int pinHeightRange;
+    
+    float gainP;
+    float gainI;
+    int maxI;
+    int deadZone;
+    int maxSpeed;
     
 };
 

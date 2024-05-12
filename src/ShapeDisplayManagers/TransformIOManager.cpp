@@ -16,6 +16,13 @@ TransformIOManager::TransformIOManager() {
     pinHeightMax = 210;
     pinHeightRange = pinHeightMax - pinHeightMin;
     
+    // Pin config values, might be abstracted into a single array.
+    gainP    = 1.5;
+    gainI    = 0.045;
+    maxI     = 25;
+    deadZone = 2;
+    maxSpeed = 200;
+
     configureBoards();
 }
 
