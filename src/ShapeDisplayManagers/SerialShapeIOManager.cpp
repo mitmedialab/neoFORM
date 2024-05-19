@@ -26,14 +26,21 @@ SerialShapeIOManager::SerialShapeIOManager() {
     // from the shape display telling us whether pins are stuck
     enableStuckPinSafetyToggle = enableStuckPinSafetyToggle && heightsFromShapeDisplayAvailable;
 
+    // Size the pin arrays correctly based on the hardware specific dimension, and initialize them with zero values
+    heightsForShapeDisplay.resize(SHAPE_DISPLAY_SIZE_X, std::vector<unsigned char>(SHAPE_DISPLAY_SIZE_Y, 0));
+    heightsFromShapeDisplay.resize(SHAPE_DISPLAY_SIZE_X, std::vector<unsigned char>(SHAPE_DISPLAY_SIZE_Y, 0));
+    pinDiscrepancy.resize(SHAPE_DISPLAY_SIZE_X, std::vector<int>(SHAPE_DISPLAY_SIZE_Y, 0));
+    //pinEnabled.resize(SHAPE_DISPLAY_SIZE_X, std::vector<int>(SHAPE_DISPLAY_SIZE_Y, true));
+    //pinStuckSinceTime.resize(SHAPE_DISPLAY_SIZE_X, std::vector<int>(SHAPE_DISPLAY_SIZE_Y, timeOfLastConfigsRefresh));
+    
     // initialize per-pin data arrays
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
         for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            heightsForShapeDisplay[x][y] = 0;
-            heightsFromShapeDisplay[x][y] = 0;
-            pinDiscrepancy[x][y] = 0;
-            pinEnabled[x][y] = true;
-            pinStuckSinceTime[x][y] = timeOfLastConfigsRefresh;
+            //heightsForShapeDisplay[x][y] = 0;
+            //heightsFromShapeDisplay[x][y] = 0;
+            //pinDiscrepancy[x][y] = 0;
+            //pinEnabled[x][y] = true;
+            //pinStuckSinceTime[x][y] = timeOfLastConfigsRefresh;
         }
     }
 }
@@ -136,9 +143,20 @@ void SerialShapeIOManager::printBoardConfiguration() {
 //--------------------------------------------------------------
 
 // Set the desired heights for the shape display
-void SerialShapeIOManager::sendHeightsToShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) {
-    unsigned char *src = (unsigned char *) heights;
-    copy(src, src + SHAPE_DISPLAY_SIZE_2D, (unsigned char *) heightsForShapeDisplay);
+void SerialShapeIOManager::sendHeightsToShapeDisplay( const std::vector<std::vector<unsigned char>>& heights ) {
+    
+    // Flatten the 2D vector into a 1D vector for copying
+    std:vector<unsigned char> flattenedHeights;
+    for (const auto& row : heights) {
+        flattenedHeights.insert(flattenedHeights.end(), row.begin(), row.end());
+    }
+    
+    // Copy the flattened vector to the heightsForShapeDisplay class member.
+    std::copy(flattenedHeights.begin(), flattenedHeights.end(), heightsForShapeDisplay.begin());
+    
+    
+    //unsigned char *src = (unsigned char *) heights;
+    //copy(src, src + SHAPE_DISPLAY_SIZE_2D, (unsigned char *) heightsForShapeDisplay);
 
     // update display
     update();
@@ -146,13 +164,17 @@ void SerialShapeIOManager::sendHeightsToShapeDisplay(unsigned char heights[SHAPE
 
 // Get the actual height values on the shape display. They will be copied into
 // the destination array passed in as the argument.
-void SerialShapeIOManager::getHeightsFromShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) {
+void SerialShapeIOManager::getHeightsFromShapeDisplay( const std::vector<std::vector<unsigned char>>& heights ) {
     if (!heightsFromShapeDisplayAvailable) {
         throw ("height data from shape display is not available on " + shapeDisplayName);
     }
 
-    unsigned char *src = (unsigned char *) heightsFromShapeDisplay;
-    copy(src, src + SHAPE_DISPLAY_SIZE_2D, (unsigned char *) heights);
+    for (size_t i = 0; i < heightsFromShapeDisplay.size(); ++i) {
+        std::copy( heightsFromShapeDisplay[i].begin(), heightsFromShapeDisplay[i].end(), heights[i].begin() );
+    }
+  
+    //unsigned char *src = (unsigned char *) heightsFromShapeDisplay;
+    //copy(src, src + SHAPE_DISPLAY_SIZE_2D, (unsigned char *) heights);
 }
 
 // Set a single height for the display.

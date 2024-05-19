@@ -37,8 +37,8 @@ public:
     ~SerialShapeIOManager();
     
     // send and receive height values
-    void sendHeightsToShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
-    void getHeightsFromShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
+    void sendHeightsToShapeDisplay(const std::vector<std::vector<unsigned char>>& heights);
+    void getHeightsFromShapeDisplay(const std::vector<std::vector<unsigned char>>& heights);
     void clearShapeDisplayHeights(int value=0);
 
     // setters for pin config values
@@ -104,8 +104,8 @@ protected:
     SerialPinBoard pinBoards[NUM_ARDUINOS];
 
     // shape display height values (both intended and actual values)
-    unsigned char heightsForShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
-    unsigned char heightsFromShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
+    std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
 
     // pin behavior configurations
     PinConfigs pinConfigs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
@@ -119,9 +119,9 @@ protected:
     double timeOfLastConfigsRefresh;
 
     // properties for detecting stuck pins to toggle
-    int pinDiscrepancy[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
-    bool pinEnabled[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
-    double pinStuckSinceTime[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<int>> pinDiscrepancy;
+    std::vector<std::vector<bool>> pinEnabled;
+    std::vector<std::vector<double>> pinStuckSinceTime;
     const int pinDiscrepancyToggleThreshold = 100;
     const float secondsUntilPinToggledOff = 1.0;
     const float secondsUntilPinToggledOn = 3.0;
@@ -133,6 +133,12 @@ protected:
     
     // Shape display hardware constants (previously defined using #define preprocessor statements.
     // These values are designed to be overridden by their respective individual shape display sub-classes (Transform, Inform, Cooperform, ets.)
+    
+    int shapeDisplaySizeX;
+    int shapeDisplaySizeY;
+    
+    int numberArduinos;
+    int numberPinsPerArduino;
     
     int pinHeightMin;
     int pinHeightMax;

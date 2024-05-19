@@ -19,8 +19,8 @@ public:
     virtual ~ShapeIOManager() {};
 
     // send and receive height values
-    virtual void sendHeightsToShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) = 0;
-    virtual void getHeightsFromShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) = 0;
+    virtual void sendHeightsToShapeDisplay(const std::vector<std::vector<unsigned char>>& heights);
+    virtual void getHeightsFromShapeDisplay(const std::vector<std::vector<unsigned char>>& heights);
     virtual void clearShapeDisplayHeights(int value=0) = 0;
 
     // setters for pin config values

@@ -11,6 +11,11 @@
 // configuration
 TransformIOManager::TransformIOManager() {
     // Set the Transform specific hardware parameters here.
+    shapeDisplaySizeX = 48;
+    shapeDisplaySizeY = 24;
+    
+    numberArduinos = 192;
+    numberPinsPerArduino = 6;
     
     pinHeightMin = 50;
     pinHeightMax = 210;
