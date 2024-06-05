@@ -142,9 +142,8 @@ void SerialShapeIOManager::printBoardConfiguration() {
 //--------------------------------------------------------------
 
 // Set the desired heights for the shape display
-void SerialShapeIOManager::sendHeightsToShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) {
-    unsigned char *src = (unsigned char *) heights;
-    copy(src, src + SHAPE_DISPLAY_SIZE_2D, (unsigned char *) heightsForShapeDisplay);
+void SerialShapeIOManager::sendHeightsToShapeDisplay( const std::vector<std::vector<unsigned char>>& heights ) {
+    heightsForShapeDisplay = heights;
 
     // update display
     update();
