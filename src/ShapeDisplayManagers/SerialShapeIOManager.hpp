@@ -29,8 +29,7 @@ public:
     int serialConnection; // what serial connection is it on?
 };
 
-
-class SerialShapeIOManager : public ShapeIOManager {
+class SerialShapeIOManager {
 public:
     SerialShapeIOManager();
     SerialShapeIOManager(KinectManager* kinectRef);
@@ -66,6 +65,9 @@ public:
     int   getMaxI()     const { return maxI; }
     int   getDeadZone() const { return deadZone; }
     int   getMaxSpeed() const { return maxSpeed; }
+    
+    // can heights be read from the display?
+    const bool heightsFromShapeDisplayAvailable = SHAPE_DISPLAY_CAN_TALK_BACK;
     
 
 protected:

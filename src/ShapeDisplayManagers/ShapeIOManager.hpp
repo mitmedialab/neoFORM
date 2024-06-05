@@ -13,6 +13,8 @@
 #include "constants.h"
 #include "PinConfigs.h"
 
+// This has been dereferenced from the SerialShapeIOManager.hpp file, so maybe think about removing someday.
+
 class ShapeIOManager {
 public:
     // virtual destructor allows delegation to derived class destructors when used polymorphically
