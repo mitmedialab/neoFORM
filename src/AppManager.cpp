@@ -7,6 +7,10 @@
 
 #include "AppManager.hpp"
 
+AppManager::AppManager() {
+    heightsForShapeDisplay = std::vector<std::vector<unsigned char>>(SHAPE_DISPLAY_SIZE_X, std::vector<unsigned char>(SHAPE_DISPLAY_SIZE_Y));
+}
+
 void AppManager::setup(){
     
     ofSetFrameRate(30);

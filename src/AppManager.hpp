@@ -45,6 +45,8 @@
 class AppManager : public ofBaseApp {
     
 public:
+    AppManager();
+
     void setup();
     void update();
     void draw();
@@ -104,7 +106,7 @@ private:
     // I/O data buffers
 
     // maybe rename to serialHeightOutput()
-    unsigned char heightsForShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
     // maybe rename to serialHeightInput()
     unsigned char heightsFromShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
     ofPixels heightPixelsForShapeDisplay;
