@@ -36,7 +36,7 @@ public:
     ~SerialShapeIOManager();
     
     // send and receive height values
-    void sendHeightsToShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
+    void sendHeightsToShapeDisplay(const std::vector<std::vector<unsigned char>>& heights);
     void getHeightsFromShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
     void clearShapeDisplayHeights(int value=0);
 
@@ -106,7 +106,7 @@ protected:
     SerialPinBoard pinBoards[NUM_ARDUINOS];
 
     // shape display height values (both intended and actual values)
-    unsigned char heightsForShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
     unsigned char heightsFromShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
 
     // pin behavior configurations
