@@ -45,7 +45,6 @@
 class AppManager : public ofBaseApp {
     
 public:
-    AppManager();
 
     void setup();
     void update();
