@@ -76,7 +76,6 @@ void AppManager::setupShapeDisplayManagement() {
     
     printf("Setting up Shape Display Management\n");
 
-    //m_serialShapeIOManager->shapeDisplaySizeX
     // Size the pin arrays correctly based on the hardware specific dimension, and initialize them with zero values
     heightsForShapeDisplay = std::vector<std::vector<unsigned char>>(m_serialShapeIOManager->shapeDisplaySizeX, std::vector<unsigned char>(m_serialShapeIOManager->shapeDisplaySizeY));
 
