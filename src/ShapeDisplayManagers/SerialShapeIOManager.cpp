@@ -45,9 +45,6 @@ SerialShapeIOManager::SerialShapeIOManager(KinectManager* kinectRef) {
     // stuck pin safety toggling can only be implemented if we have height data
     // from the shape display telling us whether pins are stuck
     enableStuckPinSafetyToggle = enableStuckPinSafetyToggle && heightsFromShapeDisplayAvailable;
-    
-    // Size the pin arrays correctly based on the hardware specific dimension, and initialize them with zero values
-    heightsForShapeDisplay.resize(SHAPE_DISPLAY_SIZE_X, std::vector<unsigned char>(SHAPE_DISPLAY_SIZE_Y, 0));
 
     // initialize per-pin data arrays
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
