@@ -106,7 +106,7 @@ private:
     // maybe rename to serialHeightOutput()
     std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
     // maybe rename to serialHeightInput()
-    unsigned char heightsFromShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
     ofPixels heightPixelsForShapeDisplay;
     ofPixels heightPixelsFromShapeDisplay;
     PinConfigs pinConfigsForShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];

@@ -37,7 +37,7 @@ public:
     
     // send and receive height values
     void sendHeightsToShapeDisplay(const std::vector<std::vector<unsigned char>>& heights);
-    void getHeightsFromShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
+    void getHeightsFromShapeDisplay(const std::vector<std::vector<unsigned char>>& heights);
     void clearShapeDisplayHeights(int value=0);
 
     // setters for pin config values
@@ -111,7 +111,7 @@ protected:
 
     // shape display height values (both intended and actual values)
     std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
-    unsigned char heightsFromShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
 
     // pin behavior configurations
     PinConfigs pinConfigs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];

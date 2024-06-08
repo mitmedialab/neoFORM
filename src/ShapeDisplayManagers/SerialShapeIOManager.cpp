@@ -30,7 +30,7 @@ SerialShapeIOManager::SerialShapeIOManager() {
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
         for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
             //heightsForShapeDisplay[x][y] = 0;
-            heightsFromShapeDisplay[x][y] = 0;
+            //heightsFromShapeDisplay[x][y] = 0;
             pinDiscrepancy[x][y] = 0;
             pinEnabled[x][y] = true;
             pinStuckSinceTime[x][y] = timeOfLastConfigsRefresh;
@@ -53,7 +53,7 @@ SerialShapeIOManager::SerialShapeIOManager(KinectManager* kinectRef) {
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
         for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
             //heightsForShapeDisplay[x][y] = 0;
-            heightsFromShapeDisplay[x][y] = 0;
+            //heightsFromShapeDisplay[x][y] = 0;
             pinDiscrepancy[x][y] = 0;
             pinEnabled[x][y] = true;
             pinStuckSinceTime[x][y] = timeOfLastConfigsRefresh;
@@ -148,13 +148,12 @@ void SerialShapeIOManager::sendHeightsToShapeDisplay( const std::vector<std::vec
 
 // Get the actual height values on the shape display. They will be copied into
 // the destination array passed in as the argument.
-void SerialShapeIOManager::getHeightsFromShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) {
+void SerialShapeIOManager::getHeightsFromShapeDisplay( const std::vector<std::vector<unsigned char>>& heights) {
     if (!heightsFromShapeDisplayAvailable) {
         throw ("height data from shape display is not available on " + shapeDisplayName);
     }
 
-    unsigned char *src = (unsigned char *) heightsFromShapeDisplay;
-    copy(src, src + SHAPE_DISPLAY_SIZE_2D, (unsigned char *) heights);
+    heightsFromShapeDisplay = heights;
 }
 
 // Set a single height for the display.
