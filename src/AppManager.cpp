@@ -94,7 +94,6 @@ void AppManager::setupShapeDisplayManagement() {
     // clear height and pin config buffers
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
         for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            heightsForShapeDisplay[x][y] = 0;
             heightsFromShapeDisplay[x][y] = 0;
             pinConfigsForShapeDisplay[x][y] = pinConfigs;
         }
