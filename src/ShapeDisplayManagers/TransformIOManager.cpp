@@ -12,6 +12,14 @@
 TransformIOManager::TransformIOManager() {
     // Set the Transform specific hardware parameters here.
     
+    shapeDisplaySizeX = 48;
+    shapeDisplaySizeY = 24;
+    
+    // Size the 2d heights array appropriately for the specific shape display hardware, and initialize it with zero values.
+    // This needs to happen in the subclass constructor because the superclass constructor fires first, and won't yet have the subclass specific constants.
+    heightsForShapeDisplay.resize(shapeDisplaySizeX, std::vector<unsigned char>(shapeDisplaySizeY, 0));
+
+    
     pinHeightMin = 50;
     pinHeightMax = 210;
     pinHeightRange = pinHeightMax - pinHeightMin;

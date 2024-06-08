@@ -69,6 +69,10 @@ public:
     // can heights be read from the display?
     const bool heightsFromShapeDisplayAvailable = SHAPE_DISPLAY_CAN_TALK_BACK;
     
+    // Shape display hardware constants, to be initialized by the relevant sub-class.
+    int shapeDisplaySizeX;
+    int shapeDisplaySizeY;
+    
 
 protected:
     // manage the connection to the shape display
