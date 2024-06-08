@@ -99,9 +99,9 @@ void AppManager::setupShapeDisplayManagement() {
     }
 
     // allocate height pixels objects and clear contents
-    heightPixelsForShapeDisplay.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y, 1);
+    heightPixelsForShapeDisplay.allocate(m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY, 1);
     heightPixelsForShapeDisplay.set(0);
-    heightPixelsFromShapeDisplay.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y, 1);
+    heightPixelsFromShapeDisplay.allocate(m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY, 1);
     heightPixelsFromShapeDisplay.set(0);
 
     // allocate shape display graphics container and clear contents
