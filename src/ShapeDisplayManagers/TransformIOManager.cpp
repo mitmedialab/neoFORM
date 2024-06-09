@@ -43,7 +43,7 @@ TransformIOManager::TransformIOManager() {
 
     
     
-    // Set the dimensions of the pinConfigs
+    // Set the dimensions of the pinConfigs, and set all the elements to the defaultPinConfigs struct.
     pinConfigsForShapeDisplay.resize(shapeDisplaySizeX, std::vector<PinConfigs>(shapeDisplaySizeY, defaultPinConfigs));
     
     // Add serial connection strings to the vector of serial connections.
