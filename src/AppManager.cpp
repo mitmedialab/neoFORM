@@ -38,8 +38,7 @@ void AppManager::setup(){
     
     // set up debugging application
     // and the debugging apps, too
-    axisCheckerApp = new AxisCheckerApp();
-    axisCheckerApp->setRefForShapeIOManager(m_serialShapeIOManager);
+    axisCheckerApp = new AxisCheckerApp(m_serialShapeIOManager);
     applications["axisChecker"] = axisCheckerApp;
     
     kinectDebugApp = new KinectDebugApp(kinectManager);

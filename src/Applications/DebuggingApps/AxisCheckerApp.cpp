@@ -7,6 +7,9 @@
 
 #include "AxisCheckerApp.hpp"
 
+AxisCheckerApp::AxisCheckerApp(SerialShapeIOManager *theSerialShapeIOManager) : Application(theSerialShapeIOManager) {
+    cout << "AxisCheckerApp constructor" << endl;
+}
 
 void AxisCheckerApp::update(float dt) {
     normalizedPhase += dt * 0.5;
