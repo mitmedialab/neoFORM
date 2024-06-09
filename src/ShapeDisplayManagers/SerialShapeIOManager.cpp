@@ -64,10 +64,6 @@ SerialShapeIOManager::SerialShapeIOManager(KinectManager* kinectRef) {
     m_kinectManagerRef = kinectRef;
 }
 
-// Destructor
-SerialShapeIOManager::~SerialShapeIOManager() {
-    disconnectFromDisplay();
-}
 
 // Connect to the display
 void SerialShapeIOManager::connectToDisplay() {

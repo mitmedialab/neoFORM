@@ -33,7 +33,10 @@ class SerialShapeIOManager {
 public:
     SerialShapeIOManager();
     SerialShapeIOManager(KinectManager* kinectRef);
-    ~SerialShapeIOManager();
+    // Destructor
+    virtual ~SerialShapeIOManager(){
+        disconnectFromDisplay();
+    };
     
     // send and receive height values
     void sendHeightsToShapeDisplay(const std::vector<std::vector<unsigned char>>& heights);
