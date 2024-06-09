@@ -28,8 +28,7 @@ void AppManager::setup(){
     timeOfLastUpdate = elapsedTimeInSeconds();
     
     // set up applications
-    mqttApp = new MqttTransmissionApp();
-    mqttApp->setRefForShapeIOManager(m_serialShapeIOManager);
+    mqttApp = new MqttTransmissionApp(m_serialShapeIOManager);
     applications["mqttTransmission"] = mqttApp;
     
     videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);

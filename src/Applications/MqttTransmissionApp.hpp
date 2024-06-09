@@ -14,6 +14,7 @@
 
 class MqttTransmissionApp : public Application {
 public:
+    MqttTransmissionApp(SerialShapeIOManager *theCustomShapeDisplayManager);
     void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     string appInstructionsText();
