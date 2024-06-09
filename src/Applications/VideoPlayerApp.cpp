@@ -7,6 +7,10 @@
 
 #include "VideoPlayerApp.hpp"
 
+VideoPlayerApp::VideoPlayerApp(SerialShapeIOManager *theCustomShapeDisplayManager) : Application(theCustomShapeDisplayManager) {
+    cout << "VideoPlayerApp constructor\n";
+}
+
 void VideoPlayerApp::setup() {
     //setupTransformedPixelMap();
     video.load("escher-5-slow.mov");

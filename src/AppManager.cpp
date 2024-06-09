@@ -32,8 +32,7 @@ void AppManager::setup(){
     mqttApp->setRefForShapeIOManager(m_serialShapeIOManager);
     applications["mqttTransmission"] = mqttApp;
     
-    videoPlayerApp = new VideoPlayerApp();
-    videoPlayerApp->setRefForShapeIOManager(m_serialShapeIOManager);
+    videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
     applications["videoPlayer"] = videoPlayerApp;
     videoPlayerApp->setup();
     
