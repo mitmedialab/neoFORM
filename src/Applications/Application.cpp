@@ -30,9 +30,8 @@ void Application::getHeightsForShapeDisplay(ofPixels &heights) {
     heights = heightsForShapeDisplay;
 };
 
-void Application::getPinConfigsForShapeDisplay(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) {
-    PinConfigs *src = (PinConfigs *) pinConfigsForShapeDisplay;
-    copy(src, src + SHAPE_DISPLAY_SIZE_2D, (PinConfigs *) configs);
+void Application::getPinConfigsForShapeDisplay(std::vector<std::vector<PinConfigs>>& configs) {
+    pinConfigsForShapeDisplay = configs;
 };
 
 void Application::setHeightsFromShapeDisplayRef(const ofPixels *heights) {

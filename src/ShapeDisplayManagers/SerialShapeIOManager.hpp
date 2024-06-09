@@ -41,7 +41,7 @@ public:
     void clearShapeDisplayHeights(int value=0);
 
     // setters for pin config values
-    void setPinConfigs(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
+    void setPinConfigs(std::vector<std::vector<PinConfigs>>& configs);
     void setGlobalPinConfigs(PinConfigs configs);
 
     // should pins that appear stuck be turned off at regular intervals?
@@ -114,7 +114,7 @@ protected:
     std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
 
     // pin behavior configurations
-    PinConfigs pinConfigs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
 
     // initialization flags
     bool boardsAreConfigured = false;

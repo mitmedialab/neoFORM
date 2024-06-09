@@ -91,12 +91,9 @@ void AppManager::setupShapeDisplayManagement() {
     m_serialShapeIOManager->setGlobalPinConfigs(pinConfigs);
     timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
 
-    // clear height and pin config buffers
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            pinConfigsForShapeDisplay[x][y] = pinConfigs;
-        }
-    }
+    
+    // Set the dimensions of the pinConfigs
+    pinConfigsForShapeDisplay.resize(m_serialShapeIOManager->shapeDisplaySizeX, std::vector<PinConfigs>(m_serialShapeIOManager->shapeDisplaySizeY, pinConfigs));
 
     // allocate height pixels objects and clear contents
     heightPixelsForShapeDisplay.allocate(m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY, 1);

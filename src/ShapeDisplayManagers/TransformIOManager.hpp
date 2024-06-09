@@ -13,6 +13,8 @@
 #include "constants.h"
 #include "SerialShapeIOManager.hpp"
 
+#include "PinConfigs.h"
+
 class TransformIOManager : public SerialShapeIOManager {
 public:
     TransformIOManager();

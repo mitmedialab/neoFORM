@@ -109,7 +109,7 @@ private:
     std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
     ofPixels heightPixelsForShapeDisplay;
     ofPixels heightPixelsFromShapeDisplay;
-    PinConfigs pinConfigsForShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
     ofFbo graphicsForShapeDisplay;
     ofPixels colorPixels;
     ofPixels depthPixels;

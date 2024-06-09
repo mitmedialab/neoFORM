@@ -173,10 +173,10 @@ void SerialShapeIOManager::clearShapeDisplayHeights(int value) {
 //
 //--------------------------------------------------------------
 
-void SerialShapeIOManager::setPinConfigs(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) {
+void SerialShapeIOManager::setPinConfigs(std::vector<std::vector<PinConfigs>>& configs) {
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
         for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            pinConfigs[x][y] = configs[x][y];
+            pinConfigsForShapeDisplay[x][y] = configs[x][y];
         }
     }
 }
@@ -184,7 +184,7 @@ void SerialShapeIOManager::setPinConfigs(PinConfigs configs[SHAPE_DISPLAY_SIZE_X
 void SerialShapeIOManager::setGlobalPinConfigs(PinConfigs configs) {
     for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
         for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            pinConfigs[x][y] = configs;
+            pinConfigsForShapeDisplay[x][y] = configs;
         }
     }
 }
@@ -259,8 +259,8 @@ void SerialShapeIOManager::readyDataForArduinos() {
             pinBoards[i].heights[j] = heightsForShapeDisplay[x][y];
 
             // if they've been updated, copy the pin configs to the board
-            if (pinBoards[i].configs[j].timeOfUpdate < pinConfigs[x][y].timeOfUpdate) {
-                pinBoards[i].configs[j] = pinConfigs[x][y];
+            if (pinBoards[i].configs[j].timeOfUpdate < pinConfigsForShapeDisplay[x][y].timeOfUpdate) {
+                pinBoards[i].configs[j] = pinConfigsForShapeDisplay[x][y];
                 pinBoards[i].timeOfLastConfigsUpdate = elapsedTimeInSeconds();
             }
 

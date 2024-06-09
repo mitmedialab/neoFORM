@@ -32,6 +32,20 @@ TransformIOManager::TransformIOManager() {
     deadZone = 2;
     maxSpeed = 200;
     
+    // Make a new PinConfigs struct instance with the default values.
+    PinConfigs defaultPinConfigs;
+    defaultPinConfigs.timeOfUpdate = 0;
+    defaultPinConfigs.gainP = gainP;
+    defaultPinConfigs.gainI = gainI;
+    defaultPinConfigs.maxI = maxI;
+    defaultPinConfigs.deadZone = deadZone;
+    defaultPinConfigs.maxSpeed = maxSpeed;
+
+    
+    
+    // Set the dimensions of the pinConfigs
+    pinConfigsForShapeDisplay.resize(shapeDisplaySizeX, std::vector<PinConfigs>(shapeDisplaySizeY, defaultPinConfigs));
+    
     // Add serial connection strings to the vector of serial connections.
     serialPorts.push_back("/dev/tty.usbserial-A702YMNV");
     serialPorts.push_back("/dev/tty.usbserial-A702YLM2");

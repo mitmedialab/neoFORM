@@ -26,7 +26,7 @@ public:
     virtual void clearShapeDisplayHeights(int value=0) = 0;
 
     // setters for pin config values
-    virtual void setPinConfigs(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) = 0;
+    virtual void setPinConfigs(std::vector<std::vector<PinConfigs>>& configs) = 0;
     virtual void setGlobalPinConfigs(PinConfigs configs) = 0;
     
     //virtual ofPixels getPinPixelsOnly(ofPixels fullPixels);

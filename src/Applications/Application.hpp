@@ -23,7 +23,7 @@ public:
     Application(SerialShapeIOManager *theCustomShapeDisplayManager);
     
     void getHeightsForShapeDisplay(ofPixels &heights);
-    void getPinConfigsForShapeDisplay(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
+    void getPinConfigsForShapeDisplay(std::vector<std::vector<PinConfigs>>& configs);
     void setHeightsFromShapeDisplayRef(const ofPixels *heights);
     void setPixelsFromKinectRefs(const ofPixels *colorPixels, const ofPixels *depthPixels);
 
@@ -48,7 +48,7 @@ public:
 protected:
     
     ofPixels heightsForShapeDisplay;
-    PinConfigs pinConfigsForShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
     const ofPixels *heightsFromShapeDisplay;
     bool hasHeightsFromShapeDisplay = false;
 
