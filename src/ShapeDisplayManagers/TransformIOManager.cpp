@@ -110,8 +110,8 @@ void TransformIOManager::configureBoards() {
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             unsigned char j0 = pinBoards[i].pinCoordinates[j][0];
             unsigned char j1 = pinBoards[i].pinCoordinates[j][1];
-            pinBoards[i].pinCoordinates[j][0] = SHAPE_DISPLAY_SIZE_X - 1 - j0;
-            pinBoards[i].pinCoordinates[j][1] = SHAPE_DISPLAY_SIZE_Y - 1 - j1;
+            pinBoards[i].pinCoordinates[j][0] = shapeDisplaySizeX - 1 - j0;
+            pinBoards[i].pinCoordinates[j][1] = shapeDisplaySizeY - 1 - j1;
         }
     }
 
