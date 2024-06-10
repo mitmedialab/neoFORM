@@ -8,9 +8,7 @@
 #include "Application.hpp"
 
 Application::Application() {
-    heightsForShapeDisplay.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y, OF_IMAGE_GRAYSCALE);
-    heightsForShapeDisplay.set(0);
-    heightsDrawingBuffer.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y);
+    // Default constructor
 };
 
 Application::Application(SerialShapeIOManager *theCustomShapeDisplayManager){
