@@ -119,8 +119,8 @@ void AppManager::update(){
         // note: manually looping over all pixels is important! the underlying
         // ofPixels char array is stored as unsigned char[y][x], while the
         // shape display heights are stored as unsigned char[x][y]
-        for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-            for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+        for (int x = 0; x < m_serialShapeIOManager->shapeDisplaySizeX; x++) {
+            for (int y = 0; y < m_serialShapeIOManager->shapeDisplaySizeY; y++) {
                 int xy = heightPixelsFromShapeDisplay.getPixelIndex(x, y);
                 heightPixelsFromShapeDisplay[xy] = heightsFromShapeDisplay[x][y];
             }
@@ -136,8 +136,8 @@ void AppManager::update(){
         // note: manually looping over all pixels is important! the underlying
         // ofPixels char array is stored as unsigned char[y][x], while the
         // shape display heights are stored as unsigned char[x][y]
-        for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-            for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+        for (int x = 0; x < m_serialShapeIOManager->shapeDisplaySizeX; x++) {
+            for (int y = 0; y <  m_serialShapeIOManager->shapeDisplaySizeY; y++) {
                 int xy = heightPixelsForShapeDisplay.getPixelIndex(x, y);
                 heightsForShapeDisplay[x][y] = heightPixelsForShapeDisplay[xy];
             }
