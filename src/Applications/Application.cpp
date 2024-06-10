@@ -14,11 +14,13 @@ Application::Application() {
 };
 
 Application::Application(SerialShapeIOManager *theCustomShapeDisplayManager){
-    heightsForShapeDisplay.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y, OF_IMAGE_GRAYSCALE);
-    heightsForShapeDisplay.set(0);
-    heightsDrawingBuffer.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y);
     
     m_CustomShapeDisplayManager = theCustomShapeDisplayManager;
+    
+    heightsForShapeDisplay.allocate(theCustomShapeDisplayManager->shapeDisplaySizeX, theCustomShapeDisplayManager->shapeDisplaySizeY, OF_IMAGE_GRAYSCALE);
+    heightsForShapeDisplay.set(0);
+    heightsDrawingBuffer.allocate(theCustomShapeDisplayManager->shapeDisplaySizeX, theCustomShapeDisplayManager->shapeDisplaySizeY);
+    
 }
 
 void Application::setRefForShapeIOManager(SerialShapeIOManager* customIOManager){
