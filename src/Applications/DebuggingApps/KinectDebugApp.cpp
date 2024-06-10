@@ -21,6 +21,13 @@ KinectDebugApp::KinectDebugApp(KinectManager* kinectManager){
     
 }
 
+KinectDebugApp::KinectDebugApp(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager) : Application(  theCustomShapeDisplayManager ) {
+    m_kinectManager = theKinectManager;
+    
+    setupDepthFloorMap();
+    
+}
+
 void KinectDebugApp::setup() {
     setupDepthFloorMap();
 }

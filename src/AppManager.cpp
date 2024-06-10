@@ -40,8 +40,7 @@ void AppManager::setup(){
     axisCheckerApp = new AxisCheckerApp(m_serialShapeIOManager);
     applications["axisChecker"] = axisCheckerApp;
     
-    kinectDebugApp = new KinectDebugApp(kinectManager);
-    kinectDebugApp->setRefForShapeIOManager(m_serialShapeIOManager);
+    kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
     applications["kinectDebug"] = kinectDebugApp;
     
     depthDebugApp = new DepthDebugApp();
