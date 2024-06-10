@@ -43,8 +43,7 @@ void AppManager::setup(){
     kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
     applications["kinectDebug"] = kinectDebugApp;
     
-    depthDebugApp = new DepthDebugApp();
-    depthDebugApp->setRefForShapeIOManager(m_serialShapeIOManager);
+    depthDebugApp = new DepthDebugApp(m_serialShapeIOManager);
     applications["depthDebug"] = depthDebugApp;
     
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
