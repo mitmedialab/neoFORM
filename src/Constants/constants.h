@@ -39,28 +39,20 @@ using namespace std;
 #define NUM_ARDUINOS 192
 #define NUM_PINS_ARDUINO 6
 
-#define NUM_SERIAL_CONNECTIONS 6
-#define SERIAL_PORT_0 "/dev/tty.usbserial-A702YMNV"
-#define SERIAL_PORT_1 "/dev/tty.usbserial-A702YLM2"
-#define SERIAL_PORT_2 "/dev/tty.usbserial-A702YMNT"
-#define SERIAL_PORT_3 "/dev/tty.usbserial-A702YLM6"
-#define SERIAL_PORT_4 "/dev/tty.usbserial-A702YLM9"
-#define SERIAL_PORT_5 "/dev/tty.usbserial-A30011Hp"
-
-
+#define NUM_SERIAL_CONNECTIONS 3
+#define SERIAL_PORT_0 "/dev/tty.usbserial-A30010PW"
+#define SERIAL_PORT_1 "/dev/tty.usbserial-A702YLM3"
+#define SERIAL_PORT_2 "/dev/tty.usbserial-A702YMNY"
 
 const string SERIAL_PORTS[NUM_SERIAL_CONNECTIONS] = {
     SERIAL_PORT_0,
     SERIAL_PORT_1,
-    SERIAL_PORT_2,
-    SERIAL_PORT_3,
-    SERIAL_PORT_4,
-    SERIAL_PORT_5
+    SERIAL_PORT_2
 };
 
 // Shape display table
 // -------------------
-#define    SHAPE_DISPLAY_SIZE_X 48
+#define    SHAPE_DISPLAY_SIZE_X 24
 #define    SHAPE_DISPLAY_SIZE_Y 24
 
 #define SHAPE_DISPLAY_CAN_TALK_BACK 1
