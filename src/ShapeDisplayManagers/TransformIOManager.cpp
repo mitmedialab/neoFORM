@@ -18,22 +18,30 @@ TransformIOManager::TransformIOManager(KinectManager* kinectRef) {
     m_kinectManagerRef = kinectRef;
 }
 
+
 // setup transFORM-specific board configuration
 void TransformIOManager::configureBoards() {
     // set up coordinates for
-    for (int i = 0; i < NUM_ARDUINOS; i++) {
+    for (int i = 0; i < 96; i++) {  //NUM_ARDUINOS
         // determine which serial connection each board is on:
         // every 3rd and 4th board is on the second
-        if (i < 64) {
-            pinBoards[i].serialConnection = ((i / 2) % 2 == 0) ? 0 : 1;
-        } else if (i < 128) {
-            pinBoards[i].serialConnection = ((i / 2) % 2 == 0) ? 2 : 3;
+        if (i < 36) { //64
+            pinBoards[i].serialConnection = 0; //((i / 2) % 2 == 0) ? 0 : 1
+        } else if (i < 60) { //128
+            pinBoards[i].serialConnection = 1; //((i / 2) % 2 == 0) ? 2 : 3
         } else {
-            pinBoards[i].serialConnection = ((i / 2) % 2 == 0) ? 4 : 5;
+            pinBoards[i].serialConnection = 2; //((i / 2) % 2 == 0) ? 4 : 5
         }
         
         // every 5th to 8th board is mounted upside down, so invert the height
-        pinBoards[i].invertHeight = ((i / 4) % 2 == 0) ? false : true;
+        if (i % 12 == 5 || i % 12 == 6 || i % 12 == 7 || i % 12 == 8) {
+            pinBoards[i].invertHeight = 1;
+        } else {
+            pinBoards[i].invertHeight = 0;
+        }
+        
+            
+        //pinBoards[i].invertHeight = ((i / 4) % 2 == 0) ? false : true;
         
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             int currentRow = (int)(i / 4);
