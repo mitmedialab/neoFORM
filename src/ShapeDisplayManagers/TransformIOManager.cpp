@@ -46,6 +46,11 @@ TransformIOManager::TransformIOManager() {
     // Set the dimensions of the pinConfigs, and set all the elements to the defaultPinConfigs struct.
     pinConfigsForShapeDisplay.resize(shapeDisplaySizeX, std::vector<PinConfigs>(shapeDisplaySizeY, defaultPinConfigs));
     
+    // Initialize pin tracking vectors.
+    pinDiscrepancy.resize(shapeDisplaySizeX, std::vector<int>(shapeDisplaySizeY, 0));
+    pinEnabled.resize(shapeDisplaySizeX, std::vector<bool>(shapeDisplaySizeY, true));
+    pinStuckSinceTime.resize( shapeDisplaySizeX, std::vector<double>(shapeDisplaySizeY, elapsedTimeInSeconds() ));
+    
     // Add serial connection strings to the vector of serial connections.
     serialPorts.push_back("/dev/tty.usbserial-A702YMNV");
     serialPorts.push_back("/dev/tty.usbserial-A702YLM2");

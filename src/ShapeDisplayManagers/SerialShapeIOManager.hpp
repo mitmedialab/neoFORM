@@ -128,9 +128,10 @@ protected:
     double timeOfLastConfigsRefresh;
 
     // properties for detecting stuck pins to toggle
-    int pinDiscrepancy[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
-    bool pinEnabled[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
-    double pinStuckSinceTime[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<int>> pinDiscrepancy;
+    std::vector<std::vector<bool>> pinEnabled;
+    std::vector<std::vector<double>> pinStuckSinceTime;
+    
     const int pinDiscrepancyToggleThreshold = 100;
     const float secondsUntilPinToggledOff = 1.0;
     const float secondsUntilPinToggledOn = 3.0;
