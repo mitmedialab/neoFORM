@@ -25,17 +25,6 @@ SerialShapeIOManager::SerialShapeIOManager() {
     // stuck pin safety toggling can only be implemented if we have height data
     // from the shape display telling us whether pins are stuck
     enableStuckPinSafetyToggle = enableStuckPinSafetyToggle && heightsFromShapeDisplayAvailable;
-    
-    // initialize per-pin data arrays
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            //heightsForShapeDisplay[x][y] = 0;
-            //heightsFromShapeDisplay[x][y] = 0;
-            pinDiscrepancy[x][y] = 0;
-            pinEnabled[x][y] = true;
-            pinStuckSinceTime[x][y] = timeOfLastConfigsRefresh;
-        }
-    }
 }
 
 SerialShapeIOManager::SerialShapeIOManager(KinectManager* kinectRef) {
