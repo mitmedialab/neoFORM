@@ -133,8 +133,8 @@ void SerialShapeIOManager::getHeightsFromShapeDisplay( const std::vector<std::ve
 // Note: shape display heights will be adjusted to fit within the clipping range
 // regardless of the value set.
 void SerialShapeIOManager::clearShapeDisplayHeights(int value) {
-    for (int i = 0; i < SHAPE_DISPLAY_SIZE_X; i++) {
-        for (int j = 0; j < SHAPE_DISPLAY_SIZE_Y; j++) {
+    for (int i = 0; i < shapeDisplaySizeX; i++) {
+        for (int j = 0; j < shapeDisplaySizeY; j++) {
             heightsForShapeDisplay[i][j] = value;
         }
     }
@@ -181,8 +181,8 @@ void SerialShapeIOManager::toggleStuckPins() {
 
     double currentTime = elapsedTimeInSeconds();
 
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+    for (int x = 0; x < shapeDisplaySizeX; x++) {
+        for (int y = 0; y < shapeDisplaySizeY; y++) {
             int expectedHeight = heightsForShapeDisplay[x][y];
             int actualHeight = heightsFromShapeDisplay[x][y];
             pinDiscrepancy[x][y] = abs(expectedHeight - actualHeight);
