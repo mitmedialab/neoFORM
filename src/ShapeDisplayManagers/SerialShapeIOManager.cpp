@@ -210,8 +210,8 @@ void SerialShapeIOManager::toggleStuckPins() {
 // Clip all values to fit within the allowed range
 void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
     float thresholdScalar = 1.0 * pinHeightRange / 255;
-    for (int i = 0; i < SHAPE_DISPLAY_SIZE_X; i++) {
-        for (int j = 0; j < SHAPE_DISPLAY_SIZE_Y; j++) {
+    for (int i = 0; i < shapeDisplaySizeX; i++) {
+        for (int j = 0; j < shapeDisplaySizeY; j++) {
             // to rescale the values instead of clipping them, use this line:
             //heightsForShapeDisplay[i][j] = heightsForShapeDisplay[i][j] * thresholdScalar + pinHeightMin;
 
