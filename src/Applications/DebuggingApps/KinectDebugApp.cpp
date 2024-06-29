@@ -34,9 +34,9 @@ void KinectDebugApp::setup() {
 
 void KinectDebugApp::setupDepthFloorMap() {
     //set all pins to 0
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
+    for (int x = 0; x < m_CustomShapeDisplayManager->shapeDisplaySizeX; x++) {
 
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+        for (int y = 0; y < m_CustomShapeDisplayManager->shapeDisplaySizeY; y++) {
             
             // This takes the 2 dimensional coordinates and turns them into a one dimensional index for the flattened array.
             int flattenedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
@@ -242,9 +242,9 @@ void KinectDebugApp::updateHeights() {
             
         float tempSum = 0;
        
-        for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
+        for (int x = 0; x < m_CustomShapeDisplayManager->shapeDisplaySizeX; x++) {
 
-            for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+            for (int y = 0; y < m_CustomShapeDisplayManager->shapeDisplaySizeY; y++) {
                 
                 // This takes the 2 dimensional coordinates and turns them into a one dimensional index for the flattened array.
                 int flattenedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
