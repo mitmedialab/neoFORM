@@ -169,9 +169,10 @@ void SerialShapeIOManager::clearShapeDisplayHeights(int value) {
 //
 //--------------------------------------------------------------
 
+// This may be unecessary, it's no different from setGlobalPinConfigs and it never seems to be called.
 void SerialShapeIOManager::setPinConfigs(std::vector<std::vector<PinConfigs>>& configs) {
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+    for (int x = 0; x < shapeDisplaySizeX; x++) {
+        for (int y = 0; y < shapeDisplaySizeY; y++) {
             pinConfigsForShapeDisplay[x][y] = configs[x][y];
         }
     }
