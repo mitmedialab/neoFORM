@@ -177,9 +177,11 @@ void SerialShapeIOManager::setPinConfigs(std::vector<std::vector<PinConfigs>>& c
     }
 }
 
+// Set all of the values of pinConfigsForShapeDisplay to the same value, passed as the configs parameter.
+// I can't really say why this is necessary, but the boards don't get the right configs without it.
 void SerialShapeIOManager::setGlobalPinConfigs(PinConfigs configs) {
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+    for (int x = 0; x < shapeDisplaySizeX; x++) {
+        for (int y = 0; y < shapeDisplaySizeY; y++) {
             pinConfigsForShapeDisplay[x][y] = configs;
         }
     }
