@@ -36,7 +36,6 @@ using namespace std;
 
 // Transform specific constants
 
-#define NUM_ARDUINOS 192
 #define NUM_PINS_ARDUINO 6
 
 #define SHAPE_DISPLAY_CAN_TALK_BACK 1
