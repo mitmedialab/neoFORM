@@ -15,6 +15,10 @@
 
 MqttTransmissionApp::MqttTransmissionApp(SerialShapeIOManager *theSerialShapeIOManager) : Application(theSerialShapeIOManager) {
     cout << "MqttTransmissionApp constructor\n";
+    m_CustomShapeDisplayManager = theSerialShapeIOManager;
+    
+    theNewHeights.resize( m_CustomShapeDisplayManager->shapeDisplaySizeX * m_CustomShapeDisplayManager->shapeDisplaySizeY );
+    
 }
 
 // zero matrix for reset
@@ -22,9 +26,9 @@ std::string doob = "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
 
 // Helper functions for array piece
 
-int theHeights[SHAPE_DISPLAY_SIZE_X*SHAPE_DISPLAY_SIZE_Y];
+//int theHeights[SHAPE_DISPLAY_SIZE_X*SHAPE_DISPLAY_SIZE_Y];
 std::string theStr;
-string stringArray[SHAPE_DISPLAY_SIZE_X*SHAPE_DISPLAY_SIZE_Y];
+//string stringArray[SHAPE_DISPLAY_SIZE_X*SHAPE_DISPLAY_SIZE_Y];
 
 string int_array_to_string(int int_array[], int size_of_array) {
     theStr = "";
@@ -42,13 +46,14 @@ std::vector<std::string> string_to_int_array(std::string text){
     
     return tokens;
 }
-
+/*
 void updateINTHEIGHTS(std::vector<std::string> puma){
     for (int i=0; i<1152; i++){
         //printf("%s",puma.at(i).c_str());
         theHeights[i] = stoi(puma.at(i));
     }
 }
+ */
 
 void MqttTransmissionApp::updateHeights() {
     //depression = touchDetector->significantDepressionAmidstStabilityPixels();
@@ -67,26 +72,37 @@ void MqttTransmissionApp::updateHeights() {
     if (string_to_int_array(doob).size() != 1152){
         printf ("ERROR!");
         printf("%i\n",string_to_int_array(doob).size());
-        for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-            for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+        for (int x = 0; x < m_CustomShapeDisplayManager->shapeDisplaySizeX; x++) {
+            for (int y = 0; y < m_CustomShapeDisplayManager->shapeDisplaySizeY; y++) {
                 int xy = heightsForShapeDisplay.getPixelIndex(x, y);
                 heightsForShapeDisplay[xy] = 30;
             }
         }
         
     }else{
-         updateINTHEIGHTS(string_to_int_array(doob));
-        for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-            for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+         //updateINTHEIGHTS(string_to_int_array(doob));
+        std::vector<std::string> puma = string_to_int_array(doob);
+        
+        int flatLength = m_CustomShapeDisplayManager->shapeDisplaySizeX * m_CustomShapeDisplayManager->shapeDisplaySizeY;
+        
+        for (int i=0; i< flatLength; i++){
+            //printf("%s",puma.at(i).c_str());
+            //theHeights[i]    = stoi(puma.at(i));
+            theNewHeights[i] = stoi(puma.at(i));
+        }
+        
+        
+        for (int x = 0; x < m_CustomShapeDisplayManager->shapeDisplaySizeX; x++) {
+            for (int y = 0; y < m_CustomShapeDisplayManager->shapeDisplaySizeY; y++) {
                 int xy = heightsForShapeDisplay.getPixelIndex(x, y);
                 
               //  if (theHeights[xy] > 193){
               //      theHeights[xy] = 170;
               //  }
               
-                heightsForShapeDisplay[xy] = theHeights[xy]+30;//heightScalar * height + heightOffset;
+                //heightsForShapeDisplay[xy] = theHeights[xy]+30;//heightScalar * height + heightOffset;
                 
-               
+                heightsForShapeDisplay[xy] = theNewHeights[xy]+30;
               
                 //if {//(heightsForShapeDisplay[xy] != theHeights[xy]){//(depression.getColor(x, y).r != 0) {
                     //heightsForShapeDisplay[xy] = HEIGHT_MAX;
