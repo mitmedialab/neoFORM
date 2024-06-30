@@ -313,8 +313,9 @@ void SerialShapeIOManager::sendValueToAllBoards(unsigned char termId, unsigned c
         messageContents[i + 2] = (unsigned char) value;
     }
     
-    for (int i = 0; i < NUM_SERIAL_CONNECTIONS; i++) {
-        serialConnections[i]->writeMessage(messageContents);
+    // Iterate through all serial connections and send the message to each one.
+    for (auto& connection : serialConnections) {
+        connection->writeMessage(messageContents);
     }
 }
 
