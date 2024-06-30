@@ -41,16 +41,7 @@ using namespace std;
 
 #define NUM_SERIAL_CONNECTIONS 6
 
-
-// Shape display table
-// -------------------
-#define    SHAPE_DISPLAY_SIZE_X 48
-#define    SHAPE_DISPLAY_SIZE_Y 24
-
 #define SHAPE_DISPLAY_CAN_TALK_BACK 1
-
-// shape display derived dimensions, for convenience
-#define SHAPE_DISPLAY_SIZE_2D (SHAPE_DISPLAY_SIZE_X * SHAPE_DISPLAY_SIZE_Y)
 
 #endif /* constants_h */
 
