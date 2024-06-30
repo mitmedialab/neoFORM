@@ -155,7 +155,7 @@ ofPixels TransformIOManager::cropToActiveSurface( ofPixels fullSurface ) {
     ofPixels combinedActiveZones = combineActiveZones(fullSurface, sections);
     
     // Scale and rotate the combined active zones
-    combinedActiveZones.resize(48, 24);
+    combinedActiveZones.resize(shapeDisplaySizeX, shapeDisplaySizeY);
     combinedActiveZones.rotate90(2);
     
     // Return the cropped and transformed image
