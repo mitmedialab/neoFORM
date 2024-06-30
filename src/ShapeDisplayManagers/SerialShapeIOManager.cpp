@@ -91,7 +91,7 @@ void SerialShapeIOManager::openSerialConnections() {
 
 // Print board configuration settings to console for debugging
 void SerialShapeIOManager::printBoardConfiguration() {
-    for (int i = 0; i < NUM_ARDUINOS; i++) {
+    for (int i = 0; i < numberOfArduinos; i++) {
         printf("board: %d: ", i);
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             printf("%d,%d(%d); ", pinBoards[i].pinCoordinates[j][0], pinBoards[i].pinCoordinates[j][1], pinBoards[i].invertHeight);
@@ -225,7 +225,7 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
 // Copy data from storage in the 2D array to the corresponding arduino board
 // structures. Flip height values where needed to match the board's orientation.
 void SerialShapeIOManager::readyDataForArduinos() {
-    for (int i = 0; i < NUM_ARDUINOS; i++) {
+    for (int i = 0; i < numberOfArduinos; i++) {
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             int x = pinBoards[i].pinCoordinates[j][0];
             int y = pinBoards[i].pinCoordinates[j][1];
@@ -274,12 +274,12 @@ void SerialShapeIOManager::update() {
 
     // send height data. if the display talks back, ask it what it's doing
     if (heightsFromShapeDisplayAvailable) {
-        for (int i = 0; i < NUM_ARDUINOS; i++) {
+        for (int i = 0; i < numberOfArduinos; i++) {
             sendHeightsToBoardAndRequestFeedback(i + 1, pinBoards[i].heights, pinBoards[i].serialConnection);
         }
         readHeightsFromBoards(); // gets actual heights from arduino boards
     } else {
-        for (int i = 0; i < NUM_ARDUINOS; i++) {
+        for (int i = 0; i < numberOfArduinos; i++) {
             sendHeightsToBoard(i + 1, pinBoards[i].heights, pinBoards[i].serialConnection);
         }
     }
@@ -388,7 +388,7 @@ void SerialShapeIOManager::sendConfigsToBoard(unsigned char boardId, PinConfigs 
 
 // Send configuration values that have been updated to the display
 void SerialShapeIOManager::sendUpdatedConfigValues() {
-    for (int i = 0; i < NUM_ARDUINOS; i++) {
+    for (int i = 0; i < numberOfArduinos; i++) {
         if (timeOfLastConfigsUpdate < pinBoards[i].timeOfLastConfigsUpdate) {
             sendConfigsToBoard(i + 1, pinBoards[i].configs, pinBoards[i].serialConnection);
         }
@@ -402,7 +402,7 @@ void SerialShapeIOManager::sendUpdatedConfigValues() {
 // that appear broken; invalid values can crop up over time from firmware issues
 // and connection noise.
 void SerialShapeIOManager::sendAllConfigValues() {
-    for (int i = 0; i < NUM_ARDUINOS; i++) {
+    for (int i = 0; i < numberOfArduinos; i++) {
         sendConfigsToBoard(i + 1, pinBoards[i].configs, pinBoards[i].serialConnection);
     }
     timeOfLastConfigsUpdate = elapsedTimeInSeconds();
@@ -418,7 +418,7 @@ void SerialShapeIOManager::readHeightsFromBoards() {
             serialConnections[i]->readMessage(messageContent);
             if (messageContent[0] == TERM_ID_HEIGHT_RECEIVE) {
                 int boardAddress = messageContent[1] - 1;
-                if (boardAddress >= 0 && boardAddress <= NUM_ARDUINOS) {
+                if (boardAddress >= 0 && boardAddress <= numberOfArduinos) {
                     for (int j = 0; j < 6; j++) {
                         int height = messageContent[j + 2];
                         if (pinBoards[boardAddress].invertHeight) {

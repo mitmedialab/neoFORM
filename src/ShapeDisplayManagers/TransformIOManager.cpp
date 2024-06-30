@@ -15,6 +15,8 @@ TransformIOManager::TransformIOManager() {
     shapeDisplaySizeX = 48;
     shapeDisplaySizeY = 24;
     
+    numberOfArduinos = 192;
+    
     // Size the 2d heights array appropriately for the specific shape display hardware, and initialize it with zero values.
     // This needs to happen in the subclass constructor because the superclass constructor fires first, and won't yet have the subclass specific constants.
     heightsForShapeDisplay.resize(shapeDisplaySizeX, std::vector<unsigned char>(shapeDisplaySizeY, 0));
@@ -74,7 +76,7 @@ TransformIOManager::TransformIOManager(KinectManager* kinectRef) : TransformIOMa
 // setup transFORM-specific board configuration
 void TransformIOManager::configureBoards() {
     // set up coordinates for
-    for (int i = 0; i < NUM_ARDUINOS; i++) {
+    for (int i = 0; i < numberOfArduinos; i++) {
         // determine which serial connection each board is on:
         // every 3rd and 4th board is on the second
         if (i < 64) {

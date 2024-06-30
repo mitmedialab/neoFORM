@@ -76,6 +76,8 @@ public:
     int shapeDisplaySizeX;
     int shapeDisplaySizeY;
     
+    int numberOfArduinos;
+    
 
 protected:
     // manage the connection to the shape display
