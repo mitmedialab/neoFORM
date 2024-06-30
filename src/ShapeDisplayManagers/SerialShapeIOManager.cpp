@@ -74,22 +74,19 @@ void SerialShapeIOManager::disconnectFromDisplay(bool clearHeights) {
 
     // close connections
     isConnected = false;
-    closeSerialConnections();
+    
+    // No longer necessary, the unique_ptrs will automatically deallocate the objects when the vector is cleared or goes out of scope.
+    //closeSerialConnections();
 }
 
 // Open serial connections to the display. Connections close automatically when
 // destroyed.
 void SerialShapeIOManager::openSerialConnections() {
-    for (int i = 0; i < NUM_SERIAL_CONNECTIONS; i++) {
-        serialConnections[i] = new SerialShapeIO(serialPorts[i], SERIAL_BAUD_RATE, heightsFromShapeDisplayAvailable);
+    for (const auto& port : serialPorts) {
+        serialConnections.push_back(std::make_unique<SerialShapeIO>(port, SERIAL_BAUD_RATE, heightsFromShapeDisplayAvailable));
     }
-}
-
-// Close all serial connections to the display
-void SerialShapeIOManager::closeSerialConnections() {
-    for (int i = 0; i < NUM_SERIAL_CONNECTIONS; i++) {
-        delete serialConnections[i];
-    }
+    // No need for a closeSerialConnections function, as the unique_ptrs will automatically
+    // deallocate the objects when the vector is cleared or goes out of scope.
 }
 
 // Print board configuration settings to console for debugging

@@ -82,7 +82,6 @@ protected:
     void connectToDisplay();
     void disconnectFromDisplay(bool clearHeights=false);
     void openSerialConnections();
-    void closeSerialConnections();
 
     // setup hardware-specific board configuration
     virtual void configureBoards() = 0;
@@ -109,7 +108,8 @@ protected:
     void readHeightsFromBoards();
 
     // serial communications objects
-    SerialShapeIO *serialConnections[NUM_SERIAL_CONNECTIONS];
+    std::vector<std::unique_ptr<SerialShapeIO>> serialConnections;
+
     SerialPinBoard pinBoards[NUM_ARDUINOS];
 
     // shape display height values (both intended and actual values)
