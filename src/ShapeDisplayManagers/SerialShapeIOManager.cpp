@@ -412,7 +412,7 @@ void SerialShapeIOManager::sendAllConfigValues() {
 // Read actual heights from the boards
 void SerialShapeIOManager::readHeightsFromBoards() {
     // receive the current heights on the shape display
-    for (int i = 0; i < NUM_SERIAL_CONNECTIONS; i++) {
+    for (size_t i = 0; i < serialConnections.size(); i++) {
         while (serialConnections[i]->hasNewMessage()) {
             unsigned char messageContent[MSG_SIZE_RECEIVE];
             serialConnections[i]->readMessage(messageContent);
