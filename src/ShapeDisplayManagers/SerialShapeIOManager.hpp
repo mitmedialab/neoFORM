@@ -112,7 +112,7 @@ protected:
     // serial communications objects
     std::vector<std::unique_ptr<SerialShapeIO>> serialConnections;
 
-    SerialPinBoard pinBoards[NUM_ARDUINOS];
+    std::vector<SerialPinBoard> pinBoards;
 
     // shape display height values (both intended and actual values)
     std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
