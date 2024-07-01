@@ -57,9 +57,11 @@ void KinectHandWavy::drawGraphicsForShapeDisplay(int x, int y, int width, int he
 
     //*** Contours are disabled, but maybe they will be useful in the future.
     //m_kinectManager->drawContours();
-    
-    //*** Draw preview of the actuated pixel regions (sections).
-    drawPreviewActuatedSections();
+
+    if ( m_CustomShapeDisplayManager->getShapeDisplayName() == "TRANSFORM" ) {
+        //*** Draw preview of the actuated pixel regions (sections).
+        drawPreviewActuatedSections();
+    }
 }
 
 // Draw a rectangle around the shape display pixels based on the mask info from settings.xml
@@ -82,7 +84,7 @@ void KinectHandWavy::drawPreviewMaskRectangle() {
     ofFill();
 }
 
-// Draw a semi-transparent rectangle over each of the three the actuated sections.
+// Draw a semi-transparent rectangle over each of the three the actuated sections. This should only be called when the shape display is a transFORM.
 void KinectHandWavy::drawPreviewActuatedSections() {
     
     // Get the width in inches of the the full transform surface (need to cast shape display manager object first).
