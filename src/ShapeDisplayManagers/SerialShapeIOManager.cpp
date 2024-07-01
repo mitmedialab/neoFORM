@@ -119,7 +119,7 @@ void SerialShapeIOManager::sendHeightsToShapeDisplay( const std::vector<std::vec
 // the destination array passed in as the argument.
 void SerialShapeIOManager::getHeightsFromShapeDisplay( const std::vector<std::vector<unsigned char>>& heights) {
     if (!heightsFromShapeDisplayAvailable) {
-        throw ("height data from shape display is not available on " + shapeDisplayName);
+        throw ("height data from shape display is not available on " + getShapeDisplayName());
     }
 
     heightsFromShapeDisplay = heights;

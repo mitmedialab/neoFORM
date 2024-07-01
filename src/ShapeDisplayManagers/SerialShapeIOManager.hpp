@@ -50,8 +50,7 @@ public:
     // should pins that appear stuck be turned off at regular intervals?
     bool enableStuckPinSafetyToggle = false;
 
-    // the name of this shape display
-    string shapeDisplayName = "Serial Shape Display";
+    virtual string getShapeDisplayName() { return "Shape Display Name"; }
     
     // Dan and Jonathan Custom API-like commands
     virtual ofPixels getKinectStream(){return feebsTEMP;}
