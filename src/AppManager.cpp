@@ -67,7 +67,15 @@ void AppManager::setup(){
 void AppManager::setupShapeDisplayManagement() {
     // initialize communication with the shape display
     // This is where the particulars of the shape display are set (i.e. TRANSFORM, inFORM, or any other physical layout).
-    m_serialShapeIOManager = new TransformIOManager(kinectManager);
+    string shapeDisplayToUse = "TRANSFORM";
+    
+    if (shapeDisplayToUse == "TRANSFORM") {
+        m_serialShapeIOManager = new TransformIOManager(kinectManager);
+    } else if (shapeDisplayToUse == "inFORM") {
+        m_serialShapeIOManager = new InFormIOManager(kinectManager);
+    } else {
+        throw "unknown shape display type: " + shapeDisplayToUse;
+    }
     
     printf("Setting up Shape Display Management\n");
 
