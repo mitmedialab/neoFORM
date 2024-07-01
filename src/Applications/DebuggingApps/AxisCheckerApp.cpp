@@ -7,24 +7,27 @@
 
 #include "AxisCheckerApp.hpp"
 
+AxisCheckerApp::AxisCheckerApp(SerialShapeIOManager *theSerialShapeIOManager) : Application(theSerialShapeIOManager) {
+    cout << "AxisCheckerApp constructor" << endl;
+}
 
 void AxisCheckerApp::update(float dt) {
     normalizedPhase += dt * 0.5;
     tally++;
-    tally %= SHAPE_DISPLAY_SIZE_X + SHAPE_DISPLAY_SIZE_Y;
+    tally %= m_CustomShapeDisplayManager->shapeDisplaySizeX + m_CustomShapeDisplayManager->shapeDisplaySizeY;
     updateHeights();
 }
 
 void AxisCheckerApp::updateHeights() {
     if (checkerboard) {
-        for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-            for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+        for (int x = 0; x < m_CustomShapeDisplayManager->shapeDisplaySizeX; x++) {
+            for (int y = 0; y < m_CustomShapeDisplayManager->shapeDisplaySizeY; y++) {
                 int height;
-                if (x < SHAPE_DISPLAY_SIZE_X / 2 && y < SHAPE_DISPLAY_SIZE_Y / 2) {
+                if (x < m_CustomShapeDisplayManager->shapeDisplaySizeX / 2 && y < m_CustomShapeDisplayManager->shapeDisplaySizeY / 2) {
                     height = 40;
-                } else if (x < SHAPE_DISPLAY_SIZE_X / 2) {
+                } else if (x < m_CustomShapeDisplayManager->shapeDisplaySizeX / 2) {
                     height = 250;
-                } else if (y < SHAPE_DISPLAY_SIZE_Y / 2) {
+                } else if (y < m_CustomShapeDisplayManager->shapeDisplaySizeY / 2) {
                     height = 110;
                 } else {
                     height = 180;
@@ -34,13 +37,13 @@ void AxisCheckerApp::updateHeights() {
             }
         }
     } else {
-        for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-            for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+        for (int x = 0; x < m_CustomShapeDisplayManager->shapeDisplaySizeX; x++) {
+            for (int y = 0; y < m_CustomShapeDisplayManager->shapeDisplaySizeY; y++) {
                 int height;
-                if (tally < SHAPE_DISPLAY_SIZE_X) {
+                if (tally < m_CustomShapeDisplayManager->shapeDisplaySizeX) {
                     height = x == tally ? 255 : 0;
                 } else {
-                    height = SHAPE_DISPLAY_SIZE_X + y == tally ? 255 : 0;
+                    height = m_CustomShapeDisplayManager->shapeDisplaySizeX + y == tally ? 255 : 0;
                 }
                 int xy = heightsForShapeDisplay.getPixelIndex(x, y);
                 heightsForShapeDisplay[xy] = height;

@@ -15,6 +15,8 @@
 
 class DepthDebugApp : public Application {
 public:
+    DepthDebugApp(SerialShapeIOManager *theCustomShapeDisplayManager);
+    
     void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     string appInstructionsText();

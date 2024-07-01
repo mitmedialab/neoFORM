@@ -56,6 +56,7 @@
 		A7A38C1DAA6949FC9F8B48C0 /* will_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 98278F7AD1AA612A8F4DDA10 /* will_mosq.c */; };
 		ACE7DC9A3223ED5EE1B80074 /* cameras.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DBD37876A11E46E4D7069B3 /* cameras.c */; };
 		B006626C26FF99AB717C7CD4 /* utf8_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = D1822FF66A31138F103D3C2F /* utf8_mosq.c */; };
+		B94766EA2C3105CC00877064 /* InFormIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B94766E82C3105CC00877064 /* InFormIOManager.cpp */; };
 		B9A9F318297DF82000ACC2F8 /* KinectManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F2F5297DF82000ACC2F8 /* KinectManager.cpp */; };
 		B9A9F319297DF82000ACC2F8 /* SerialIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F2FA297DF82000ACC2F8 /* SerialIOManager.cpp */; };
 		B9A9F31A297DF82000ACC2F8 /* ShapeIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F2FD297DF82000ACC2F8 /* ShapeIOManager.cpp */; };
@@ -511,6 +512,8 @@
 		B88A80AA34B79BD6DA9253DE /* sse_utils.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = sse_utils.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv4/opencv2/core/sse_utils.hpp; sourceTree = SOURCE_ROOT; };
 		B8A2CBF3E24E6E5026B13A90 /* ofxBase3DVideo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxBase3DVideo.h; path = ../../../addons/ofxKinect/src/ofxBase3DVideo.h; sourceTree = SOURCE_ROOT; };
 		B8F39F6EBA0607ECB7D18D89 /* handle_disconnect.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = handle_disconnect.c; path = "../../../addons/ofxMQTT-1.5.0/libs/mosquitto/src/handle_disconnect.c"; sourceTree = SOURCE_ROOT; };
+		B94766E82C3105CC00877064 /* InFormIOManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InFormIOManager.cpp; sourceTree = "<group>"; };
+		B94766E92C3105CC00877064 /* InFormIOManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = InFormIOManager.hpp; sourceTree = "<group>"; };
 		B9A9F2F5297DF82000ACC2F8 /* KinectManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KinectManager.cpp; sourceTree = "<group>"; };
 		B9A9F2F6297DF82000ACC2F8 /* KinectManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KinectManager.hpp; sourceTree = "<group>"; };
 		B9A9F2F8297DF82000ACC2F8 /* PinConfigs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PinConfigs.h; sourceTree = "<group>"; };
@@ -1980,15 +1983,17 @@
 			isa = PBXGroup;
 			children = (
 				B9A9F2F8297DF82000ACC2F8 /* PinConfigs.h */,
-				B9A9F2F9297DF82000ACC2F8 /* TransformIOManager.hpp */,
+				B94766E82C3105CC00877064 /* InFormIOManager.cpp */,
+				B94766E92C3105CC00877064 /* InFormIOManager.hpp */,
+				B9A9F2FE297DF82000ACC2F8 /* SerialIOManager.hpp */,
 				B9A9F2FA297DF82000ACC2F8 /* SerialIOManager.cpp */,
 				B9A9F2FB297DF82000ACC2F8 /* SerialShapeIO.hpp */,
-				B9A9F2FC297DF82000ACC2F8 /* SerialShapeIOManager.hpp */,
-				B9A9F2FD297DF82000ACC2F8 /* ShapeIOManager.cpp */,
-				B9A9F2FE297DF82000ACC2F8 /* SerialIOManager.hpp */,
 				B9A9F2FF297DF82000ACC2F8 /* SerialShapeIO.cpp */,
+				B9A9F2FC297DF82000ACC2F8 /* SerialShapeIOManager.hpp */,
 				B9A9F300297DF82000ACC2F8 /* SerialShapeIOManager.cpp */,
 				B9A9F301297DF82000ACC2F8 /* ShapeIOManager.hpp */,
+				B9A9F2FD297DF82000ACC2F8 /* ShapeIOManager.cpp */,
+				B9A9F2F9297DF82000ACC2F8 /* TransformIOManager.hpp */,
 				B9A9F302297DF82000ACC2F8 /* TransformIOManager.cpp */,
 			);
 			path = ShapeDisplayManagers;
@@ -2007,15 +2012,15 @@
 			isa = PBXGroup;
 			children = (
 				B9A9F308297DF82000ACC2F8 /* Application.hpp */,
-				B9A9F309297DF82000ACC2F8 /* AxisChecker.cpp */,
-				B9A9F30A297DF82000ACC2F8 /* MqttTransmissionApp.cpp */,
-				B9A9F30B297DF82000ACC2F8 /* VideoPlayerApp.cpp */,
-				B9A9F30C297DF82000ACC2F8 /* MqttTransmissionApp.hpp */,
-				B9A9F30D297DF82000ACC2F8 /* VideoPlayerApp.hpp */,
 				B9A9F30E297DF82000ACC2F8 /* Application.cpp */,
 				B9A9F30F297DF82000ACC2F8 /* AxisChecker.hpp */,
-				84B1DCFE2B792D8500DE7B7B /* KinectHandWavy.cpp */,
+				B9A9F309297DF82000ACC2F8 /* AxisChecker.cpp */,
+				B9A9F30C297DF82000ACC2F8 /* MqttTransmissionApp.hpp */,
+				B9A9F30A297DF82000ACC2F8 /* MqttTransmissionApp.cpp */,
+				B9A9F30D297DF82000ACC2F8 /* VideoPlayerApp.hpp */,
+				B9A9F30B297DF82000ACC2F8 /* VideoPlayerApp.cpp */,
 				84B1DCFF2B792D8500DE7B7B /* KinectHandWavy.hpp */,
+				84B1DCFE2B792D8500DE7B7B /* KinectHandWavy.cpp */,
 				B9A9F310297DF82000ACC2F8 /* DebuggingApps */,
 			);
 			path = Applications;
@@ -2024,12 +2029,12 @@
 		B9A9F310297DF82000ACC2F8 /* DebuggingApps */ = {
 			isa = PBXGroup;
 			children = (
-				B9A9F311297DF82000ACC2F8 /* KinectDebugApp.cpp */,
 				B9A9F312297DF82000ACC2F8 /* AxisCheckerApp.hpp */,
-				B9A9F313297DF82000ACC2F8 /* KinectDebugApp.hpp */,
 				B9A9F314297DF82000ACC2F8 /* AxisCheckerApp.cpp */,
-				84AEEE272A926C7700D26E7C /* DepthDebugApp.cpp */,
 				84AEEE282A926C7700D26E7C /* DepthDebugApp.hpp */,
+				84AEEE272A926C7700D26E7C /* DepthDebugApp.cpp */,
+				B9A9F311297DF82000ACC2F8 /* KinectDebugApp.cpp */,
+				B9A9F313297DF82000ACC2F8 /* KinectDebugApp.hpp */,
 			);
 			path = DebuggingApps;
 			sourceTree = "<group>";
@@ -2638,7 +2643,7 @@
 			attributes = {
 				LastUpgradeCheck = 1420;
 			};
-			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "neoFORM" */;
+			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "neoForm" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -2713,6 +2718,7 @@
 				F4135EEFC911E9ED211FB6F9 /* core.c in Sources */,
 				E55DEEF784A10419E444669E /* flags.c in Sources */,
 				B9A9F31F297DF82000ACC2F8 /* AxisChecker.cpp in Sources */,
+				B94766EA2C3105CC00877064 /* InFormIOManager.cpp in Sources */,
 				FCC16AB16073FF0581F50ED7 /* loader.c in Sources */,
 				D31F5C1B140C59B2AF1533A8 /* registration.c in Sources */,
 				49BEEB2DFA5319D55AA6899F /* tilt.c in Sources */,
@@ -3647,7 +3653,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "neoFORM" */ = {
+		E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "neoForm" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E4B69B4E0A3A1720003C02F2 /* Debug */,

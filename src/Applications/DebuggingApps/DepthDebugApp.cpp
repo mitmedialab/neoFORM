@@ -7,6 +7,9 @@
 
 #include "DepthDebugApp.hpp"
 
+DepthDebugApp::DepthDebugApp(SerialShapeIOManager *theCustomShapeDisplayManager) : Application(theCustomShapeDisplayManager) {
+    cout << "DepthDebugApp constructor" << endl;
+}
 
 void DepthDebugApp::update(float dt) {
     cout << "hello there debug depth";
