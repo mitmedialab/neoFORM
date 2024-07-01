@@ -15,6 +15,7 @@
 #include "PinConfigs.h"
 #include "../ShapeDisplayManagers/ShapeIOManager.hpp"
 #include "../ShapeDisplayManagers/TransformIOManager.hpp"
+#include "../ShapeDisplayManagers/InFormIOManager.hpp"
 
 class Application {
 public:
