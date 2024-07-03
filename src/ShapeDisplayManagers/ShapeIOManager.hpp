@@ -13,18 +13,20 @@
 #include "constants.h"
 #include "PinConfigs.h"
 
+// This has been dereferenced from the SerialShapeIOManager.hpp file, so maybe think about removing someday.
+
 class ShapeIOManager {
 public:
     // virtual destructor allows delegation to derived class destructors when used polymorphically
     virtual ~ShapeIOManager() {};
 
     // send and receive height values
-    virtual void sendHeightsToShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) = 0;
-    virtual void getHeightsFromShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) = 0;
+    //virtual void sendHeightsToShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) = 0;
+    //virtual void getHeightsFromShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) = 0;
     virtual void clearShapeDisplayHeights(int value=0) = 0;
 
     // setters for pin config values
-    virtual void setPinConfigs(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) = 0;
+    virtual void setPinConfigs(std::vector<std::vector<PinConfigs>>& configs) = 0;
     virtual void setGlobalPinConfigs(PinConfigs configs) = 0;
     
     //virtual ofPixels getPinPixelsOnly(ofPixels fullPixels);

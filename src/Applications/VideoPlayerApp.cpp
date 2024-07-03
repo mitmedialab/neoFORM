@@ -7,9 +7,20 @@
 
 #include "VideoPlayerApp.hpp"
 
+VideoPlayerApp::VideoPlayerApp(SerialShapeIOManager *theCustomShapeDisplayManager) : Application(theCustomShapeDisplayManager) {
+    cout << "VideoPlayerApp constructor\n";
+}
+
 void VideoPlayerApp::setup() {
     //setupTransformedPixelMap();
-    video.load("escher-5-slow.mov");
+    
+    // Select a video appropriate for the shape display.
+    if (m_CustomShapeDisplayManager->getShapeDisplayName() == "TRANSFORM") {
+        video.load("escher-5-slow.mov");
+    } else {
+        video.load("inFORM-escher-mode.mp4");
+    }
+
     video.play();
 }
 
@@ -29,9 +40,9 @@ void VideoPlayerApp::updateHeights() {
     // Pass the current video frame to the shape display manager to get the actuated pixels.
     ofPixels livePixels = m_CustomShapeDisplayManager->cropToActiveSurface(m_videoPixels);
     
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
+    for (int x = 0; x < m_CustomShapeDisplayManager->shapeDisplaySizeX; x++) {
 
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+        for (int y = 0; y < m_CustomShapeDisplayManager->shapeDisplaySizeY; y++) {
             
             // This takes the 2 dimensional coordinates and turns them into a one dimensional index for the flattened array.
             int flattenedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
@@ -47,7 +58,9 @@ void VideoPlayerApp::drawGraphicsForShapeDisplay(int x, int y, int width, int he
     video.draw(30, 300, 544, 128);
     
     // Draw the preview of the actuated pixels sections.
-    drawSectionPreviewFrameBuffer(30, 300, 544, 128);
+    if (m_CustomShapeDisplayManager->getShapeDisplayName() == "TRANSFORM") {
+        drawSectionPreviewFrameBuffer(30, 300, 544, 128);
+    }
 }
 
 void VideoPlayerApp::drawSectionPreviewFrameBuffer(int x, int y, int width, int height) {

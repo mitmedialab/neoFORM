@@ -28,27 +28,22 @@ void AppManager::setup(){
     timeOfLastUpdate = elapsedTimeInSeconds();
     
     // set up applications
-    mqttApp = new MqttTransmissionApp();
-    mqttApp->setRefForShapeIOManager(m_serialShapeIOManager);
+    mqttApp = new MqttTransmissionApp(m_serialShapeIOManager);
     applications["mqttTransmission"] = mqttApp;
     
-    videoPlayerApp = new VideoPlayerApp();
-    videoPlayerApp->setRefForShapeIOManager(m_serialShapeIOManager);
+    videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
     applications["videoPlayer"] = videoPlayerApp;
     videoPlayerApp->setup();
     
     // set up debugging application
     // and the debugging apps, too
-    axisCheckerApp = new AxisCheckerApp();
-    axisCheckerApp->setRefForShapeIOManager(m_serialShapeIOManager);
+    axisCheckerApp = new AxisCheckerApp(m_serialShapeIOManager);
     applications["axisChecker"] = axisCheckerApp;
     
-    kinectDebugApp = new KinectDebugApp(kinectManager);
-    kinectDebugApp->setRefForShapeIOManager(m_serialShapeIOManager);
+    kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
     applications["kinectDebug"] = kinectDebugApp;
     
-    depthDebugApp = new DepthDebugApp();
-    depthDebugApp->setRefForShapeIOManager(m_serialShapeIOManager);
+    depthDebugApp = new DepthDebugApp(m_serialShapeIOManager);
     applications["depthDebug"] = depthDebugApp;
     
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
@@ -72,35 +67,41 @@ void AppManager::setup(){
 void AppManager::setupShapeDisplayManagement() {
     // initialize communication with the shape display
     // This is where the particulars of the shape display are set (i.e. TRANSFORM, inFORM, or any other physical layout).
-    m_serialShapeIOManager = new TransformIOManager(kinectManager);
+    string shapeDisplayToUse = "inFORM";
+    
+    if (shapeDisplayToUse == "TRANSFORM") {
+        m_serialShapeIOManager = new TransformIOManager(kinectManager);
+    } else if (shapeDisplayToUse == "inFORM") {
+        m_serialShapeIOManager = new InFormIOManager(kinectManager);
+    } else {
+        throw "unknown shape display type: " + shapeDisplayToUse;
+    }
     
     printf("Setting up Shape Display Management\n");
 
+    // Size the pin arrays correctly based on the hardware specific dimension, and initialize them with zero values
+    heightsForShapeDisplay = std::vector<std::vector<unsigned char>>(m_serialShapeIOManager->shapeDisplaySizeX, std::vector<unsigned char>(m_serialShapeIOManager->shapeDisplaySizeY));
+    heightsFromShapeDisplay = std::vector<std::vector<unsigned char>>(m_serialShapeIOManager->shapeDisplaySizeX, std::vector<unsigned char>(m_serialShapeIOManager->shapeDisplaySizeY));
 
     // initialize shape display pin configs
     PinConfigs pinConfigs;
     pinConfigs.timeOfUpdate = elapsedTimeInSeconds();
-    pinConfigs.gainP = DEFAULT_GAIN_P;
-    pinConfigs.gainI = DEFAULT_GAIN_I;
-    pinConfigs.maxI = DEFAULT_MAX_I;
-    pinConfigs.deadZone = DEFAULT_DEAD_ZONE;
-    pinConfigs.maxSpeed = DEFAULT_MAX_SPEED;
+    pinConfigs.gainP = m_serialShapeIOManager->getGainP();
+    pinConfigs.gainI = m_serialShapeIOManager->getGainI();
+    pinConfigs.maxI  = m_serialShapeIOManager->getMaxI();
+    pinConfigs.deadZone = m_serialShapeIOManager->getDeadZone();
+    pinConfigs.maxSpeed = m_serialShapeIOManager->getMaxSpeed();
     m_serialShapeIOManager->setGlobalPinConfigs(pinConfigs);
     timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
 
-    // clear height and pin config buffers
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            heightsForShapeDisplay[x][y] = 0;
-            heightsFromShapeDisplay[x][y] = 0;
-            pinConfigsForShapeDisplay[x][y] = pinConfigs;
-        }
-    }
+    
+    // Set the dimensions of the pinConfigs
+    pinConfigsForShapeDisplay.resize(m_serialShapeIOManager->shapeDisplaySizeX, std::vector<PinConfigs>(m_serialShapeIOManager->shapeDisplaySizeY, pinConfigs));
 
     // allocate height pixels objects and clear contents
-    heightPixelsForShapeDisplay.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y, 1);
+    heightPixelsForShapeDisplay.allocate(m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY, 1);
     heightPixelsForShapeDisplay.set(0);
-    heightPixelsFromShapeDisplay.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y, 1);
+    heightPixelsFromShapeDisplay.allocate(m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY, 1);
     heightPixelsFromShapeDisplay.set(0);
 
     // allocate shape display graphics container and clear contents
@@ -126,8 +127,8 @@ void AppManager::update(){
         // note: manually looping over all pixels is important! the underlying
         // ofPixels char array is stored as unsigned char[y][x], while the
         // shape display heights are stored as unsigned char[x][y]
-        for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-            for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+        for (int x = 0; x < m_serialShapeIOManager->shapeDisplaySizeX; x++) {
+            for (int y = 0; y < m_serialShapeIOManager->shapeDisplaySizeY; y++) {
                 int xy = heightPixelsFromShapeDisplay.getPixelIndex(x, y);
                 heightPixelsFromShapeDisplay[xy] = heightsFromShapeDisplay[x][y];
             }
@@ -143,8 +144,8 @@ void AppManager::update(){
         // note: manually looping over all pixels is important! the underlying
         // ofPixels char array is stored as unsigned char[y][x], while the
         // shape display heights are stored as unsigned char[x][y]
-        for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-            for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+        for (int x = 0; x < m_serialShapeIOManager->shapeDisplaySizeX; x++) {
+            for (int y = 0; y <  m_serialShapeIOManager->shapeDisplaySizeY; y++) {
                 int xy = heightPixelsForShapeDisplay.getPixelIndex(x, y);
                 heightsForShapeDisplay[x][y] = heightPixelsForShapeDisplay[xy];
             }

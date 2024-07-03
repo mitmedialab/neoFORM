@@ -29,27 +29,28 @@ public:
     int serialConnection; // what serial connection is it on?
 };
 
-
-class SerialShapeIOManager : public ShapeIOManager {
+class SerialShapeIOManager {
 public:
     SerialShapeIOManager();
     SerialShapeIOManager(KinectManager* kinectRef);
-    ~SerialShapeIOManager();
+    // Destructor
+    virtual ~SerialShapeIOManager(){
+        disconnectFromDisplay();
+    };
     
     // send and receive height values
-    void sendHeightsToShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
-    void getHeightsFromShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
+    void sendHeightsToShapeDisplay(const std::vector<std::vector<unsigned char>>& heights);
+    void getHeightsFromShapeDisplay(const std::vector<std::vector<unsigned char>>& heights);
     void clearShapeDisplayHeights(int value=0);
 
     // setters for pin config values
-    void setPinConfigs(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]);
+    void setPinConfigs(std::vector<std::vector<PinConfigs>>& configs);
     void setGlobalPinConfigs(PinConfigs configs);
 
     // should pins that appear stuck be turned off at regular intervals?
     bool enableStuckPinSafetyToggle = false;
 
-    // the name of this shape display
-    string shapeDisplayName = "Serial Shape Display";
+    virtual string getShapeDisplayName() { return "Shape Display Name"; }
     
     // Dan and Jonathan Custom API-like commands
     virtual ofPixels getKinectStream(){return feebsTEMP;}
@@ -60,13 +61,28 @@ public:
     // Virtual class for hardware specific pin layouts.
     virtual std::vector<ofRectangle> createSections(float pixelsPerInch) {};
 
+    // Public getters for protected hardware constants, these are specific to the pin configs so might be abstracted into a single array of values.
+    float getGainP()    const { return gainP; }
+    float getGainI()    const { return gainI; }
+    int   getMaxI()     const { return maxI; }
+    int   getDeadZone() const { return deadZone; }
+    int   getMaxSpeed() const { return maxSpeed; }
+    
+    // can heights be read from the display?
+    const bool heightsFromShapeDisplayAvailable = SHAPE_DISPLAY_CAN_TALK_BACK;
+    
+    // Shape display hardware constants, to be initialized by the relevant sub-class.
+    int shapeDisplaySizeX;
+    int shapeDisplaySizeY;
+    
+    int numberOfArduinos;
+    
 
 protected:
     // manage the connection to the shape display
     void connectToDisplay();
     void disconnectFromDisplay(bool clearHeights=false);
     void openSerialConnections();
-    void closeSerialConnections();
 
     // setup hardware-specific board configuration
     virtual void configureBoards() = 0;
@@ -93,15 +109,16 @@ protected:
     void readHeightsFromBoards();
 
     // serial communications objects
-    SerialShapeIO *serialConnections[NUM_SERIAL_CONNECTIONS];
-    SerialPinBoard pinBoards[NUM_ARDUINOS];
+    std::vector<std::unique_ptr<SerialShapeIO>> serialConnections;
+
+    std::vector<SerialPinBoard> pinBoards;
 
     // shape display height values (both intended and actual values)
-    unsigned char heightsForShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
-    unsigned char heightsFromShapeDisplay[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
+    std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
 
     // pin behavior configurations
-    PinConfigs pinConfigs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
 
     // initialization flags
     bool boardsAreConfigured = false;
@@ -112,9 +129,10 @@ protected:
     double timeOfLastConfigsRefresh;
 
     // properties for detecting stuck pins to toggle
-    int pinDiscrepancy[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
-    bool pinEnabled[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
-    double pinStuckSinceTime[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y];
+    std::vector<std::vector<int>> pinDiscrepancy;
+    std::vector<std::vector<bool>> pinEnabled;
+    std::vector<std::vector<double>> pinStuckSinceTime;
+    
     const int pinDiscrepancyToggleThreshold = 100;
     const float secondsUntilPinToggledOff = 1.0;
     const float secondsUntilPinToggledOn = 3.0;
@@ -123,6 +141,24 @@ protected:
     ofPixels feebsTEMP;
     
     KinectManager* m_kinectManagerRef;
+    
+    // Shape display hardware constants (previously defined using #define preprocessor statements.
+    // These values are designed to be overridden by their respective individual shape display sub-classes (Transform, Inform, Cooperform, ets.)
+    
+    int pinHeightMin;
+    int pinHeightMax;
+    int pinHeightRange;
+    
+    // Pin configs, maybe split out into a single array instead of separate values.
+    float gainP;
+    float gainI;
+    int maxI;
+    int deadZone;
+    int maxSpeed;
+    
+    // Serial connection id strings
+    std::vector<std::string> serialPorts;
+
 };
 
 #endif /* SerialShapeIOManager_hpp */

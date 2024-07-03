@@ -20,6 +20,7 @@ class KinectDebugApp : public Application{
 public:
 
     KinectDebugApp(KinectManager* kinectManager);
+    KinectDebugApp(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager);
     
     void setup();
     void update(float dt);

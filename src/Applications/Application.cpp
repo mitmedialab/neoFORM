@@ -8,17 +8,17 @@
 #include "Application.hpp"
 
 Application::Application() {
-    heightsForShapeDisplay.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y, OF_IMAGE_GRAYSCALE);
-    heightsForShapeDisplay.set(0);
-    heightsDrawingBuffer.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y);
+    // Default constructor
 };
 
 Application::Application(SerialShapeIOManager *theCustomShapeDisplayManager){
-    heightsForShapeDisplay.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y, OF_IMAGE_GRAYSCALE);
-    heightsForShapeDisplay.set(0);
-    heightsDrawingBuffer.allocate(SHAPE_DISPLAY_SIZE_X, SHAPE_DISPLAY_SIZE_Y);
     
     m_CustomShapeDisplayManager = theCustomShapeDisplayManager;
+    
+    heightsForShapeDisplay.allocate(theCustomShapeDisplayManager->shapeDisplaySizeX, theCustomShapeDisplayManager->shapeDisplaySizeY, OF_IMAGE_GRAYSCALE);
+    heightsForShapeDisplay.set(0);
+    heightsDrawingBuffer.allocate(theCustomShapeDisplayManager->shapeDisplaySizeX, theCustomShapeDisplayManager->shapeDisplaySizeY);
+    
 }
 
 void Application::setRefForShapeIOManager(SerialShapeIOManager* customIOManager){
@@ -30,9 +30,8 @@ void Application::getHeightsForShapeDisplay(ofPixels &heights) {
     heights = heightsForShapeDisplay;
 };
 
-void Application::getPinConfigsForShapeDisplay(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) {
-    PinConfigs *src = (PinConfigs *) pinConfigsForShapeDisplay;
-    copy(src, src + SHAPE_DISPLAY_SIZE_2D, (PinConfigs *) configs);
+void Application::getPinConfigsForShapeDisplay(std::vector<std::vector<PinConfigs>>& configs) {
+    pinConfigsForShapeDisplay = configs;
 };
 
 void Application::setHeightsFromShapeDisplayRef(const ofPixels *heights) {

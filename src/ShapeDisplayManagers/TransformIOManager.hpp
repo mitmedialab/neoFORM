@@ -13,19 +13,22 @@
 #include "constants.h"
 #include "SerialShapeIOManager.hpp"
 
+#include "PinConfigs.h"
+
 class TransformIOManager : public SerialShapeIOManager {
 public:
     TransformIOManager();
 
     TransformIOManager(KinectManager* kinectRef);
 
+    // the name of this shape display
+    string getShapeDisplayName() {
+        // This is a method instead of a property only to simplify the inheritance by making the superclass declaration virtual.
+        return "TRANSFORM";
+    }
+    
     // should pins that appear stuck be turned off at regular intervals?
     bool enableStuckPinSafetyToggle = false;
-
-    // the name of this shape display
-    string shapeDisplayName = "transFORM";
-    
-    void sendHeightsToShapeDisplay();
     
     ofPixels getKinectStream();
 

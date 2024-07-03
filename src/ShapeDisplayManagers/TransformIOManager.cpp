@@ -10,18 +10,76 @@
 // Create new transformIOManager instance, setting up transFORM-specific board
 // configuration
 TransformIOManager::TransformIOManager() {
+    // Set the Transform specific hardware parameters here.
+    
+    shapeDisplaySizeX = 48;
+    shapeDisplaySizeY = 24;
+    
+    numberOfArduinos = 192;
+    
+    // Size the pinBoards vector appropriately.
+    pinBoards.resize(numberOfArduinos);
+    
+    // Size the 2d heights array appropriately for the specific shape display hardware, and initialize it with zero values.
+    // This needs to happen in the subclass constructor because the superclass constructor fires first, and won't yet have the subclass specific constants.
+    heightsForShapeDisplay.resize(shapeDisplaySizeX, std::vector<unsigned char>(shapeDisplaySizeY, 0));
+    // Also size the array that receives height values from the shape display.
+    heightsFromShapeDisplay.resize(shapeDisplaySizeX, std::vector<unsigned char>(shapeDisplaySizeY, 0));
+    
+    pinHeightMin = 50;
+    pinHeightMax = 210;
+    pinHeightRange = pinHeightMax - pinHeightMin;
+    
+    // Pin config values, might be abstracted into a single array.
+    gainP    = 1.5;
+    gainI    = 0.045;
+    maxI     = 25;
+    deadZone = 2;
+    maxSpeed = 200;
+    
+    // Make a new PinConfigs struct instance with the default values.
+    PinConfigs defaultPinConfigs;
+    defaultPinConfigs.timeOfUpdate = 0;
+    defaultPinConfigs.gainP = gainP;
+    defaultPinConfigs.gainI = gainI;
+    defaultPinConfigs.maxI = maxI;
+    defaultPinConfigs.deadZone = deadZone;
+    defaultPinConfigs.maxSpeed = maxSpeed;
+
+    
+    
+    // Set the dimensions of the pinConfigs, and set all the elements to the defaultPinConfigs struct.
+    pinConfigsForShapeDisplay.resize(shapeDisplaySizeX, std::vector<PinConfigs>(shapeDisplaySizeY, defaultPinConfigs));
+    
+    // Initialize pin tracking vectors.
+    pinDiscrepancy.resize(shapeDisplaySizeX, std::vector<int>(shapeDisplaySizeY, 0));
+    pinEnabled.resize(shapeDisplaySizeX, std::vector<bool>(shapeDisplaySizeY, true));
+    pinStuckSinceTime.resize( shapeDisplaySizeX, std::vector<double>(shapeDisplaySizeY, elapsedTimeInSeconds() ));
+    
+    // Add serial connection strings to the vector of serial connections.
+    serialPorts.push_back("/dev/tty.usbserial-A702YMNV");
+    serialPorts.push_back("/dev/tty.usbserial-A702YLM2");
+    serialPorts.push_back("/dev/tty.usbserial-A702YMNT");
+    serialPorts.push_back("/dev/tty.usbserial-A702YLM6");
+    serialPorts.push_back("/dev/tty.usbserial-A702YLM9");
+    serialPorts.push_back("/dev/tty.usbserial-A30011Hp");
+    
+
+    // Connect to shape display.
+    connectToDisplay();
+    
     configureBoards();
 }
 
-TransformIOManager::TransformIOManager(KinectManager* kinectRef) {
-    configureBoards();
+// Secondary Constructor delegates to the primary constructor and adds the kinect reference.
+TransformIOManager::TransformIOManager(KinectManager* kinectRef) : TransformIOManager() {
     m_kinectManagerRef = kinectRef;
 }
 
 // setup transFORM-specific board configuration
 void TransformIOManager::configureBoards() {
     // set up coordinates for
-    for (int i = 0; i < NUM_ARDUINOS; i++) {
+    for (int i = 0; i < numberOfArduinos; i++) {
         // determine which serial connection each board is on:
         // every 3rd and 4th board is on the second
         if (i < 64) {
@@ -62,8 +120,8 @@ void TransformIOManager::configureBoards() {
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             unsigned char j0 = pinBoards[i].pinCoordinates[j][0];
             unsigned char j1 = pinBoards[i].pinCoordinates[j][1];
-            pinBoards[i].pinCoordinates[j][0] = SHAPE_DISPLAY_SIZE_X - 1 - j0;
-            pinBoards[i].pinCoordinates[j][1] = SHAPE_DISPLAY_SIZE_Y - 1 - j1;
+            pinBoards[i].pinCoordinates[j][0] = shapeDisplaySizeX - 1 - j0;
+            pinBoards[i].pinCoordinates[j][1] = shapeDisplaySizeY - 1 - j1;
         }
     }
 
@@ -97,7 +155,7 @@ ofPixels TransformIOManager::cropToActiveSurface( ofPixels fullSurface ) {
     ofPixels combinedActiveZones = combineActiveZones(fullSurface, sections);
     
     // Scale and rotate the combined active zones
-    combinedActiveZones.resize(48, 24);
+    combinedActiveZones.resize(shapeDisplaySizeX, shapeDisplaySizeY);
     combinedActiveZones.rotate90(2);
     
     // Return the cropped and transformed image

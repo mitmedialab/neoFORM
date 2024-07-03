@@ -15,6 +15,7 @@
 
 class AxisCheckerApp : public Application {
 public:
+    AxisCheckerApp(SerialShapeIOManager *theCustomShapeDisplayManager);
     void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     string appInstructionsText();

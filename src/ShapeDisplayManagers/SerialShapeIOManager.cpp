@@ -25,22 +25,9 @@ SerialShapeIOManager::SerialShapeIOManager() {
     // stuck pin safety toggling can only be implemented if we have height data
     // from the shape display telling us whether pins are stuck
     enableStuckPinSafetyToggle = enableStuckPinSafetyToggle && heightsFromShapeDisplayAvailable;
-
-    // initialize per-pin data arrays
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            heightsForShapeDisplay[x][y] = 0;
-            heightsFromShapeDisplay[x][y] = 0;
-            pinDiscrepancy[x][y] = 0;
-            pinEnabled[x][y] = true;
-            pinStuckSinceTime[x][y] = timeOfLastConfigsRefresh;
-        }
-    }
-
-    // connect to shape display
-    connectToDisplay();
 }
 
+// This constructor may not be necessary, it doesn't get called.
 SerialShapeIOManager::SerialShapeIOManager(KinectManager* kinectRef) {
     timeOfLastConfigsUpdate = elapsedTimeInSeconds();
     timeOfLastConfigsRefresh = elapsedTimeInSeconds();
@@ -49,17 +36,6 @@ SerialShapeIOManager::SerialShapeIOManager(KinectManager* kinectRef) {
     // from the shape display telling us whether pins are stuck
     enableStuckPinSafetyToggle = enableStuckPinSafetyToggle && heightsFromShapeDisplayAvailable;
 
-    // initialize per-pin data arrays
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            heightsForShapeDisplay[x][y] = 0;
-            heightsFromShapeDisplay[x][y] = 0;
-            pinDiscrepancy[x][y] = 0;
-            pinEnabled[x][y] = true;
-            pinStuckSinceTime[x][y] = timeOfLastConfigsRefresh;
-        }
-    }
-
     // connect to shape display
     connectToDisplay();
     
@@ -67,10 +43,6 @@ SerialShapeIOManager::SerialShapeIOManager(KinectManager* kinectRef) {
     m_kinectManagerRef = kinectRef;
 }
 
-// Destructor
-SerialShapeIOManager::~SerialShapeIOManager() {
-    disconnectFromDisplay();
-}
 
 // Connect to the display
 void SerialShapeIOManager::connectToDisplay() {
@@ -102,27 +74,24 @@ void SerialShapeIOManager::disconnectFromDisplay(bool clearHeights) {
 
     // close connections
     isConnected = false;
-    closeSerialConnections();
+    
+    // No longer necessary, the unique_ptrs will automatically deallocate the objects when the vector is cleared or goes out of scope.
+    //closeSerialConnections();
 }
 
 // Open serial connections to the display. Connections close automatically when
 // destroyed.
 void SerialShapeIOManager::openSerialConnections() {
-    for (int i = 0; i < NUM_SERIAL_CONNECTIONS; i++) {
-        serialConnections[i] = new SerialShapeIO(SERIAL_PORTS[i], SERIAL_BAUD_RATE, heightsFromShapeDisplayAvailable);
+    for (const auto& port : serialPorts) {
+        serialConnections.push_back(std::make_unique<SerialShapeIO>(port, SERIAL_BAUD_RATE, heightsFromShapeDisplayAvailable));
     }
-}
-
-// Close all serial connections to the display
-void SerialShapeIOManager::closeSerialConnections() {
-    for (int i = 0; i < NUM_SERIAL_CONNECTIONS; i++) {
-        delete serialConnections[i];
-    }
+    // No need for a closeSerialConnections function, as the unique_ptrs will automatically
+    // deallocate the objects when the vector is cleared or goes out of scope.
 }
 
 // Print board configuration settings to console for debugging
 void SerialShapeIOManager::printBoardConfiguration() {
-    for (int i = 0; i < NUM_ARDUINOS; i++) {
+    for (int i = 0; i < numberOfArduinos; i++) {
         printf("board: %d: ", i);
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             printf("%d,%d(%d); ", pinBoards[i].pinCoordinates[j][0], pinBoards[i].pinCoordinates[j][1], pinBoards[i].invertHeight);
@@ -139,9 +108,8 @@ void SerialShapeIOManager::printBoardConfiguration() {
 //--------------------------------------------------------------
 
 // Set the desired heights for the shape display
-void SerialShapeIOManager::sendHeightsToShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) {
-    unsigned char *src = (unsigned char *) heights;
-    copy(src, src + SHAPE_DISPLAY_SIZE_2D, (unsigned char *) heightsForShapeDisplay);
+void SerialShapeIOManager::sendHeightsToShapeDisplay( const std::vector<std::vector<unsigned char>>& heights ) {
+    heightsForShapeDisplay = heights;
 
     // update display
     update();
@@ -149,13 +117,12 @@ void SerialShapeIOManager::sendHeightsToShapeDisplay(unsigned char heights[SHAPE
 
 // Get the actual height values on the shape display. They will be copied into
 // the destination array passed in as the argument.
-void SerialShapeIOManager::getHeightsFromShapeDisplay(unsigned char heights[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) {
+void SerialShapeIOManager::getHeightsFromShapeDisplay( const std::vector<std::vector<unsigned char>>& heights) {
     if (!heightsFromShapeDisplayAvailable) {
-        throw ("height data from shape display is not available on " + shapeDisplayName);
+        throw ("height data from shape display is not available on " + getShapeDisplayName());
     }
 
-    unsigned char *src = (unsigned char *) heightsFromShapeDisplay;
-    copy(src, src + SHAPE_DISPLAY_SIZE_2D, (unsigned char *) heights);
+    heightsFromShapeDisplay = heights;
 }
 
 // Set a single height for the display.
@@ -163,8 +130,8 @@ void SerialShapeIOManager::getHeightsFromShapeDisplay(unsigned char heights[SHAP
 // Note: shape display heights will be adjusted to fit within the clipping range
 // regardless of the value set.
 void SerialShapeIOManager::clearShapeDisplayHeights(int value) {
-    for (int i = 0; i < SHAPE_DISPLAY_SIZE_X; i++) {
-        for (int j = 0; j < SHAPE_DISPLAY_SIZE_Y; j++) {
+    for (int i = 0; i < shapeDisplaySizeX; i++) {
+        for (int j = 0; j < shapeDisplaySizeY; j++) {
             heightsForShapeDisplay[i][j] = value;
         }
     }
@@ -178,18 +145,21 @@ void SerialShapeIOManager::clearShapeDisplayHeights(int value) {
 //
 //--------------------------------------------------------------
 
-void SerialShapeIOManager::setPinConfigs(PinConfigs configs[SHAPE_DISPLAY_SIZE_X][SHAPE_DISPLAY_SIZE_Y]) {
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            pinConfigs[x][y] = configs[x][y];
+// This may be unecessary, it's no different from setGlobalPinConfigs and it never seems to be called.
+void SerialShapeIOManager::setPinConfigs(std::vector<std::vector<PinConfigs>>& configs) {
+    for (int x = 0; x < shapeDisplaySizeX; x++) {
+        for (int y = 0; y < shapeDisplaySizeY; y++) {
+            pinConfigsForShapeDisplay[x][y] = configs[x][y];
         }
     }
 }
 
+// Set all of the values of pinConfigsForShapeDisplay to the same value, passed as the configs parameter.
+// I can't really say why this is necessary, but the boards don't get the right configs without it.
 void SerialShapeIOManager::setGlobalPinConfigs(PinConfigs configs) {
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
-            pinConfigs[x][y] = configs;
+    for (int x = 0; x < shapeDisplaySizeX; x++) {
+        for (int y = 0; y < shapeDisplaySizeY; y++) {
+            pinConfigsForShapeDisplay[x][y] = configs;
         }
     }
 }
@@ -208,8 +178,8 @@ void SerialShapeIOManager::toggleStuckPins() {
 
     double currentTime = elapsedTimeInSeconds();
 
-    for (int x = 0; x < SHAPE_DISPLAY_SIZE_X; x++) {
-        for (int y = 0; y < SHAPE_DISPLAY_SIZE_Y; y++) {
+    for (int x = 0; x < shapeDisplaySizeX; x++) {
+        for (int y = 0; y < shapeDisplaySizeY; y++) {
             int expectedHeight = heightsForShapeDisplay[x][y];
             int actualHeight = heightsFromShapeDisplay[x][y];
             pinDiscrepancy[x][y] = abs(expectedHeight - actualHeight);
@@ -236,17 +206,17 @@ void SerialShapeIOManager::toggleStuckPins() {
 
 // Clip all values to fit within the allowed range
 void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
-    float thresholdScalar = 1.0 * HEIGHT_RANGE / 255;
-    for (int i = 0; i < SHAPE_DISPLAY_SIZE_X; i++) {
-        for (int j = 0; j < SHAPE_DISPLAY_SIZE_Y; j++) {
+    float thresholdScalar = 1.0 * pinHeightRange / 255;
+    for (int i = 0; i < shapeDisplaySizeX; i++) {
+        for (int j = 0; j < shapeDisplaySizeY; j++) {
             // to rescale the values instead of clipping them, use this line:
-            //heightsForShapeDisplay[i][j] = heightsForShapeDisplay[i][j] * thresholdScalar + HEIGHT_MIN;
+            //heightsForShapeDisplay[i][j] = heightsForShapeDisplay[i][j] * thresholdScalar + pinHeightMin;
 
-            if (heightsForShapeDisplay[i][j] <= HEIGHT_MIN) {
-                heightsForShapeDisplay[i][j] = (unsigned char) HEIGHT_MIN;
+            if (heightsForShapeDisplay[i][j] <= pinHeightMin) {
+                heightsForShapeDisplay[i][j] = (unsigned char) pinHeightMin;
             }
-            else if (heightsForShapeDisplay[i][j] >= HEIGHT_MAX) {
-                heightsForShapeDisplay[i][j] = (unsigned char) HEIGHT_MAX;
+            else if (heightsForShapeDisplay[i][j] >= pinHeightMax) {
+                heightsForShapeDisplay[i][j] = (unsigned char) pinHeightMax;
             }
         }
     }
@@ -255,7 +225,7 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
 // Copy data from storage in the 2D array to the corresponding arduino board
 // structures. Flip height values where needed to match the board's orientation.
 void SerialShapeIOManager::readyDataForArduinos() {
-    for (int i = 0; i < NUM_ARDUINOS; i++) {
+    for (int i = 0; i < numberOfArduinos; i++) {
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             int x = pinBoards[i].pinCoordinates[j][0];
             int y = pinBoards[i].pinCoordinates[j][1];
@@ -264,8 +234,8 @@ void SerialShapeIOManager::readyDataForArduinos() {
             pinBoards[i].heights[j] = heightsForShapeDisplay[x][y];
 
             // if they've been updated, copy the pin configs to the board
-            if (pinBoards[i].configs[j].timeOfUpdate < pinConfigs[x][y].timeOfUpdate) {
-                pinBoards[i].configs[j] = pinConfigs[x][y];
+            if (pinBoards[i].configs[j].timeOfUpdate < pinConfigsForShapeDisplay[x][y].timeOfUpdate) {
+                pinBoards[i].configs[j] = pinConfigsForShapeDisplay[x][y];
                 pinBoards[i].timeOfLastConfigsUpdate = elapsedTimeInSeconds();
             }
 
@@ -304,12 +274,12 @@ void SerialShapeIOManager::update() {
 
     // send height data. if the display talks back, ask it what it's doing
     if (heightsFromShapeDisplayAvailable) {
-        for (int i = 0; i < NUM_ARDUINOS; i++) {
+        for (int i = 0; i < numberOfArduinos; i++) {
             sendHeightsToBoardAndRequestFeedback(i + 1, pinBoards[i].heights, pinBoards[i].serialConnection);
         }
         readHeightsFromBoards(); // gets actual heights from arduino boards
     } else {
-        for (int i = 0; i < NUM_ARDUINOS; i++) {
+        for (int i = 0; i < numberOfArduinos; i++) {
             sendHeightsToBoard(i + 1, pinBoards[i].heights, pinBoards[i].serialConnection);
         }
     }
@@ -343,8 +313,9 @@ void SerialShapeIOManager::sendValueToAllBoards(unsigned char termId, unsigned c
         messageContents[i + 2] = (unsigned char) value;
     }
     
-    for (int i = 0; i < NUM_SERIAL_CONNECTIONS; i++) {
-        serialConnections[i]->writeMessage(messageContents);
+    // Iterate through all serial connections and send the message to each one.
+    for (auto& connection : serialConnections) {
+        connection->writeMessage(messageContents);
     }
 }
 
@@ -417,7 +388,7 @@ void SerialShapeIOManager::sendConfigsToBoard(unsigned char boardId, PinConfigs 
 
 // Send configuration values that have been updated to the display
 void SerialShapeIOManager::sendUpdatedConfigValues() {
-    for (int i = 0; i < NUM_ARDUINOS; i++) {
+    for (int i = 0; i < numberOfArduinos; i++) {
         if (timeOfLastConfigsUpdate < pinBoards[i].timeOfLastConfigsUpdate) {
             sendConfigsToBoard(i + 1, pinBoards[i].configs, pinBoards[i].serialConnection);
         }
@@ -431,7 +402,7 @@ void SerialShapeIOManager::sendUpdatedConfigValues() {
 // that appear broken; invalid values can crop up over time from firmware issues
 // and connection noise.
 void SerialShapeIOManager::sendAllConfigValues() {
-    for (int i = 0; i < NUM_ARDUINOS; i++) {
+    for (int i = 0; i < numberOfArduinos; i++) {
         sendConfigsToBoard(i + 1, pinBoards[i].configs, pinBoards[i].serialConnection);
     }
     timeOfLastConfigsUpdate = elapsedTimeInSeconds();
@@ -441,13 +412,13 @@ void SerialShapeIOManager::sendAllConfigValues() {
 // Read actual heights from the boards
 void SerialShapeIOManager::readHeightsFromBoards() {
     // receive the current heights on the shape display
-    for (int i = 0; i < NUM_SERIAL_CONNECTIONS; i++) {
+    for (size_t i = 0; i < serialConnections.size(); i++) {
         while (serialConnections[i]->hasNewMessage()) {
             unsigned char messageContent[MSG_SIZE_RECEIVE];
             serialConnections[i]->readMessage(messageContent);
             if (messageContent[0] == TERM_ID_HEIGHT_RECEIVE) {
                 int boardAddress = messageContent[1] - 1;
-                if (boardAddress >= 0 && boardAddress <= NUM_ARDUINOS) {
+                if (boardAddress >= 0 && boardAddress <= numberOfArduinos) {
                     for (int j = 0; j < 6; j++) {
                         int height = messageContent[j + 2];
                         if (pinBoards[boardAddress].invertHeight) {

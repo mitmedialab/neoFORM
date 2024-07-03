@@ -13,6 +13,7 @@
 
 class VideoPlayerApp : public Application {
 public:
+    VideoPlayerApp(SerialShapeIOManager *theCustomShapeDisplayManager);
     void setup();
     void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
