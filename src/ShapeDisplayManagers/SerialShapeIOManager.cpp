@@ -115,16 +115,6 @@ void SerialShapeIOManager::sendHeightsToShapeDisplay( const std::vector<std::vec
     update();
 }
 
-// Get the actual height values on the shape display. They will be copied into
-// the destination array passed in as the argument.
-void SerialShapeIOManager::getHeightsFromShapeDisplay( const std::vector<std::vector<unsigned char>>& heights) {
-    if (!heightsFromShapeDisplayAvailable) {
-        throw ("height data from shape display is not available on " + getShapeDisplayName());
-    }
-
-    heightsFromShapeDisplay = heights;
-}
-
 // Set a single height for the display.
 //
 // Note: shape display heights will be adjusted to fit within the clipping range
