@@ -412,22 +412,37 @@ void SerialShapeIOManager::sendAllConfigValues() {
 // Read actual heights from the boards
 void SerialShapeIOManager::readHeightsFromBoards() {
     // receive the current heights on the shape display
+    // Iterate through all serial connections and read messages from each one.
     for (size_t i = 0; i < serialConnections.size(); i++) {
         while (serialConnections[i]->hasNewMessage()) {
+            // Make an array of 8 bytes to store the message, and read the message into it.
             unsigned char messageContent[MSG_SIZE_RECEIVE];
             serialConnections[i]->readMessage(messageContent);
+
+            // If the first byte of the message is TERM_ID_HEIGHT_RECEIVE, then the message is a height message.
             if (messageContent[0] == TERM_ID_HEIGHT_RECEIVE) {
+                // The second byte of the message is the board address, which is used to determine which board the message is from.
+                // Board addresses are 1-indexed, so subtract 1 to adjust it for zero indexing.
                 int boardAddress = messageContent[1] - 1;
+                // If the board address is valid, then the message is a height message from a board.
                 if (boardAddress >= 0 && boardAddress <= numberOfArduinos) {
+                    // Iterate through the next 6 bytes of the message, which contain the height values for the 6 pins on the board.
                     for (int j = 0; j < 6; j++) {
+                        // The height value is the third byte of the message. 
                         int height = messageContent[j + 2];
+                        // If the board inverts height values, then invert the height value.
                         if (pinBoards[boardAddress].invertHeight) {
                             height = 255 - height;
                         }
                         
+                        // Check if the height value is within the valid range of 0 to 255.
                         if (height >= 0 && height <= 255) {
+
+                            // Get the x and y coordinates of the pin on the board.
                             int x = pinBoards[boardAddress].pinCoordinates[j][0];
                             int y = pinBoards[boardAddress].pinCoordinates[j][1];
+
+                            // Store the height value in the heightsFromShapeDisplay array.
                             heightsFromShapeDisplay[x][y] = height;
                         }
                     }
