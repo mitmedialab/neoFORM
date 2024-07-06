@@ -108,7 +108,7 @@ private:
     // maybe rename to serialHeightInput()
     std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
     ofPixels heightPixelsForShapeDisplay;
-    ofPixels heightPixelsFromShapeDisplay;
+
     std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
     ofFbo graphicsForShapeDisplay;
     ofPixels colorPixels;
