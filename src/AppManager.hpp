@@ -113,6 +113,8 @@ private:
     ofFbo graphicsForShapeDisplay;
     ofPixels colorPixels;
     ofPixels depthPixels;
+    
+    ofPixels convertHeightsToPixels(const std::vector<std::vector<unsigned char>>& heights);
 };
 
 

@@ -53,10 +53,14 @@ void AppManager::setup(){
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
         Application *app = iter->second;
 
+        /* This is deprecated and should be removed */
+        /* The apps have their own reference to the shape IO manager and can get the heights from the boards themselves, they don't need the app manager to do it for them. */
         // shape display heights, if they are accessible
-        if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
-            app->setHeightsFromShapeDisplayRef(&heightPixelsFromShapeDisplay);
-        }
+        //if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
+        //    app->setHeightsFromShapeDisplayRef(&heightPixelsFromShapeDisplay);
+        //}
+        /* End deprecated */
+        
     }
     
     // set default application
@@ -118,21 +122,6 @@ void AppManager::update(){
     double dt = currentTime - timeOfLastUpdate;
     timeOfLastUpdate = currentTime;
 
-    // copy heights from shape display to pixels object
-    if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
-        m_serialShapeIOManager->getHeightsFromShapeDisplay(heightsFromShapeDisplay);
-
-        // note: manually looping over all pixels is important! the underlying
-        // ofPixels char array is stored as unsigned char[y][x], while the
-        // shape display heights are stored as unsigned char[x][y]
-        for (int x = 0; x < m_serialShapeIOManager->shapeDisplaySizeX; x++) {
-            for (int y = 0; y < m_serialShapeIOManager->shapeDisplaySizeY; y++) {
-                int xy = heightPixelsFromShapeDisplay.getPixelIndex(x, y);
-                heightPixelsFromShapeDisplay[xy] = heightsFromShapeDisplay[x][y];
-            }
-        }
-    }
-
     // copy heights and pin configs from application
     bool pinConfigsAreStale;
     if (!paused) {
@@ -170,14 +159,43 @@ void AppManager::update(){
     }
 }
 
+// Takes a 2D vector of heights and converts it to an ofPixels object
+// ofPixels stores pixel data as a 1d flat array of chars, so the 2d vectors need to be iteratively flattened into a 1d array.
+ofPixels AppManager::convertHeightsToPixels(const std::vector<std::vector<unsigned char>>& heights) {
+    // Create and allocate a local ofPixels object of the right size.
+    ofPixels pixels;
+    pixels.allocate(m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY, OF_PIXELS_GRAY);
+    
+    // Loop over the 2D vector of heights.
+    for (int x = 0; x < m_serialShapeIOManager->shapeDisplaySizeX; x++) {
+        for (int y = 0; y < m_serialShapeIOManager->shapeDisplaySizeY; y++) {
+            // ofPixels are stored as a 1D array, so we need to convert the 2D index to a 1D index.
+            int index = static_cast<int>(pixels.getPixelIndex(x, y));
+            
+            // Set the corresponding pixel in the ofPixels object to the height value.
+            pixels[index] = heights[x][y];
+        }
+    }
+
+    return pixels;
+}
+
 void AppManager::draw(){
     ofBackground(0,0,0);
     ofSetColor(255);
     
     // draw shape and color I/O images
 
+    /* Draw the height data being returned for the pin heights by the arduinos */
     ofDrawRectangle(1, 1, 302, 302);
-    ofImage(heightPixelsFromShapeDisplay).draw(2, 2, 300, 300);
+    if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
+        // Make a reference to the heights from the boards, this is memory safe because it doesn't copy the data.
+        const auto& heightsFromBoards = m_serialShapeIOManager->getHeightsFromShapeDisplay();
+        
+        // Convert the heights to pixels and draw them with an ofImage
+        ofPixels pixelsFromBoards = convertHeightsToPixels(heightsFromBoards);
+        ofImage(pixelsFromBoards).draw(2, 2, 300, 300);
+    }
     
     ofDrawRectangle(305, 1, 302, 302);
     ofImage(heightPixelsForShapeDisplay).draw(306, 2, 300, 300);
