@@ -25,7 +25,11 @@ public:
     
     void getHeightsForShapeDisplay(ofPixels &heights);
     void getPinConfigsForShapeDisplay(std::vector<std::vector<PinConfigs>>& configs);
-    void setHeightsFromShapeDisplayRef(const ofPixels *heights);
+
+    /* This is deprecated and should be removed, apps can get heights from the shape display manager directly */
+    //void setHeightsFromShapeDisplayRef(const ofPixels *heights);
+    /* End deprecated */
+
     void setPixelsFromKinectRefs(const ofPixels *colorPixels, const ofPixels *depthPixels);
 
     virtual void update(float dt) {};
@@ -50,7 +54,9 @@ protected:
     
     ofPixels heightsForShapeDisplay;
     std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
-    const ofPixels *heightsFromShapeDisplay;
+    
+    /* This is deprecated and should be removed, apps can get heights from the shape display manager directly */
+    //const ofPixels *heightsFromShapeDisplay;
     bool hasHeightsFromShapeDisplay = false;
 
     const ofPixels *colorPixelsFromKinect;

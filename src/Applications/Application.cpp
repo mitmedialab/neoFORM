@@ -34,10 +34,13 @@ void Application::getPinConfigsForShapeDisplay(std::vector<std::vector<PinConfig
     pinConfigsForShapeDisplay = configs;
 };
 
-void Application::setHeightsFromShapeDisplayRef(const ofPixels *heights) {
-    heightsFromShapeDisplay = heights;
-    hasHeightsFromShapeDisplay = true;
-};
+/* This is deprecated and should be removed */
+/* The apps have their own reference to the shape IO manager and can get the heights from the boards themselves, they don't need an external object to do it for them. */
+//void Application::setHeightsFromShapeDisplayRef(const ofPixels *heights) {
+//    heightsFromShapeDisplay = heights;
+//    hasHeightsFromShapeDisplay = true;
+//};
+/* End deprecated*/
 
 void Application::setPixelsFromKinectRefs(const ofPixels *colorPixels, const ofPixels *depthPixels) {
     colorPixelsFromKinect = colorPixels;
