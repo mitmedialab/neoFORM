@@ -40,8 +40,8 @@ void AppManager::setup(){
     axisCheckerApp = new AxisCheckerApp(m_serialShapeIOManager);
     applications["axisChecker"] = axisCheckerApp;
     
-    kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
-    applications["kinectDebug"] = kinectDebugApp;
+   // kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
+    //87applications["kinectDebug"] = kinectDebugApp;
     
     depthDebugApp = new DepthDebugApp(m_serialShapeIOManager);
     applications["depthDebug"] = depthDebugApp;
@@ -49,18 +49,20 @@ void AppManager::setup(){
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
     applications["kinectHandWavy"] = kinectHandWavy;
     
+    interactiveWave = new InteractiveWave(m_serialShapeIOManager, kinectManager);
+    applications["interactiveWave"] = interactiveWave;
+    
+    intWave2 = new IntWave2(m_serialShapeIOManager, kinectManager);
+    applications["intWave2"] = intWave2;
+    
+    equationMode = new EquationMode(m_serialShapeIOManager);
+    applications["equationMode"] = equationMode;
+    
     // give applications read access to input data
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
         Application *app = iter->second;
 
-        /* This is deprecated and should be removed */
-        /* The apps have their own reference to the shape IO manager and can get the heights from the boards themselves, they don't need the app manager to do it for them. */
         // shape display heights, if they are accessible
-        //if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
-        //    app->setHeightsFromShapeDisplayRef(&heightPixelsFromShapeDisplay);
-        //}
-        /* End deprecated */
-        
     }
     
     // set default application
@@ -71,7 +73,7 @@ void AppManager::setup(){
 void AppManager::setupShapeDisplayManagement() {
     // initialize communication with the shape display
     // This is where the particulars of the shape display are set (i.e. TRANSFORM, inFORM, or any other physical layout).
-    string shapeDisplayToUse = "inFORM";
+    string shapeDisplayToUse = "TRANSFORM";
     
     if (shapeDisplayToUse == "TRANSFORM") {
         m_serialShapeIOManager = new TransformIOManager(kinectManager);
@@ -107,7 +109,7 @@ void AppManager::setupShapeDisplayManagement() {
     heightPixelsForShapeDisplay.set(0);
 
     // allocate shape display graphics container and clear contents
-   graphicsForShapeDisplay.allocate(600, 800, GL_RGBA);
+    graphicsForShapeDisplay.allocate(600, 800, GL_RGBA);
     graphicsForShapeDisplay.begin();
     ofClear(0);
     graphicsForShapeDisplay.end();
@@ -161,17 +163,19 @@ void AppManager::update(){
 
 // Takes a 2D vector of heights and converts it to an ofPixels object
 // ofPixels stores pixel data as a 1d flat array of chars, so the 2d vectors need to be iteratively flattened into a 1d array.
+
+
 ofPixels AppManager::convertHeightsToPixels(const std::vector<std::vector<unsigned char>>& heights) {
     // Create and allocate a local ofPixels object of the right size.
     ofPixels pixels;
     pixels.allocate(m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY, OF_PIXELS_GRAY);
-    
+
     // Loop over the 2D vector of heights.
     for (int x = 0; x < m_serialShapeIOManager->shapeDisplaySizeX; x++) {
         for (int y = 0; y < m_serialShapeIOManager->shapeDisplaySizeY; y++) {
-            // ofPixels are stored as a 1D array, so we need to convert the 2D index to a 1D index.
+            // ofPixels are storeted as a 1D array, so we need to convert the 2D index to a 1D index.
             int index = static_cast<int>(pixels.getPixelIndex(x, y));
-            
+
             // Set the corresponding pixel in the ofPixels object to the height value.
             pixels[index] = heights[x][y];
         }
@@ -186,18 +190,15 @@ void AppManager::draw(){
     
     // draw shape and color I/O images
 
-    /* Draw the height data being returned for the pin heights by the arduinos */
     ofDrawRectangle(1, 1, 302, 302);
     if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
-        // Make a reference to the heights from the boards, this is memory safe because it doesn't copy the data.
-        const auto& heightsFromBoards = m_serialShapeIOManager->getHeightsFromShapeDisplay();
-        
-        // Convert the heights to pixels and draw them with an ofImage
-        ofPixels pixelsFromBoards = convertHeightsToPixels(heightsFromBoards);
-        ofImage(pixelsFromBoards).draw(2, 2, 300, 300);
-    }
-    
-    ofDrawRectangle(305, 1, 302, 302);
+            // Make a reference to the heights from the boards, this is memory safe because it doesn't copy the data.
+            const auto& heightsFromBoards = m_serialShapeIOManager->getHeightsFromShapeDisplay();
+
+            // Convert the heights to pixels and draw them with an ofImage
+            ofPixels pixelsFromBoards = convertHeightsToPixels(heightsFromBoards);
+            ofImage(pixelsFromBoards).draw(2, 2, 300, 300);
+        }    ofDrawRectangle(305, 1, 302, 302);
     ofImage(heightPixelsForShapeDisplay).draw(306, 2, 300, 300);
     
     ofDrawRectangle(609, 1, 302, 302);
@@ -205,6 +206,9 @@ void AppManager::draw(){
     
     ofRect(913, 1, 302, 302);
     ofImage(colorPixels).draw(914, 2, 300, 300);
+    
+    ofRect(1, 305, 302, 302);
+    
 
     // draw this app's debugging gui, if selected
     if (showDebugGui) {
@@ -290,6 +294,12 @@ void AppManager::keyPressed(int key) {
             setCurrentApplication("kinectDebug");
         } else if (key == '5') {
             setCurrentApplication("kinectHandWavy");
+        } else if (key == '6') {
+            setCurrentApplication("interactiveWave");
+        } else if (key == '7') {
+            setCurrentApplication("intWave2");
+        } else if (key == '8') {
+            setCurrentApplication("equationMode");
         }
 
     // forward unreserved keys to the application

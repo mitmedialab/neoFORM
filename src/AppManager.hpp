@@ -42,6 +42,13 @@
 
 #include "KinectHandWavy.hpp"
 
+#include "InteractiveWave.hpp"
+
+#include "IntWave2.hpp"
+
+#include "EquationMode.hpp"
+
+
 class AppManager : public ofBaseApp {
     
 public:
@@ -92,6 +99,12 @@ private:
     // hand wavy application
     KinectHandWavy *kinectHandWavy;
     
+    InteractiveWave *interactiveWave;
+    
+    IntWave2 *intWave2;
+    
+    EquationMode *equationMode;
+    
     // program state
     bool paused = false;
     double timeOfLastUpdate = -1;
@@ -108,9 +121,9 @@ private:
     // maybe rename to serialHeightInput()
     std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
     ofPixels heightPixelsForShapeDisplay;
-
     std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
     ofFbo graphicsForShapeDisplay;
+    ofFbo graphicsFromShapeDisplay;
     ofPixels colorPixels;
     ofPixels depthPixels;
     
