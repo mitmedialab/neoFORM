@@ -40,8 +40,8 @@ void AppManager::setup(){
     axisCheckerApp = new AxisCheckerApp(m_serialShapeIOManager);
     applications["axisChecker"] = axisCheckerApp;
     
-   // kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
-    //87applications["kinectDebug"] = kinectDebugApp;
+    kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
+    applications["kinectDebug"] = kinectDebugApp;
     
     depthDebugApp = new DepthDebugApp(m_serialShapeIOManager);
     applications["depthDebug"] = depthDebugApp;
@@ -58,6 +58,10 @@ void AppManager::setup(){
     equationMode = new EquationMode(m_serialShapeIOManager);
     applications["equationMode"] = equationMode;
     
+    
+    waveModeContours = new WaveModeContours(m_serialShapeIOManager, kinectManager);
+    applications["waveModeContours"] = waveModeContours;
+
     // give applications read access to input data
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
         Application *app = iter->second;
@@ -187,7 +191,7 @@ ofPixels AppManager::convertHeightsToPixels(const std::vector<std::vector<unsign
 void AppManager::draw(){
     ofBackground(0,0,0);
     ofSetColor(255);
-    
+
     // draw shape and color I/O images
 
     ofDrawRectangle(1, 1, 302, 302);
@@ -200,10 +204,10 @@ void AppManager::draw(){
             ofImage(pixelsFromBoards).draw(2, 2, 300, 300);
         }    ofDrawRectangle(305, 1, 302, 302);
     ofImage(heightPixelsForShapeDisplay).draw(306, 2, 300, 300);
-    
-    ofDrawRectangle(609, 1, 302, 302);
-    graphicsForShapeDisplay.draw(610, 2, 300, 300);
-    
+
+    ofDrawRectangle(2000, 1, 302, 302);
+    graphicsForShapeDisplay.draw(2000, 2, 300, 300);
+
     ofRect(913, 1, 302, 302);
     ofImage(colorPixels).draw(914, 2, 300, 300);
     
@@ -300,6 +304,8 @@ void AppManager::keyPressed(int key) {
             setCurrentApplication("intWave2");
         } else if (key == '8') {
             setCurrentApplication("equationMode");
+        } else if (key == '9') {
+            setCurrentApplication("WaveModeContours");
         }
 
     // forward unreserved keys to the application

@@ -48,6 +48,8 @@
 
 #include "EquationMode.hpp"
 
+#include "WaveModeContours.hpp"
+
 
 class AppManager : public ofBaseApp {
     
@@ -104,6 +106,8 @@ private:
     IntWave2 *intWave2;
     
     EquationMode *equationMode;
+    
+    WaveModeContours *waveModeContours;
     
     // program state
     bool paused = false;

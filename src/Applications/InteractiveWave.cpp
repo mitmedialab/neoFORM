@@ -79,7 +79,8 @@ float InteractiveWave::getAdjacencyDensitySum(int x, int y){
 }
 
 void InteractiveWave::solveFluid(){
-    for (int x = 0; x < cols; x++){for (int y = 0; y < rows; y++){
+    for (int x = 0; x < cols; x++){
+        for (int y = 0; y < rows; y++){
 //        if (wallMask[x][y]){continue;}
         velocity[x][y] = friction * velocity[x][y] + (getAdjacencyDensitySum(x, y) - density[x][y] * 4.0) * 0.1;
         density[x][y] = density[x][y] + velocity[x][y];
@@ -113,28 +114,33 @@ void InteractiveWave::updateMask(){
     img.setFromPixels(maskPixels);
     img.resize((m_CustomShapeDisplayManager)->shapeDisplaySizeX, (m_CustomShapeDisplayManager)->shapeDisplaySizeY);
     maskPixels = img.getPixels();
+    
+    int counter = 0;
 
-    for (int x = 0; x < cols; x++){
-        for (int y = 0; y < rows; y++){
-            ofColor color = maskPixels.getColor(x, y);
-            if (color.getBrightness() > ofColor(127, 127, 127).getBrightness()) {
-                wallMask[x][y] = true;
-                if (!previousWallMask[x][y]) { // Only apply ripple if it's a new mask pixel
-                    applyRippleEffect(x, y);
+    if (timeControl%6 == 0) {
+        for (int x = 0; x < cols; x++){
+            for (int y = 0; y < rows; y++){
+                ofColor color = maskPixels.getColor(x, y);
+                if (color.getBrightness() > ofColor(127, 127, 127).getBrightness()) {
+                    wallMask[x][y] = true;
+                    if (!previousWallMask[x][y]) { // Only apply ripple if it's a new mask pixel
+                        if (counter % 20 == 0) {applyRippleEffect(x, y);}
+                        counter++;
+                    }
+                } else {
+                    wallMask[x][y] = false;
                 }
-            } else {
-                wallMask[x][y] = false;
             }
         }
     }
-    if (timeControl%100==0){
+    if (timeControl%100 <= 5){
         applyRippleEffect(cols/2, rows/2);
         std::cout <<"x";
     }
 }
 
 void InteractiveWave::applyRippleEffect(int x, int y) {
-    int strength = 50;
+    int strength = 100;
     int radius = 3;
 
     for (int i = -radius; i <= radius; ++i) {

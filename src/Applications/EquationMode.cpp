@@ -50,82 +50,133 @@ void EquationMode::setup(){
             heightsCopy[x][y] = 0;
         }
     }
+
+    transitioning = false;
+    firstFrame = true;
+    transitionFrameCount = 0;
+    numFrames = 20;
 }
 
 float EquationMode::equation1(float x, float y){
-    // guassian
-    float center = cols/2.0;
+    // gaussian
+    float center_x = cols/2.0;
+    float center_y = rows/2.0;
     float sigma = 5.0f;
-    
-    return 255.0/1.5 * (exp(-(((float)x - center) * ((float)x - center) + ((float)y - center) * ((float)y - center)) / (2.0 * sigma * sigma)) - exp(-(((float)cols - center) * ((float)cols - center) + ((float)cols - center) * ((float)cols - center)) / (2.0 * sigma * sigma))) / (1.0 - exp(-(((float)cols - center) * ((float)cols - center) + ((float)cols - center) * ((float)cols - center)) / (2.0 * sigma * sigma)));
+
+    return 255.0 / 1.2 * (exp(-(((float)x - center_x) * ((float)x - center_x) + ((float)y - center_y) * ((float)y - center_y)) / (2.0 * sigma * sigma)) - exp(-(((float)cols - center_x) * ((float)cols - center_x) + ((float)rows - center_y) * ((float)rows - center_y)) / (2.0 * sigma * sigma))) / (1.0 - exp(-(((float)cols - center_x) * ((float)cols - center_x) + ((float)rows - center_y) * ((float)rows - center_y)) / (2.0 * sigma * sigma)));
 }
 
-float EquationMode::equation2(float x, float y){
-    return 127.0/1.5 * std::cos(sqrt((((float)x - 0.5 * (float)cols)*((float)x - 0.5 * (float)cols)) + ((float)y - 0.5 * (float)cols)*((float)y - 0.5 * (float)cols))) + 127.0;
+float EquationMode::equation2(float x, float y) {
+    return 127.0 / 1.5 * std::cos(sqrt((((float)x - 0.5 * (float)cols) * ((float)x - 0.5 * (float)cols)) + ((float)y - 0.5 * (float)rows) * ((float)y - 0.5 * (float)rows))) + 127.0;
 }
 
 float EquationMode::equation3(float x, float y) {
-    return 127.0 + 127.0/1.5 * std::sin((float)x * 0.5) * std::cos((float)y * 0.5);
+    return 127.0 + 127.0 / 1.5 * std::sin((float)x * 0.5) * std::cos((float)y * 0.5);
 }
+
+float EquationMode::equation4(float x, float y) {
+    float A = 127.0;
+    float B = 127.0;
+    float u = (2.0 * x / cols - 1.0);
+    float v = (2.0 * y / rows - 1.0);
+    float value = A * (u * u - v * v);
+    float normalizedValue = (value + A) * (255.0 / (2.0 * A));
+    return normalizedValue;
+}
+
+float EquationMode::equation5(float x, float y) {
+    float amplitude = 127.0 * 0.8;
+    float frequency = 0.3;
+    float offset = 127.0;
+    float value = amplitude * std::sin(frequency * (x - y)) + offset;
+    return std::max(0.0f, std::min(255.0f, value));
+}
+
+
+float EquationMode::equation6(float x, float y) {
+    float frequency = 0.5;
+    return 127.0 + 0.9 * 127.0 * std::sin(frequency * ((float)x + (float)y));
+}
+
+
 
 
 void EquationMode::update(float dt){
-    updateHeights();
     timeControl++;
-    if (timeControl % 100 == 0){
-        equationNum = equationNum%3 +1;
-    }
-}
-
-void EquationMode::rotate(float theta){ // note that theta is in radians
-    for (int x = 0; x < cols; x++){
-        for (int y = 0; y < rows; y++){
-            heightsCopy[x][y] = heights[x][y];
-        }
-    } // dummy copy of heights
-    
-    for (int x = 0; x < cols; x++){
-        for (int y = 0; y < rows; y++){
-            
-            x_trans = (float)x - 0.5 * (float)cols;
-            y_trans = (float)y - 0.5 * (float)cols; // center around (0,0), then rotate
-            
-            x_Rot = x_trans*std::cos((float)count * theta)-y_trans*std::sin((float)count * theta); //(x,y) rotated by theta degrees
-            y_Rot = x_trans*std::sin((float)count * theta)+y_trans*std::cos((float)count * theta);
-            
-            x_Rot += 0.5 * (float)cols; // undo translation
-            y_Rot += 0.5 * (float)cols;
-            
-            if (equationNum ==1){heights[x][y] = equation1(x_Rot, y_Rot);} // equivalent to rotating by **negative theta
-            else if (equationNum == 2){heights[x][y] = equation2(x_Rot, y_Rot);}
-            else if (equationNum == 3){heights[x][y] = equation3(x_Rot, y_Rot);}
-            count++;
+    if (transitioning || firstFrame) {
+        updateHeights();
+        firstFrame = false;
+    } else {
+        if (timeControl % 150 == 0) {
+            int curr = equationNum;
+            equationNum = equationNum % 6 + 1;
+            startTransition(curr, equationNum);
         }
     }
 }
 
-void EquationMode::updateHeights(){
-    if (equationNum == 1){
-        for (int x = 0; x < cols; x++){
-            for (int y = 0; y < rows; y++){
-                heights[x][y] = equation1((float)x,(float)y);
+
+void EquationMode::updateHeights() {
+    if (transitioning) {
+        float alpha = (float)transitionFrameCount / numFrames;
+
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                float value1 = (transitionEq1 == 1) ? equation1(x, y) : (transitionEq1 == 2) ? equation2(x, y) : (transitionEq1 == 3) ? equation3(x, y) : (transitionEq1 == 4) ? equation4(x, y) : (transitionEq1 == 5) ? equation5(x, y) : equation6(x, y);
+                float value2 = (transitionEq2 == 1) ? equation1(x, y) : (transitionEq2 == 2) ? equation2(x, y) : (transitionEq2 == 3) ? equation3(x, y) : (transitionEq2 == 4) ? equation4(x, y) : (transitionEq2 == 5) ? equation5(x, y) : equation6(x, y);
+                heights[x][y] = (1 - alpha) * value1 + alpha * value2;
             }
         }
-    } else if (equationNum == 2){
-        for (int x = 0; x < cols; x++){
-            for (int y = 0; y < rows; y++){
-                heights[x][y] = equation2(x,y);
-            }
+
+        transitionFrameCount++;
+        if (transitionFrameCount >= numFrames) {
+            transitioning = false;
+            transitionFrameCount = 0;
+            equationNum = transitionEq2;
+            updateHeights();
         }
-    } else if (equationNum == 3){
-        for (int x = 0; x < cols; x++){
-            for (int y = 0; y < rows; y++){
-                heights[x][y] = equation3((float)x, (float)y);
+    } else {
+        if (equationNum == 1) {
+            for (int x = 0; x < cols; x++) {
+                for (int y = 0; y < rows; y++) {
+                    heights[x][y] = equation1((float)x, (float)y);
+                }
+            }
+        } else if (equationNum == 2) {
+            for (int x = 0; x < cols; x++) {
+                for (int y = 0; y < rows; y++) {
+                    heights[x][y] = equation2(x, y);
+                }
+            }
+        } else if (equationNum == 3) {
+            for (int x = 0; x < cols; x++) {
+                for (int y = 0; y < rows; y++) {
+                    heights[x][y] = equation3((float)x, (float)y);
+                }
+            }
+        } else if (equationNum == 4) {
+            for (int x = 0; x < cols; x++) {
+                for (int y = 0; y < rows; y++) {
+                    heights[x][y] = equation4((float)x, (float)y);
+                }
+            }
+        } else if (equationNum == 5) {
+            for (int x = 0; x < cols; x++) {
+                for (int y = 0; y < rows; y++) {
+                    heights[x][y] = equation5((float)x, (float)y);
+                }
+            }
+        } else if (equationNum == 6) {
+            for (int x = 0; x < cols; x++) {
+                for (int y = 0; y < rows; y++) {
+                    heights[x][y] = equation6(x, y);
+                }
             }
         }
     }
-    for (int i = 0; i < cols; i++){
-        for (int j = 0; j < rows; j++){
+
+    for (int i = 0; i < cols; i++) {
+        for (int j = 0; j < rows; j++) {
             m_EquationPixels.setColor(i, j, ofColor(heights[i][j]));
         }
     }
@@ -152,16 +203,9 @@ void EquationMode::updateHeights(){
                 std::tie(r, g, b) = projector_color;
                 ProjectorHeightMapPixels.setColor(x, y, ofColor(r, g, b));
             }
-            else if (equationNum == 3){
-                std::tuple<int, int, int> projector_color = heightPixelToMapColor(equation3((float)x/10.0, (float)y/10.0));
-                std::tie(r, g, b) = projector_color;
-                ProjectorHeightMapPixels.setColor(x, y, ofColor(r, g, b));
-            }
             
         }
     }
-    
-//    rotate(1.0/200000.0);
 }
 
 //--------------------------------------------------------------------------
@@ -201,5 +245,11 @@ void EquationMode::drawSectionPreviewFrameBuffer(int x, int y, int width, int he
     
 }
 
+void EquationMode::startTransition(int newEq1, int newEq2) {
+    transitioning = true;
+    transitionEq1 = newEq1;
+    transitionEq2 = newEq2;
+    transitionFrameCount = 0;
+}
 
 //

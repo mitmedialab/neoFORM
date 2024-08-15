@@ -19,12 +19,25 @@ public:
     float equation1(float x, float y);
     float equation2(float x, float y);
     float equation3(float x, float y);
+    float equation4(float x, float y);
+    float equation5(float x, float y);
+    float equation6(float x, float y);
     //...
     //void equationN();
     
     void update(float dt);
     void updateHeights();
     void rotate(float theta);
+    
+    bool transitioning;
+    bool firstFrame;
+    int transitionEq1;
+    int transitionEq2;
+    int transitionFrameCount;
+    static const int transitionDuration = 10; 
+    int numFrames;
+
+    void startTransition(int newEq1, int newEq2);
     
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     void drawSectionPreviewFrameBuffer(int x, int y, int width, int height);
