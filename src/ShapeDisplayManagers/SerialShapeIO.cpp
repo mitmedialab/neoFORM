@@ -84,7 +84,8 @@ void SerialShapeIO::threadedFunction() {
             // and according to http://stackoverflow.com/questions/14340485/getting-stuck-in-usleep1
             // usleep is deprecated
             // so instead use nanosleep
-            nanosleep((struct timespec[]){{0, 50000000}}, NULL);
+            timespec twentieth_of_second[] = {{0, 50'000'000}};
+            nanosleep(twentieth_of_second, NULL);
         }
         
         // receive messages from the table if there are any

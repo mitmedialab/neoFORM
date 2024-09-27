@@ -1,1 +1,6 @@
 .DS_Store
+# compiler related files
+compile_commands.json
+neoFORM.qbs
+obj/
+.cache
