@@ -1,5 +1,10 @@
 ofxKinect
+ofxKinect
+ofxMQTT-1.5.0
 ofxMQTT-1.5.0
 ofxNetwork
+ofxNetwork
 ofxOpenCv
+ofxOpenCv
+ofxXmlSettings
 ofxXmlSettings

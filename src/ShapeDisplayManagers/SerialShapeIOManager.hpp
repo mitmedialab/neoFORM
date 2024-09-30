@@ -60,7 +60,7 @@ public:
     virtual ofPixels getKinectStream(){return feebsTEMP;}
     
     // Virtual class for hardware specific pin layouts.
-    virtual ofPixels cropToActiveSurface(ofPixels fullSurface) {return ofPixels();}
+    virtual ofPixels cropToActiveSurface(ofPixels fullSurface) = 0;
     
     // Virtual class for hardware specific pin layouts.
     virtual std::vector<ofRectangle> createSections(float pixelsPerInch) {return std::vector<ofRectangle>();}

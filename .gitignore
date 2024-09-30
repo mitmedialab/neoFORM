@@ -4,3 +4,8 @@ compile_commands.json
 neoFORM.qbs
 obj/
 .cache
+#compiler outputs
+bin/emptyExampleDebug.app
+bin/neoFormDebug.app
+bin/libfmod.so
+bin/neoFORM

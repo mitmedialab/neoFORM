@@ -8,7 +8,7 @@
 #   The location of your root openFrameworks installation
 #       (default) OF_ROOT = ../../.. 
 ################################################################################
-OF_ROOT = /home/charlcoal800/Documents/Programming/open_frameworks
+OF_ROOT = ../../..
 
 ################################################################################
 # PROJECT ROOT
@@ -70,13 +70,12 @@ OF_ROOT = /home/charlcoal800/Documents/Programming/open_frameworks
 #		(default) PROJECT_LDFLAGS = -Wl,-rpath=./libs
 #
 #   Note: Leave a leading space when adding list items with the += operator
-################################################################################
-
+#
 # Currently, shared libraries that are needed are copied to the 
 # $(PROJECT_ROOT)/bin/libs directory.  The following LDFLAGS tell the linker to
 # add a runtime path to search for those shared libraries, since they aren't 
 # incorporated directly into the final executable application binary.
-# TODO: should this be a default setting?
+################################################################################
 # PROJECT_LDFLAGS=-Wl,-rpath=./libs
 
 ################################################################################
