@@ -13,6 +13,6 @@
 #include "ofMain.h"
 
 double elapsedTimeInSeconds();
-
+void setImageNotBlurry(ofImage& image);
 #endif /* utils_hpp */
 

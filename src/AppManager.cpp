@@ -6,6 +6,7 @@
 //
 
 #include "AppManager.hpp"
+#include "utils.hpp"
 
 void AppManager::setup(){
     
@@ -195,17 +196,23 @@ void AppManager::draw(){
         
         // Convert the heights to pixels and draw them with an ofImage
         ofPixels pixelsFromBoards = convertHeightsToPixels(heightsFromBoards);
-        ofImage(pixelsFromBoards).draw(2, 2, 300, 300);
+        ofImage imageFromBoards = ofImage(pixelsFromBoards);
+        setImageNotBlurry(imageFromBoards);
+        imageFromBoards.draw(2, 2, 300, 300);
     }
     
     ofDrawRectangle(305, 1, 302, 302);
-    ofImage(heightPixelsForShapeDisplay).draw(306, 2, 300, 300);
+    ofImage heightImageForShapeDisplay = ofImage(heightPixelsForShapeDisplay);
+    setImageNotBlurry(heightImageForShapeDisplay);
+    heightImageForShapeDisplay.draw(306, 2, 300, 300);
     
     ofDrawRectangle(609, 1, 302, 302);
     graphicsForShapeDisplay.draw(610, 2, 300, 300);
     
-    ofRect(913, 1, 302, 302);
-    ofImage(colorPixels).draw(914, 2, 300, 300);
+    ofDrawRectangle(913, 1, 302, 302);
+    ofImage colorImage = ofImage(colorPixels);
+    setImageNotBlurry(colorImage);
+    colorImage.draw(914, 2, 300, 300);
 
     // draw this app's debugging gui, if selected
     if (showDebugGui) {
@@ -232,7 +239,9 @@ void AppManager::draw(){
     // if there isn't already a debug gui, draw some more information
     if (!showDebugGui || currentApplication == applications["water"] || currentApplication == applications["stretchy"]) {
         ofRect(913, 305, 302, 302);
-        ofImage(depthPixels).draw(914, 306, 300, 300);
+        ofImage depthImage = ofImage(depthPixels);
+        setImageNotBlurry(depthImage);
+        depthImage.draw(914, 306, 300, 300);
 
         ofDrawBitmapString(currentApplication->appInstructionsText(), menuLeftCoordinate, menuHeight);
         menuHeight += 20;
