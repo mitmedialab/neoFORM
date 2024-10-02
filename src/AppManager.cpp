@@ -278,7 +278,7 @@ void AppManager::keyPressed(int key) {
     // keys used by app manager must be registered as reserved keys
     const int reservedKeysLength = 13;
     const int reservedKeys[reservedKeysLength] = {
-        '/', '?', '.', ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+        '/', '?', '.', ' ', '1', '2', '3', '4',  '6', '7', '8', '9'
     };
     const int *reservedKeysEnd = reservedKeys + reservedKeysLength;
 
@@ -297,8 +297,6 @@ void AppManager::keyPressed(int key) {
         } else if (key == '3') {
             setCurrentApplication("videoPlayer");
         } else if (key == '4') {
-            setCurrentApplication("kinectDebug");
-        } else if (key == '5') {
             setCurrentApplication("kinectHandWavy");
         }
 
