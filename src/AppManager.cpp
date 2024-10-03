@@ -209,10 +209,10 @@ void AppManager::draw(){
     ofDrawRectangle(609, 1, 302, 302);
     graphicsForShapeDisplay.draw(610, 2, 300, 300);
     
-    ofDrawRectangle(913, 1, 302, 302);
-    ofImage colorImage = ofImage(colorPixels);
-    setImageNotBlurry(colorImage);
-    colorImage.draw(914, 2, 300, 300);
+    //ofDrawRectangle(913, 1, 302, 302);
+    //ofImage colorImage = ofImage(colorPixels);
+    //setImageNotBlurry(colorImage);
+    //colorImage.draw(914, 2, 300, 300);
 
     // draw this app's debugging gui, if selected
     if (showDebugGui) {
