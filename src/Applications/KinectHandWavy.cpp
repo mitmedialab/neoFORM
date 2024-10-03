@@ -6,6 +6,7 @@
 //
 
 #include "KinectHandWavy.hpp"
+#include <iostream>
 
 #include "ofxXmlSettings.h"
 #include <opencv2/imgproc.hpp>
@@ -27,6 +28,9 @@ void KinectHandWavy::setup() {
 }
 
 void KinectHandWavy::update(float dt) {
+    // prevents running without kinectManager
+    if (!m_kinectManager->isConnected()) return;
+
     cout << "I'm updating!!!!!!";
     
     m_kinectManager->update();
@@ -35,6 +39,9 @@ void KinectHandWavy::update(float dt) {
 }
 // This is responsible for drawing the on screen preview of the app's behavior.
 void KinectHandWavy::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
+    // prevents running without kinectManager
+    if (!m_kinectManager->isConnected()) return;
+
     //*** Draw the color pixels for reference.
     m_kinectManager->colorImg.draw(2, 2, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
     
@@ -66,6 +73,9 @@ void KinectHandWavy::drawGraphicsForShapeDisplay(int x, int y, int width, int he
 
 // Draw a rectangle around the shape display pixels based on the mask info from settings.xml
 void KinectHandWavy::drawPreviewMaskRectangle() {
+    // prevents running without kinectManager
+    if (!m_kinectManager->isConnected()) return;
+
     // Set the drawing parameters
     ofSetColor(0, 0, 255);
     ofNoFill();
@@ -86,6 +96,8 @@ void KinectHandWavy::drawPreviewMaskRectangle() {
 
 // Draw a semi-transparent rectangle over each of the three the actuated sections. This should only be called when the shape display is a transFORM.
 void KinectHandWavy::drawPreviewActuatedSections() {
+    // prevents running without kinectManager
+    if (!m_kinectManager->isConnected()) return;
     
     // Get the width in inches of the the full transform surface (need to cast shape display manager object first).
     float transformWidth = ((TransformIOManager*)m_CustomShapeDisplayManager)->m_Transform_W;
@@ -115,6 +127,8 @@ void KinectHandWavy::drawPreviewActuatedSections() {
 }
 
 void KinectHandWavy::updateHeights() {
+    // prevents running without kinectManager
+    if (!m_kinectManager->isConnected()) return;
     // Add blur to the depth image.
     ofxCvGrayscaleImage blurredDepthImg = getBlurredDepthImg();
     
