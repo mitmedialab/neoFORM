@@ -74,27 +74,29 @@ InFormIOManager::InFormIOManager(KinectManager* kinectRef) : InFormIOManager() {
 }
 
 void InFormIOManager::configureBoards() {
-    // set up coordinates for
+    // Set up the coordinates for each board.
     for (int i = 0; i < numberOfArduinos; i++) {
-        // determine which serial connection each board is on:
-        // every 3rd and 4th board is on the second
+        // Assign a serial connection for each board, based on inded of the board.
         if (i < 36) { //64
-          pinBoards[i].serialConnection = 0; //((i / 2) % 2 == 0) ? 0 : 1
+          pinBoards[i].serialConnection = 0;
         } else if (i < 60) { //128
-          pinBoards[i].serialConnection = 1; //((i / 2) % 2 == 0) ? 2 : 3
+          pinBoards[i].serialConnection = 1;
         } else {
-          pinBoards[i].serialConnection = 2; //((i / 2) % 2 == 0) ? 4 : 5
+          pinBoards[i].serialConnection = 2;
         }
-        // every 5th to 8th board is mounted upside down, so invert the height
+        
         // Track the boards that are upside down (center of rack).
+        // These are the 9th through 12th boards in each rack, where there are 12 board in each rack.
+        // They are identified here as the 8, 9, 10, 11 (zero-indexed) indexes in each grouping of 12.
         if (i % 12 == 8 || i % 12 == 9 || i % 12 == 10 || i % 12 == 11) {
           //printf(“%d\n”, i % 12 == 8 || i % 12 == 9 || i % 12 == 10 || i % 12 == 11);
           pinBoards[i].invertHeight = true;
         } else{
-          printf("%d\n", i % 12 == 8 || i % 12 == 9 || i % 12 == 10 || i % 12 == 11);
+          //printf("%d\n", i % 12 == 8 || i % 12 == 9 || i % 12 == 10 || i % 12 == 11);
           pinBoards[i].invertHeight = false;
         }
-        //pinBoards[i].invertHeight = ((i / 4) % 2 == 0) ? false : true;
+
+        // Set the pin coordinates, and set all the heights to zero.
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
           int currentRow = (int)(i / 4);
           int currentColumn = 5 - j + (i % 4 * 6);
@@ -102,21 +104,9 @@ void InFormIOManager::configureBoards() {
           pinBoards[i].pinCoordinates[j][0] = currentRow;
           pinBoards[i].pinCoordinates[j][1] = currentColumn;
         }
-        //    if ((i / 2) % 2 == 0) { //
-        //      int pinCoordinateRows[NUM_PINS_ARDUINO];
-        //
-        //       //invert pin order if the boards are mounted rotated
-        //      for (int count = 0; count < NUM_PINS_ARDUINO; count++) {
-        //        pinCoordinateRows[NUM_PINS_ARDUINO - count - 1] = pinBoards[i].pinCoordinates[count][1];
-        //      }
-        //      for (int count = 0; count < NUM_PINS_ARDUINO; count++) {
-        //        pinBoards[i].pinCoordinates[count][1] = pinCoordinateRows[count];
-        //      }
-        //
-        //      // also invert the pin height again if they are:
-        //      pinBoards[i].invertHeight = !pinBoards[i].invertHeight;
-        //    }
-        // last, orient the x-y coordinate axes to the desired external axes
+
+
+        // Orient the x-y coordinate axes to the desired external axes
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
           unsigned char j0 = pinBoards[i].pinCoordinates[j][0];
           unsigned char j1 = pinBoards[i].pinCoordinates[j][1];
@@ -126,7 +116,7 @@ void InFormIOManager::configureBoards() {
       }
     
       printBoardConfiguration();
-      // flag configuration as complete
+      // Flag configuration as complete.
       boardsAreConfigured = true;
 }
 
