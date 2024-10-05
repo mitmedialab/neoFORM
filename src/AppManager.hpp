@@ -13,7 +13,6 @@
 // basics
 #include "ofMain.h"
 #include "constants.h"
-#include "ofTrueTypeFont.h"
 #include "utils.hpp"
 
 // shape display managers
@@ -101,9 +100,6 @@ private:
     // gui state
     bool showGlobalGuiInstructions = false;
     bool showDebugGui = true;
-
-    // text renderer (nicer text)
-    ofTrueTypeFont font;
     
     // I/O data buffers
 
