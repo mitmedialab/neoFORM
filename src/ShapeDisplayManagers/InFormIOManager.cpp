@@ -86,7 +86,8 @@ void InFormIOManager::configureBoards() {
           pinBoards[i].serialConnection = 2; //((i / 2) % 2 == 0) ? 4 : 5
         }
         // every 5th to 8th board is mounted upside down, so invert the height
-        if (i % 12 == 4 || i % 12 == 5 || i % 12 == 6 || i % 12 == 7) {
+        // Track the boards that are upside down (center of rack).
+        if (i % 12 == 8 || i % 12 == 9 || i % 12 == 10 || i % 12 == 11) {
           //printf(“%d\n”, i % 12 == 8 || i % 12 == 9 || i % 12 == 10 || i % 12 == 11);
           pinBoards[i].invertHeight = true;
         } else{
