@@ -86,9 +86,9 @@ void InFormIOManager::configureBoards() {
         }
         
         // Track the boards that are upside down (center of rack).
-        // These are the 9th through 12th boards in each rack, where there are 12 board in each rack.
+        // These are the 5th through 8th boards in each rack, where there are 12 board in each rack.
         // They are identified here as the 8, 9, 10, 11 (zero-indexed) indexes in each grouping of 12.
-        if (i % 12 == 8 || i % 12 == 9 || i % 12 == 10 || i % 12 == 11) {
+        if (i % 12 == 4 || i % 12 == 5 || i % 12 == 6 || i % 12 == 7) {
           //printf(“%d\n”, i % 12 == 8 || i % 12 == 9 || i % 12 == 10 || i % 12 == 11);
           pinBoards[i].invertHeight = true;
         } else{
@@ -99,6 +99,14 @@ void InFormIOManager::configureBoards() {
         // Set the pin coordinates, and set all the heights to zero.
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
           int currentRow = (int)(i / 4);
+          
+          // Flip bottom/middle boards to match physical configuration
+          if(currentRow % 3 == 1) {
+            currentRow++;
+          } else if (currentRow % 3 == 2) {
+            currentRow--;
+          }
+            
           int currentColumn = 5 - j + (i % 4 * 6);
           pinBoards[i].heights[j] = 0;
           pinBoards[i].pinCoordinates[j][0] = currentRow;
