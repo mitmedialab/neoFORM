@@ -13,7 +13,9 @@
 // basics
 #include "ofMain.h"
 #include "constants.h"
+#include "ofParameter.h"
 #include "utils.hpp"
+#include "ofxGui.h"
 
 // shape display managers
 #include "PinConfigs.h"
@@ -41,6 +43,17 @@
 #include "DepthDebugApp.hpp"
 
 #include "KinectHandWavy.hpp"
+
+const string POSSIBLE_MODES[] = {"mqttTransmission, videoPlayer, axisChecker, depthDebug, kinectHandWavy"};
+
+//enum AppMode {
+//    mqttTransmission = 0,
+//    videoPlayer = 1,
+//    axisChecker = 2,
+//    depthDebug = 3,
+//    kinectHandWavy = 4,
+//};
+//const int modeNum = 5;
 
 class AppManager : public ofBaseApp {
     
@@ -96,6 +109,13 @@ private:
     bool paused = false;
     double timeOfLastUpdate = -1;
     double timeOfLastPinConfigsUpdate = -1;
+
+    // new gui
+    ofxPanel gui;
+    vector<ofxButton> modeButtons;
+    vector<string> modeNames;
+
+    int mode = 0;
 
     // gui state
     bool showGlobalGuiInstructions = false;

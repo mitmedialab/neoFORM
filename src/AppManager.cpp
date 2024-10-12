@@ -17,7 +17,7 @@ void AppManager::setup(){
     
     // initialize shape display and set up helper objects
     setupShapeDisplayManagement();
-    
+
     // setup external devices (e.g., kinect)
     //kinectManager = new KinectManager();
     // Depth thresholds for the kinect are set here.
@@ -51,9 +51,20 @@ void AppManager::setup(){
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
     applications["kinectHandWavy"] = kinectHandWavy;
     
-    // give applications read access to input data
+    // innitialize GUI
+    gui.setup("panel");
+
+    // IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
+    // of modeButtons will invalidate all existing pointers stored in gui.
+    // DO NOT .push_back MORE THAN applications.size()!!!!
+    modeButtons.reserve(applications.size());
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
         Application *app = iter->second;
+        
+        modeButtons.push_back(ofxButton());
+        modeNames.push_back(iter->first);
+        auto p_button = modeButtons.back().setup(app->getName());
+        gui.add(p_button);
 
         /* This is deprecated and should be removed */
         /* The apps have their own reference to the shape IO manager and can get the heights from the boards themselves, they don't need the app manager to do it for them. */
@@ -118,6 +129,13 @@ void AppManager::setupShapeDisplayManagement() {
 void AppManager::update(){
     
     //cout << "Update in App Manager\n";
+    
+    //set the application based on the GUI mode buttons
+    int i = 0;
+    for (string name : modeNames) {
+        if (modeButtons[i] && applications[name] != currentApplication) setCurrentApplication(name);
+        i++;
+    }
     
     // time elapsed since last update
     float currentTime = elapsedTimeInSeconds();
@@ -246,6 +264,8 @@ void AppManager::draw(){
         ofDrawBitmapString(currentApplication->appInstructionsText(), menuLeftCoordinate, menuHeight);
         menuHeight += 20;
     }
+
+    gui.draw();
     
 }
 
@@ -290,7 +310,7 @@ void AppManager::keyPressed(int key) {
             showDebugGui = !showDebugGui;
         } else if (key == ' ') {
             paused = !paused;
-        } else if (key == '1') {
+        } /*else if (key == '1') {
             setCurrentApplication("mqttTransmission");
         } else if (key == '2') {
             setCurrentApplication("axisChecker");
@@ -298,7 +318,7 @@ void AppManager::keyPressed(int key) {
             setCurrentApplication("videoPlayer");
         } else if (key == '4') {
             setCurrentApplication("kinectHandWavy");
-        }
+        }*/
 
     // forward unreserved keys to the application
     } else {
