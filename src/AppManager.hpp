@@ -115,8 +115,6 @@ private:
     vector<ofxButton> modeButtons;
     vector<string> modeNames;
 
-    int mode = 0;
-
     // gui state
     bool showGlobalGuiInstructions = false;
     bool showDebugGui = true;
@@ -132,7 +130,7 @@ private:
     std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
     ofFbo graphicsForShapeDisplay;
     ofPixels colorPixels;
-    ofPixels depthPixels;
+    //ofPixels depthPixels;
     
     ofPixels convertHeightsToPixels(const std::vector<std::vector<unsigned char>>& heights);
 };

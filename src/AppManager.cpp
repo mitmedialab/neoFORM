@@ -207,7 +207,7 @@ void AppManager::draw(){
     // draw shape and color I/O images
 
     /* Draw the height data being returned for the pin heights by the arduinos */
-    ofDrawRectangle(1, 1, 302, 302);
+    ofDrawRectangle(600, 50, 302, 302);
     if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
         // Make a reference to the heights from the boards, this is memory safe because it doesn't copy the data.
         const auto& heightsFromBoards = m_serialShapeIOManager->getHeightsFromShapeDisplay();
@@ -216,16 +216,16 @@ void AppManager::draw(){
         ofPixels pixelsFromBoards = convertHeightsToPixels(heightsFromBoards);
         ofImage imageFromBoards = ofImage(pixelsFromBoards);
         setImageNotBlurry(imageFromBoards);
-        imageFromBoards.draw(2, 2, 300, 300);
+        imageFromBoards.draw(601, 51, 300, 300);
     }
     
-    ofDrawRectangle(305, 1, 302, 302);
+    ofDrawRectangle(905, 50, 302, 302);
     ofImage heightImageForShapeDisplay = ofImage(heightPixelsForShapeDisplay);
     setImageNotBlurry(heightImageForShapeDisplay);
-    heightImageForShapeDisplay.draw(306, 2, 300, 300);
+    heightImageForShapeDisplay.draw(906, 51, 300, 300);
     
-    ofDrawRectangle(609, 1, 302, 302);
-    graphicsForShapeDisplay.draw(610, 2, 300, 300);
+    ofDrawRectangle(600, 355, 607, 607);
+    graphicsForShapeDisplay.draw(601, 356, 605, 605);
     
     //ofDrawRectangle(913, 1, 302, 302);
     //ofImage colorImage = ofImage(colorPixels);
@@ -256,10 +256,12 @@ void AppManager::draw(){
 
     // if there isn't already a debug gui, draw some more information
     if (!showDebugGui || currentApplication == applications["water"] || currentApplication == applications["stretchy"]) {
-        ofRect(913, 305, 302, 302);
-        ofImage depthImage = ofImage(depthPixels);
-        setImageNotBlurry(depthImage);
-        depthImage.draw(914, 306, 300, 300);
+        // Removed as depthPixels is never written to
+        
+        //ofDrawRectangle(913, 305, 302, 302);
+        //ofImage depthImage = ofImage(depthPixels);
+        //setImageNotBlurry(depthImage);
+        //depthImage.draw(914, 306, 300, 300);
 
         ofDrawBitmapString(currentApplication->appInstructionsText(), menuLeftCoordinate, menuHeight);
         menuHeight += 20;
