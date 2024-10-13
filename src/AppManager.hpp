@@ -30,7 +30,7 @@
 
 // debugging applications
 #include "AxisCheckerApp.hpp"
-
+#include "SinglePinDebug.hpp"
 #include "KinectDebugApp.hpp"
 
 // mqtt application
@@ -82,6 +82,7 @@ private:
     
     // debugging applications
     AxisCheckerApp *axisCheckerApp;
+    SinglePinDebug *singlePinDebug;
     //KinectDebugApp *kinectDebugApp;
     DepthDebugApp *depthDebugApp;
     
