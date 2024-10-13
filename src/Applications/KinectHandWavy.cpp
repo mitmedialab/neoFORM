@@ -140,7 +140,7 @@ void KinectHandWavy::updateHeights() {
 }
 
 ofxCvGrayscaleImage KinectHandWavy::getBlurredDepthImg() {
-    ofxCvGrayscaleImage blurredDepthImg = m_kinectManager->croppedDepthImg;
+    ofxCvGrayscaleImage blurredDepthImg = m_kinectManager->depthThreshed;
     blurredDepthImg.blurGaussian(41);
     
     return blurredDepthImg;
