@@ -6,6 +6,7 @@
 //
 
 #include "AppManager.hpp"
+#include "ofGraphics.h"
 #include "utils.hpp"
 
 void AppManager::setup(){
@@ -218,6 +219,12 @@ void AppManager::draw(){
         ofImage imageFromBoards = ofImage(pixelsFromBoards);
         setImageNotBlurry(imageFromBoards);
         imageFromBoards.draw(601, 51, 300, 300);
+
+        if (mouseX > 600 && mouseX < 902 && mouseY > 50 && mouseY < 352) {
+            int pixelX = ((mouseX - 601) * m_serialShapeIOManager->shapeDisplaySizeX) / 300;
+            int pixelY = ((mouseY - 51) * m_serialShapeIOManager->shapeDisplaySizeY) / 300;
+            ofDrawBitmapString("Pixel Row: " + to_string(pixelY) + "   Pixel Column: " + to_string(pixelX), 20, 20);
+        }
     }
     
     ofDrawRectangle(905, 50, 302, 302);
