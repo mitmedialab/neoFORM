@@ -209,6 +209,7 @@ void AppManager::draw(){
     /* Draw the height data being returned for the pin heights by the arduinos */
     ofDrawRectangle(600, 50, 302, 302);
     if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
+        ofDrawBitmapString("Current Physical Heights", 600, 40);
         // Make a reference to the heights from the boards, this is memory safe because it doesn't copy the data.
         const auto& heightsFromBoards = m_serialShapeIOManager->getHeightsFromShapeDisplay();
         
@@ -220,6 +221,7 @@ void AppManager::draw(){
     }
     
     ofDrawRectangle(905, 50, 302, 302);
+    ofDrawBitmapString("Heights Being Sent", 900, 40);
     ofImage heightImageForShapeDisplay = ofImage(heightPixelsForShapeDisplay);
     setImageNotBlurry(heightImageForShapeDisplay);
     heightImageForShapeDisplay.draw(906, 51, 300, 300);
