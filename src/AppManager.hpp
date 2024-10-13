@@ -44,17 +44,6 @@
 
 #include "KinectHandWavy.hpp"
 
-const string POSSIBLE_MODES[] = {"mqttTransmission, videoPlayer, axisChecker, depthDebug, kinectHandWavy"};
-
-//enum AppMode {
-//    mqttTransmission = 0,
-//    videoPlayer = 1,
-//    axisChecker = 2,
-//    depthDebug = 3,
-//    kinectHandWavy = 4,
-//};
-//const int modeNum = 5;
-
 class AppManager : public ofBaseApp {
     
 public:
@@ -93,7 +82,7 @@ private:
     
     // debugging applications
     AxisCheckerApp *axisCheckerApp;
-    KinectDebugApp *kinectDebugApp;
+    //KinectDebugApp *kinectDebugApp;
     DepthDebugApp *depthDebugApp;
     
     // mqtt application

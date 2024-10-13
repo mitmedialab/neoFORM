@@ -143,7 +143,7 @@ void AppManager::update(){
     timeOfLastUpdate = currentTime;
 
     // copy heights and pin configs from application
-    bool pinConfigsAreStale;
+    bool pinConfigsAreStale = false;
     if (!paused) {
         currentApplication->update(dt);
         currentApplication->getHeightsForShapeDisplay(heightPixelsForShapeDisplay);
