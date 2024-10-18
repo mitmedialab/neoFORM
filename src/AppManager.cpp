@@ -58,30 +58,6 @@ void AppManager::setup(){
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
     applications["kinectHandWavy"] = kinectHandWavy;
 
-    // innitialize GUI
-    gui.setup("panel");
-
-    // IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
-    // of modeButtons will invalidate all existing pointers stored in gui.
-    // DO NOT .push_back MORE THAN applications.size()!!!!
-    modeButtons.reserve(applications.size());
-    for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
-        Application *app = iter->second;
-        
-        modeButtons.push_back(ofxButton());
-        modeNames.push_back(iter->first);
-        auto p_button = modeButtons.back().setup(app->getName());
-        gui.add(p_button);
-
-        /* This is deprecated and should be removed */
-        /* The apps have their own reference to the shape IO manager and can get the heights from the boards themselves, they don't need the app manager to do it for them. */
-        // shape display heights, if they are accessible
-        //if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
-        //    app->setHeightsFromShapeDisplayRef(&heightPixelsFromShapeDisplay);
-        //}
-        /* End deprecated */
-        
-    }
     
     // set default application
     setCurrentApplication("mqttTransmission");
@@ -136,13 +112,6 @@ void AppManager::setupShapeDisplayManagement() {
 void AppManager::update(){
     
     //cout << "Update in App Manager\n";
-    
-    //set the application based on the GUI mode buttons
-    int i = 0;
-    for (string name : modeNames) {
-        if (modeButtons[i] && applications[name] != currentApplication) setCurrentApplication(name);
-        i++;
-    }
     
     // time elapsed since last update
     float currentTime = elapsedTimeInSeconds();
@@ -311,45 +280,45 @@ void AppManager::keyPressed(int key) {
     }
 }
 
-void AppManager::setupSettingsWindow() {
-};
+//void AppManager::setupSettingsWindow() {
+//};
 
-void AppManager::drawSettingsWindow(ofEventArgs & args) {
-    ofBackground(0,0,0);
-    ofSetColor(255);
-
-    // draw text
-    int menuLeftCoordinate = 21;
-    int menuHeight = 350;
-    string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
-    ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
-    menuHeight += 30;
-    ofDrawBitmapString((string) "  '?' : " + (showGlobalGuiInstructions ? "hide" : "show") + " instructions", menuLeftCoordinate, menuHeight);
-    if (showGlobalGuiInstructions) {
-        menuHeight += 20;
-        ofDrawBitmapString((string) "  '1' - '9' : select application", menuLeftCoordinate, menuHeight);
-        menuHeight += 20;
-        ofDrawBitmapString((string) "  '.' : turn debug gui " + (showDebugGui ? "off" : "on"), menuLeftCoordinate, menuHeight);
-        menuHeight += 20;
-        ofDrawBitmapString((string) "  ' ' : " + (paused ? "play" : "pause"), menuLeftCoordinate, menuHeight);
-    }
-    menuHeight += 30;
-
-    // if there isn't already a debug gui, draw some more information
-    if (!showDebugGui || currentApplication == applications["water"] || currentApplication == applications["stretchy"]) {
-        // Removed as depthPixels is never written to
-        
-        //ofDrawRectangle(913, 305, 302, 302);
-        //ofImage depthImage = ofImage(depthPixels);
-        //setImageNotBlurry(depthImage);
-        //depthImage.draw(914, 306, 300, 300);
-
-        ofDrawBitmapString(currentApplication->appInstructionsText(), menuLeftCoordinate, menuHeight);
-        menuHeight += 20;
-    }
-
-    gui.draw();
-};
+//void AppManager::drawSettingsWindow(ofEventArgs & args) {
+//    ofBackground(0,0,0);
+//    ofSetColor(255);
+//
+//    // draw text
+//    int menuLeftCoordinate = 21;
+//    int menuHeight = 350;
+//    string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
+//    ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
+//    menuHeight += 30;
+//    ofDrawBitmapString((string) "  '?' : " + (showGlobalGuiInstructions ? "hide" : "show") + " instructions", menuLeftCoordinate, menuHeight);
+//    if (showGlobalGuiInstructions) {
+//        menuHeight += 20;
+//        ofDrawBitmapString((string) "  '1' - '9' : select application", menuLeftCoordinate, menuHeight);
+//        menuHeight += 20;
+//        ofDrawBitmapString((string) "  '.' : turn debug gui " + (showDebugGui ? "off" : "on"), menuLeftCoordinate, menuHeight);
+//        menuHeight += 20;
+//        ofDrawBitmapString((string) "  ' ' : " + (paused ? "play" : "pause"), menuLeftCoordinate, menuHeight);
+//    }
+//    menuHeight += 30;
+//
+//    // if there isn't already a debug gui, draw some more information
+//    if (!showDebugGui || currentApplication == applications["water"] || currentApplication == applications["stretchy"]) {
+//        // Removed as depthPixels is never written to
+//        
+//        //ofDrawRectangle(913, 305, 302, 302);
+//        //ofImage depthImage = ofImage(depthPixels);
+//        //setImageNotBlurry(depthImage);
+//        //depthImage.draw(914, 306, 300, 300);
+//
+//        ofDrawBitmapString(currentApplication->appInstructionsText(), menuLeftCoordinate, menuHeight);
+//        menuHeight += 20;
+//    }
+//
+//    gui.draw();
+//};
 
 void AppManager::keyReleased(int key) {};
 void AppManager::mouseMoved(int x, int y) {};

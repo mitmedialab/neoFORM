@@ -1,3 +1,4 @@
+#include "SettingsApp.hpp"
 #include "ofMain.h"
 #include "ofApp.h"
 #include "AppManager.hpp"
@@ -7,13 +8,13 @@
 int main( ){
     // create main window with specific location
 	  ofGLFWWindowSettings settings;
-	  settings.setSize(1216, 1068);
+	  settings.setSize(610, 1060);
 	  settings.setPosition(glm::vec2(400,0));
 	  settings.resizable = true;
     auto mainWindow = ofCreateWindow(settings);
 
     // create settings window
-	  settings.setSize(400, 1000);
+	  settings.setSize(400, 600);
 	  settings.setPosition(glm::vec2(0,0));
 	  settings.resizable = false;
 	  // uncomment next line to share main's OpenGL resources with gui
@@ -22,10 +23,11 @@ int main( ){
 	  settingsWindow->setVerticalSync(false);
     
     auto manager = make_shared<AppManager>();
-    manager->setupSettingsWindow();
-    ofAddListener(settingsWindow->events().draw, manager.get(), &AppManager::drawSettingsWindow);
+    auto settingsApp = make_shared<SettingsApp>();
+    settingsApp->mainApp = manager;
 
     ofRunApp(mainWindow, manager);
+    ofRunApp(settingsWindow, settingsApp);
 	  ofRunMainLoop();
 
 }

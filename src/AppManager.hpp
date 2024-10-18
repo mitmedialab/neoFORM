@@ -48,10 +48,10 @@ class AppManager : public ofBaseApp {
     
 public:
     void setup();
-    void setupSettingsWindow();
+    //void setupSettingsWindow();
     void update();
     void draw();
-    void drawSettingsWindow(ofEventArgs & args);
+    //void drawSettingsWindow(ofEventArgs & args);
     void exit();
     
     void keyPressed(int key);
@@ -67,11 +67,12 @@ public:
     void mouseEntered(int x, int y);
     void mouseExited(int x, int y);
     
+    // lets settings window access main window stuff
+    friend class SettingsApp;
 private:
     void setupShapeDisplayManagement();
-    void setCurrentApplication(string appName);
     void updateDepthInputBoundaries();
-
+    void setCurrentApplication(string appName);
     // interfaces to the peripherals
     SerialShapeIOManager *m_serialShapeIOManager;
     
@@ -101,11 +102,6 @@ private:
     bool paused = false;
     double timeOfLastUpdate = -1;
     double timeOfLastPinConfigsUpdate = -1;
-
-    // new gui
-    ofxPanel gui;
-    vector<ofxButton> modeButtons;
-    vector<string> modeNames;
 
     // gui state
     bool showGlobalGuiInstructions = false;
