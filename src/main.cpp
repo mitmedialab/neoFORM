@@ -8,12 +8,12 @@ int main( ){
     // create main window with specific location
 	  ofGLFWWindowSettings settings;
 	  settings.setSize(1216, 1068);
-	  settings.setPosition(glm::vec2(300,0));
+	  settings.setPosition(glm::vec2(400,0));
 	  settings.resizable = true;
     auto mainWindow = ofCreateWindow(settings);
 
     // create settings window
-	  settings.setSize(300, 300);
+	  settings.setSize(400, 1000);
 	  settings.setPosition(glm::vec2(0,0));
 	  settings.resizable = false;
 	  // uncomment next line to share main's OpenGL resources with gui

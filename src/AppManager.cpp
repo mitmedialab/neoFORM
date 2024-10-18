@@ -36,7 +36,7 @@ void AppManager::setup(){
     applications["mqttTransmission"] = mqttApp;
 
     singlePinDebug = new SinglePinDebug(m_serialShapeIOManager,
-                                        601, 356, 605, 605);
+                                        1, 356, 605, 605);
     applications["singlePinDebug"] = singlePinDebug;
     
     videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
@@ -57,7 +57,7 @@ void AppManager::setup(){
     
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
     applications["kinectHandWavy"] = kinectHandWavy;
-    
+
     // innitialize GUI
     gui.setup("panel");
 
@@ -214,9 +214,9 @@ void AppManager::draw(){
     // draw shape and color I/O images
 
     /* Draw the height data being returned for the pin heights by the arduinos */
-    ofDrawRectangle(600, 50, 302, 302);
+    ofDrawRectangle(0, 50, 302, 302);
     if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
-        ofDrawBitmapString("Current Physical Heights", 600, 40);
+        ofDrawBitmapString("Current Physical Heights", 0, 40);
         // Make a reference to the heights from the boards, this is memory safe because it doesn't copy the data.
         const auto& heightsFromBoards = m_serialShapeIOManager->getHeightsFromShapeDisplay();
         
@@ -224,23 +224,23 @@ void AppManager::draw(){
         ofPixels pixelsFromBoards = convertHeightsToPixels(heightsFromBoards);
         ofImage imageFromBoards = ofImage(pixelsFromBoards);
         setImageNotBlurry(imageFromBoards);
-        imageFromBoards.draw(601, 51, 300, 300);
+        imageFromBoards.draw(1, 51, 300, 300);
 
-        if (mouseX > 600 && mouseX < 902 && mouseY > 50 && mouseY < 352) {
-            int pixelX = ((mouseX - 601) * m_serialShapeIOManager->shapeDisplaySizeX) / 300;
+        if (mouseX > 0 && mouseX < 302 && mouseY > 50 && mouseY < 352) {
+            int pixelX = ((mouseX) * m_serialShapeIOManager->shapeDisplaySizeX) / 300;
             int pixelY = ((mouseY - 51) * m_serialShapeIOManager->shapeDisplaySizeY) / 300;
             ofDrawBitmapString("Pixel Row: " + to_string(pixelY) + "   Pixel Column: " + to_string(pixelX), 20, 20);
         }
     }
     
-    ofDrawRectangle(905, 50, 302, 302);
-    ofDrawBitmapString("Heights Being Sent", 900, 40);
+    ofDrawRectangle(305, 50, 302, 302);
+    ofDrawBitmapString("Heights Being Sent", 300, 40);
     ofImage heightImageForShapeDisplay = ofImage(heightPixelsForShapeDisplay);
     setImageNotBlurry(heightImageForShapeDisplay);
-    heightImageForShapeDisplay.draw(906, 51, 300, 300);
+    heightImageForShapeDisplay.draw(306, 51, 300, 300);
     
-    ofDrawRectangle(600, 355, 607, 607);
-    graphicsForShapeDisplay.draw(601, 356, 605, 605);
+    ofDrawRectangle(0, 355, 607, 607);
+    graphicsForShapeDisplay.draw(1, 356, 605, 605);
     
     //ofDrawRectangle(913, 1, 302, 302);
     //ofImage colorImage = ofImage(colorPixels);
@@ -252,38 +252,6 @@ void AppManager::draw(){
         currentApplication->drawDebugGui(1, 305);
     }
 
-    // draw text
-    int menuLeftCoordinate = 21;
-    int menuHeight = 350;
-    string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
-    ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
-    menuHeight += 30;
-    ofDrawBitmapString((string) "  '?' : " + (showGlobalGuiInstructions ? "hide" : "show") + " instructions", menuLeftCoordinate, menuHeight);
-    if (showGlobalGuiInstructions) {
-        menuHeight += 20;
-        ofDrawBitmapString((string) "  '1' - '9' : select application", menuLeftCoordinate, menuHeight);
-        menuHeight += 20;
-        ofDrawBitmapString((string) "  '.' : turn debug gui " + (showDebugGui ? "off" : "on"), menuLeftCoordinate, menuHeight);
-        menuHeight += 20;
-        ofDrawBitmapString((string) "  ' ' : " + (paused ? "play" : "pause"), menuLeftCoordinate, menuHeight);
-    }
-    menuHeight += 30;
-
-    // if there isn't already a debug gui, draw some more information
-    if (!showDebugGui || currentApplication == applications["water"] || currentApplication == applications["stretchy"]) {
-        // Removed as depthPixels is never written to
-        
-        //ofDrawRectangle(913, 305, 302, 302);
-        //ofImage depthImage = ofImage(depthPixels);
-        //setImageNotBlurry(depthImage);
-        //depthImage.draw(914, 306, 300, 300);
-
-        ofDrawBitmapString(currentApplication->appInstructionsText(), menuLeftCoordinate, menuHeight);
-        menuHeight += 20;
-    }
-
-    gui.draw();
-    
 }
 
 
@@ -344,11 +312,43 @@ void AppManager::keyPressed(int key) {
 }
 
 void AppManager::setupSettingsWindow() {
-
 };
 
 void AppManager::drawSettingsWindow(ofEventArgs & args) {
+    ofBackground(0,0,0);
+    ofSetColor(255);
 
+    // draw text
+    int menuLeftCoordinate = 21;
+    int menuHeight = 350;
+    string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
+    ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
+    menuHeight += 30;
+    ofDrawBitmapString((string) "  '?' : " + (showGlobalGuiInstructions ? "hide" : "show") + " instructions", menuLeftCoordinate, menuHeight);
+    if (showGlobalGuiInstructions) {
+        menuHeight += 20;
+        ofDrawBitmapString((string) "  '1' - '9' : select application", menuLeftCoordinate, menuHeight);
+        menuHeight += 20;
+        ofDrawBitmapString((string) "  '.' : turn debug gui " + (showDebugGui ? "off" : "on"), menuLeftCoordinate, menuHeight);
+        menuHeight += 20;
+        ofDrawBitmapString((string) "  ' ' : " + (paused ? "play" : "pause"), menuLeftCoordinate, menuHeight);
+    }
+    menuHeight += 30;
+
+    // if there isn't already a debug gui, draw some more information
+    if (!showDebugGui || currentApplication == applications["water"] || currentApplication == applications["stretchy"]) {
+        // Removed as depthPixels is never written to
+        
+        //ofDrawRectangle(913, 305, 302, 302);
+        //ofImage depthImage = ofImage(depthPixels);
+        //setImageNotBlurry(depthImage);
+        //depthImage.draw(914, 306, 300, 300);
+
+        ofDrawBitmapString(currentApplication->appInstructionsText(), menuLeftCoordinate, menuHeight);
+        menuHeight += 20;
+    }
+
+    gui.draw();
 };
 
 void AppManager::keyReleased(int key) {};
