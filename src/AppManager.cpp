@@ -34,7 +34,8 @@ void AppManager::setup(){
     mqttApp = new MqttTransmissionApp(m_serialShapeIOManager);
     applications["mqttTransmission"] = mqttApp;
 
-    singlePinDebug = new SinglePinDebug(m_serialShapeIOManager, 601, 356, 605, 605);
+    singlePinDebug = new SinglePinDebug(m_serialShapeIOManager,
+                                        601, 356, 605, 605);
     applications["singlePinDebug"] = singlePinDebug;
     
     videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);

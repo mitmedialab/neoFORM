@@ -1,6 +1,7 @@
 #include "ofMain.h"
 #include "ofApp.h"
 #include "AppManager.hpp"
+#include <memory>
 
 //========================================================================
 int main( ){
@@ -13,7 +14,7 @@ int main( ){
 	// this kicks off the running of my app
 	// can be OF_WINDOW or OF_FULLSCREEN
 	// pass in width and height too:
-    AppManager *manager = new AppManager();
+    auto manager = make_shared<AppManager>();
 	//ofRunApp( new ofApp());
     ofRunApp(manager);
 
