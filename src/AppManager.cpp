@@ -242,6 +242,9 @@ void AppManager::updateDepthInputBoundaries() {
 }
 
 void AppManager::exit() {
+    // make other windows shut down
+    settingsWindow->setWindowShouldClose();
+
     // delete m_serialShapeIOManager to shut down the shape display
     delete m_serialShapeIOManager;
 }

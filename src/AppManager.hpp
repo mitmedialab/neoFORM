@@ -67,6 +67,8 @@ public:
     void mouseEntered(int x, int y);
     void mouseExited(int x, int y);
     
+    shared_ptr<ofAppBaseWindow> settingsWindow;
+
     // lets settings window access main window stuff
     friend class SettingsApp;
 private:

@@ -22,9 +22,14 @@ int main( ){
 	  auto settingsWindow = ofCreateWindow(settings);
 	  settingsWindow->setVerticalSync(false);
     
+    // seperate applications to make ofxGui happy
     auto manager = make_shared<AppManager>();
     auto settingsApp = make_shared<SettingsApp>();
+
+    // let the two windows see each other
     settingsApp->mainApp = manager;
+    settingsApp->mainWindow = mainWindow;
+    manager->settingsWindow = settingsWindow;
 
     ofRunApp(mainWindow, manager);
     ofRunApp(settingsWindow, settingsApp);

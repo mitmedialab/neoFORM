@@ -63,18 +63,15 @@ void SettingsApp::draw(){
 
     // if there isn't already a debug gui, draw some more information
     if (!mainApp->showDebugGui || mainApp->currentApplication == mainApp->applications["water"] || mainApp->currentApplication == mainApp->applications["stretchy"]) {
-        // Removed as depthPixels is never written to
-        
-        //ofDrawRectangle(913, 305, 302, 302);
-        //ofImage depthImage = ofImage(depthPixels);
-        //setImageNotBlurry(depthImage);
-        //depthImage.draw(914, 306, 300, 300);
-
         ofDrawBitmapString(mainApp->currentApplication->appInstructionsText(), menuLeftCoordinate, menuHeight);
         menuHeight += 20;
     }
 
     gui.draw();
+}
+
+void SettingsApp::exit() {
+    mainWindow->setWindowShouldClose();
 }
 
 //--------------------------------------------------------------

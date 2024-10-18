@@ -9,6 +9,7 @@ public:
 		void setup();
 		void update();
 		void draw();
+    void exit();
 		
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -24,6 +25,7 @@ public:
 
     // main window
     shared_ptr<AppManager> mainApp;
+    shared_ptr<ofAppBaseWindow> mainWindow;
     
     // lets main window access settings window stuff
     friend AppManager;
