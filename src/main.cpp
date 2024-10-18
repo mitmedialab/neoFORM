@@ -5,17 +5,27 @@
 
 //========================================================================
 int main( ){
+    // create main window with specific location
+	  ofGLFWWindowSettings settings;
+	  settings.setSize(1216, 1068);
+	  settings.setPosition(glm::vec2(300,0));
+	  settings.resizable = true;
+    auto mainWindow = ofCreateWindow(settings);
 
-    ofAppGLFWWindow window;
+    // create settings window
+	  settings.setSize(300, 300);
+	  settings.setPosition(glm::vec2(0,0));
+	  settings.resizable = false;
+	  // uncomment next line to share main's OpenGL resources with gui
+	  //settings.shareContextWith = mainWindow;
+	  auto settingsWindow = ofCreateWindow(settings);
+	  settingsWindow->setVerticalSync(false);
     
-	//ofSetupOpenGL(1024,768, OF_WINDOW);			// <-------- setup the GL context
-    ofSetupOpenGL(&window, 1216, 768 + 300, OF_WINDOW);
-    
-	// this kicks off the running of my app
-	// can be OF_WINDOW or OF_FULLSCREEN
-	// pass in width and height too:
     auto manager = make_shared<AppManager>();
-	//ofRunApp( new ofApp());
-    ofRunApp(manager);
+    manager->setupSettingsWindow();
+    ofAddListener(settingsWindow->events().draw, manager.get(), &AppManager::drawSettingsWindow);
+
+    ofRunApp(mainWindow, manager);
+	  ofRunMainLoop();
 
 }

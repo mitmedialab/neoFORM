@@ -7,6 +7,7 @@
 
 #include "AppManager.hpp"
 #include "SinglePinDebug.hpp"
+#include "ofEvents.h"
 #include "ofGraphics.h"
 #include "utils.hpp"
 
@@ -341,6 +342,14 @@ void AppManager::keyPressed(int key) {
         currentApplication->keyPressed(key);
     }
 }
+
+void AppManager::setupSettingsWindow() {
+
+};
+
+void AppManager::drawSettingsWindow(ofEventArgs & args) {
+
+};
 
 void AppManager::keyReleased(int key) {};
 void AppManager::mouseMoved(int x, int y) {};
