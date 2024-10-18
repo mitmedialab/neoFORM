@@ -196,8 +196,8 @@ void AppManager::draw(){
         imageFromBoards.draw(1, 51, 300, 300);
 
         if (mouseX > 0 && mouseX < 302 && mouseY > 50 && mouseY < 352) {
-            int pixelX = ((mouseX) * m_serialShapeIOManager->shapeDisplaySizeX) / 300;
-            int pixelY = ((mouseY - 51) * m_serialShapeIOManager->shapeDisplaySizeY) / 300;
+            int pixelX = ((mouseX) * m_serialShapeIOManager->shapeDisplaySizeX) / 302;
+            int pixelY = ((mouseY - 51) * m_serialShapeIOManager->shapeDisplaySizeY) / 302;
             ofDrawBitmapString("Pixel Row: " + to_string(pixelY) + "   Pixel Column: " + to_string(pixelX), 20, 20);
         }
     }
