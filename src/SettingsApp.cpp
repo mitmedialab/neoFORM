@@ -79,7 +79,8 @@ void SettingsApp::draw(){
 
 //--------------------------------------------------------------
 void SettingsApp::keyPressed(int key){
-
+    // forward to main window
+    mainApp->keyPressed(key);
 }
 
 //--------------------------------------------------------------
