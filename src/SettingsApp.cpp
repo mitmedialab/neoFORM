@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void SettingsApp::setup(){
     // innitialize GUI
-    gui.setup("panel");
+    gui.setup("modes:");
 
     // IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
     // of modeButtons will invalidate all existing pointers stored in gui.

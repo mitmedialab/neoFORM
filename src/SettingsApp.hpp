@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "AppManager.hpp"
-#include <memory>
+#include "ofxGui.h"
 
 class SettingsApp : public ofBaseApp{
 public:
@@ -31,7 +31,7 @@ public:
     friend AppManager;
 protected:
     // new gui
-    ofxPanel gui;
+    ofxGuiGroup gui;
     vector<ofxButton> modeButtons;
     vector<string> modeNames;
 };
