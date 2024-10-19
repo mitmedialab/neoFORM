@@ -6,6 +6,7 @@
 //
 
 #include "SerialShapeIOManager.hpp"
+#include "constants.h"
 
 //--------------------------------------------------------------
 //
@@ -215,6 +216,11 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
 // Copy data from storage in the 2D array to the corresponding arduino board
 // structures. Flip height values where needed to match the board's orientation.
 void SerialShapeIOManager::readyDataForArduinos() {
+    // set any disabled pins to 0
+    for (PinLocation pinLoc : getDisabledPins()) {
+        heightsForShapeDisplay[pinLoc.x][pinLoc.y] = pinHeightMin;
+    }
+
     for (int i = 0; i < numberOfArduinos; i++) {
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             int x = pinBoards[i].pinCoordinates[j][0];
