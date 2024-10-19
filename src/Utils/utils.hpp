@@ -12,6 +12,9 @@
 #include <ctime>
 #include "ofMain.h"
 
+// returns "empty" if mouse is outside of grid
+optional<pair<int, int>> getMouseCoordinateInGrid(int gridX, int gridY, int gridWidth, int gridHeight, int numXCells, int numYCells);
+
 double elapsedTimeInSeconds();
 void setImageNotBlurry(ofImage& image);
 #endif /* utils_hpp */

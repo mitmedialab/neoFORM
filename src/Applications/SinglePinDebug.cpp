@@ -15,16 +15,11 @@ void SinglePinDebug::update(float dt) {
 
     int sizeX = m_CustomShapeDisplayManager->shapeDisplaySizeX;
     int sizeY = m_CustomShapeDisplayManager->shapeDisplaySizeY;
+    auto mouseGridPos = getMouseCoordinateInGrid(graphicsX, graphicsY, graphicsWidth, graphicsHeight, sizeX, sizeY);
 
-    // find pixel position of mouse
-    int mouseX = (ofGetMouseX() - graphicsX);
-    int mouseY = (ofGetMouseY() - graphicsY);
-    
-    if (mouseX >= 0 && mouseX < graphicsWidth && mouseY >= 0 && mouseY < graphicsHeight) {
-        int pixelX = mouseX * sizeX / float(graphicsWidth);
-        int pixelY = mouseY * sizeY / float(graphicsHeight);
-
-        int xy = heightsForShapeDisplay.getPixelIndex(pixelX, pixelY);
+    if (mouseGridPos.has_value()) {
+        auto pos = mouseGridPos.value();
+        int xy = heightsForShapeDisplay.getPixelIndex(pos.first, pos.second);
         heightsForShapeDisplay[xy] = 255;
     }
 }
