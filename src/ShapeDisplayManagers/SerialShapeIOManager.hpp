@@ -91,13 +91,9 @@ protected:
     // setup hardware-specific board configuration
     virtual void configureBoards() = 0;
     void printBoardConfiguration();
-
-    struct PinLocation {
-        int x;
-        int y;
-    };
+    //
     // specific to device pin-disabling, return pin location to disable
-    virtual vector<PinLocation> getDisabledPins() {return {};}
+    vector<pair<int, int>> getDisabledPins();
 
     // pin height data processors
     void toggleStuckPins();

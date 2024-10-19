@@ -217,8 +217,8 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
 // structures. Flip height values where needed to match the board's orientation.
 void SerialShapeIOManager::readyDataForArduinos() {
     // set any disabled pins to 0
-    for (PinLocation pinLoc : getDisabledPins()) {
-        heightsForShapeDisplay[pinLoc.x][pinLoc.y] = pinHeightMin;
+    for (pair<int, int> pinLoc : getDisabledPins()) {
+        heightsForShapeDisplay[pinLoc.first][pinLoc.second] = pinHeightMin;
     }
 
     for (int i = 0; i < numberOfArduinos; i++) {
@@ -313,6 +313,12 @@ void SerialShapeIOManager::sendValueToAllBoards(unsigned char termId, unsigned c
     for (auto& connection : serialConnections) {
         connection->writeMessage(messageContents);
     }
+}
+
+
+// Get disabled pins from settings
+vector<pair<int, int>> SerialShapeIOManager::getDisabledPins() {
+    return {};
 }
 
 // Send values for some parameter (given by termId) to a board

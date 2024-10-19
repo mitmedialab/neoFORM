@@ -27,11 +27,6 @@ public:
         return "inFORM";
     }
 
-    // specify pins to disable here, in (x, y)
-    vector<PinLocation> getDisabledPins() {
-        return {};
-    }
-    
     // should pins that appear stuck be turned off at regular intervals?
     bool enableStuckPinSafetyToggle = false;
     
