@@ -11,12 +11,14 @@ int main( ){
 	  settings.setSize(610, 1060);
 	  settings.setPosition(glm::vec2(400,0));
 	  settings.resizable = true;
+    settings.title = "main";
     auto mainWindow = ofCreateWindow(settings);
 
     // create settings window
 	  settings.setSize(400, 600);
 	  settings.setPosition(glm::vec2(0,0));
 	  settings.resizable = true;
+    settings.title = "settings";
 	  // uncomment next line to share main's OpenGL resources with gui
 	  //settings.shareContextWith = mainWindow;
 	  auto settingsWindow = ofCreateWindow(settings);
