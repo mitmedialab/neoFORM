@@ -16,11 +16,11 @@ int main( ){
     // create settings window
 	  settings.setSize(400, 600);
 	  settings.setPosition(glm::vec2(0,0));
-	  settings.resizable = false;
+	  settings.resizable = true;
 	  // uncomment next line to share main's OpenGL resources with gui
 	  //settings.shareContextWith = mainWindow;
 	  auto settingsWindow = ofCreateWindow(settings);
-	  settingsWindow->setVerticalSync(false);
+	  //settingsWindow->setVerticalSync(false);
     
     // seperate applications to make ofxGui happy
     auto manager = make_shared<AppManager>();
