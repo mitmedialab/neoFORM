@@ -71,7 +71,7 @@ void SettingsApp::draw(){
 }
 
 void SettingsApp::exit() {
-    mainWindow->setWindowShouldClose();
+    mainApp->settingsWindow = nullptr;
 }
 
 //--------------------------------------------------------------

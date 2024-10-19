@@ -25,7 +25,6 @@ public:
 
     // main window
     shared_ptr<AppManager> mainApp;
-    shared_ptr<ofAppBaseWindow> mainWindow;
     
     // lets main window access settings window stuff
     friend AppManager;

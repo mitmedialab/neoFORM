@@ -30,7 +30,6 @@ int main( ){
 
     // let the two windows see each other
     settingsApp->mainApp = manager;
-    settingsApp->mainWindow = mainWindow;
     manager->settingsWindow = settingsWindow;
 
     ofRunApp(mainWindow, manager);
