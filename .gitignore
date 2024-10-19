@@ -9,3 +9,4 @@ bin/emptyExampleDebug.app
 bin/neoFormDebug.app
 bin/libfmod.so
 bin/neoFORM
+bin/neoFORM_debug
