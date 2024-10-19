@@ -218,7 +218,7 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
 void SerialShapeIOManager::readyDataForArduinos() {
     // set any disabled pins to 0
     for (PinLocation pinLoc : getDisabledPins()) {
-        heightsForShapeDisplay[pinLoc.x][pinLoc.y] = 0;
+        heightsForShapeDisplay[pinLoc.x][pinLoc.y] = pinHeightMin;
     }
 
     for (int i = 0; i < numberOfArduinos; i++) {
