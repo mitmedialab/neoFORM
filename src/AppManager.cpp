@@ -40,8 +40,9 @@ void AppManager::setup(){
     axisCheckerApp = new AxisCheckerApp(m_serialShapeIOManager);
     applications["axisChecker"] = axisCheckerApp;
     
-    kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
-    applications["kinectDebug"] = kinectDebugApp;
+    //breaks on newer openframeworks (and is no longer needed)
+    //kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
+    //applications["kinectDebug"] = kinectDebugApp;
     
     depthDebugApp = new DepthDebugApp(m_serialShapeIOManager);
     applications["depthDebug"] = depthDebugApp;

@@ -60,10 +60,10 @@ public:
     virtual ofPixels getKinectStream(){return feebsTEMP;}
     
     // Virtual class for hardware specific pin layouts.
-    virtual ofPixels cropToActiveSurface(ofPixels fullSurface) {};
+    virtual ofPixels cropToActiveSurface(ofPixels fullSurface) = 0;
     
     // Virtual class for hardware specific pin layouts.
-    virtual std::vector<ofRectangle> createSections(float pixelsPerInch) {};
+    virtual std::vector<ofRectangle> createSections(float pixelsPerInch) {return std::vector<ofRectangle>();}
 
     // Public getters for protected hardware constants, these are specific to the pin configs so might be abstracted into a single array of values.
     float getGainP()    const { return gainP; }
