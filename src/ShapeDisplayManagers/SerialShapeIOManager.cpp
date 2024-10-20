@@ -234,7 +234,7 @@ void SerialShapeIOManager::limitPowerDraw() {
                 double pinDiff = heightsForShapeDisplay[i][j] - (float)previousHeightsForShapeDisplay[i][j];
                 pinDiff /= pinHeightMax - pinHeightMin; // 1 for min -> max, 0 for h -> h, -1 for max -> min
                 pinDiff = cutoffScale*pinDiff > 1 ? 1.0/cutoffScale : pinDiff;
-                heightsForShapeDisplay[i][j] = previousHeightsForShapeDisplay[i][j] + (heightsForShapeDisplay[i][j] - (int)previousHeightsForShapeDisplay[i][j]) * scaleRatio;
+                heightsForShapeDisplay[i][j] = previousHeightsForShapeDisplay[i][j] + (pinDiff) * scaleRatio;
             }
         }
     }
