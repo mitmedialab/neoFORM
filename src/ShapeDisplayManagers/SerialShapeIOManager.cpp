@@ -229,7 +229,7 @@ void SerialShapeIOManager::limitPowerDraw() {
         double scaleRatio = (shapeDisplaySizeX * shapeDisplaySizeY *getMaxPowerLoad())/totalCost;
         for(int i = 0; i < shapeDisplaySizeX; i++) {
             for(int j = 0; j < shapeDisplaySizeY; j++) {
-                heightsForShapeDisplay[i][j] = pinHeightMin + (heightsForShapeDisplay[i][j] - pinHeightMin) * scaleRatio;
+                heightsForShapeDisplay[i][j] = previousHeightsForShapeDisplay[i][j] + (heightsForShapeDisplay[i][j] - (int)previousHeightsForShapeDisplay[i][j]) * scaleRatio;
             }
         }
     }
