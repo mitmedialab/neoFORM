@@ -32,7 +32,7 @@ public:
         return {};
     }
 
-    double getMaxPowerLoad() {return 0.5;}
+    double getMaxPowerLoad() {return 0.1;}
     
     // should pins that appear stuck be turned off at regular intervals?
     bool enableStuckPinSafetyToggle = false;
