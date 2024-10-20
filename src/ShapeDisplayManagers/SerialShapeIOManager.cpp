@@ -7,6 +7,7 @@
 
 #include "SerialShapeIOManager.hpp"
 #include "constants.h"
+#include "ofxXmlSettings.h"
 
 //--------------------------------------------------------------
 //
@@ -318,7 +319,33 @@ void SerialShapeIOManager::sendValueToAllBoards(unsigned char termId, unsigned c
 
 // Get disabled pins from settings
 vector<pair<int, int>> SerialShapeIOManager::getDisabledPins() {
-    return {};
+    ofxXmlSettings settings;
+    // returns empty if no file is found
+    if (!settings.load("settings.xml")) return {};
+
+    // singles out settings relevent to disabled pins
+    settings.pushTag(getShapeDisplayName());
+    settings.pushTag("disabledPins");
+
+    int numDisabledPins = settings.getValue("num", 0);
+    
+    vector<pair<int, int>> disabledPins = {};
+    
+    for (int i = 0; i < numDisabledPins; i++) {
+        settings.pushTag("pin " + to_string(i));
+        int x = settings.getValue("X", -1);
+        int y = settings.getValue("Y", -1);
+
+        // doesn't add invalid (out of range) pins
+        if (x >= 0 && x < shapeDisplaySizeX && y >= 0 && y < shapeDisplaySizeY) {
+            disabledPins.push_back({x, y});
+        }
+        settings.popTag();
+    }
+
+    settings.popTag();
+    settings.popTag();
+    return disabledPins;
 }
 
 // Send values for some parameter (given by termId) to a board
