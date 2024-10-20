@@ -85,15 +85,16 @@ void PinDisabler::mousePressed(int x, int y, int mouse) {
         int settingsPos = disabledMap[gridPos.value()];
         disabledMap.erase(gridPos.value());
 
-        // swap back with pin in question, then remove back
-        if (settingsPos == disabledPins.size() - 1) {
+        // swap back with pin
+        if (settingsPos != disabledPins.size() - 1) {
             disabledPins[settingsPos] = disabledPins.back();
             disabledMap[disabledPins.back()] = settingsPos;
 
             settings.setValue("pin_" + to_string(settingsPos) + ":X", gridPos.value().first);
             settings.setValue("pin_" + to_string(settingsPos) + ":Y", gridPos.value().second);
-            settings.removeTag("pin " + to_string(disabledPins.size()-1));
         }
+        // remove back pin
+        settings.removeTag("pin_" + to_string(disabledPins.size()-1));
         settings.setValue("num", (int)disabledPins.size());
         disabledPins.pop_back();
     } else { // add a disabled pin
