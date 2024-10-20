@@ -7,6 +7,7 @@
 
 #include "SerialShapeIOManager.hpp"
 #include "constants.h"
+#include "utils.hpp"
 
 //--------------------------------------------------------------
 //
@@ -213,6 +214,29 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
     }
 }
 
+// Limit all values, to reduce the maximum transient power draw
+void SerialShapeIOManager::limitPowerDraw() {
+    double totalCost = 0;
+    for(int i = 0; i < shapeDisplaySizeX; i++) {
+        for(int j = 0; j < shapeDisplaySizeY; j++) {
+            double pinDiff = heightsForShapeDisplay[i][j] - (float)previousHeightsForShapeDisplay[i][j];
+            pinDiff /= pinHeightMax - pinHeightMin; // 1 for min -> max, 0 for h -> h, -1 for max -> min
+            totalCost += abs(pinDiff);
+        }
+    }
+
+    if (totalCost > shapeDisplaySizeX * shapeDisplaySizeY * getMaxPowerLoad()) {
+        double scaleRatio = (shapeDisplaySizeX * shapeDisplaySizeY *getMaxPowerLoad())/totalCost;
+        for(int i = 0; i < shapeDisplaySizeX; i++) {
+            for(int j = 0; j < shapeDisplaySizeY; j++) {
+                heightsForShapeDisplay[i][j] *= scaleRatio;
+            }
+        }
+    }
+
+    previousHeightsForShapeDisplay = heightsForShapeDisplay;
+}
+
 // Copy data from storage in the 2D array to the corresponding arduino board
 // structures. Flip height values where needed to match the board's orientation.
 void SerialShapeIOManager::readyDataForArduinos() {
@@ -266,6 +290,7 @@ void SerialShapeIOManager::update() {
 
     // prepare height data for sending to shape display
     clipAllHeightValuesToBeWithinRange();
+    limitPowerDraw();
     readyDataForArduinos();
 
     // send height data. if the display talks back, ask it what it's doing

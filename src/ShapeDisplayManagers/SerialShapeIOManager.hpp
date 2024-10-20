@@ -127,6 +127,14 @@ protected:
     // shape display height values (both intended and actual values)
     std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
     std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
+    // make sure to resize is child constructor
+    std::vector<std::vector<unsigned char>> previousHeightsForShapeDisplay;
+
+    // [0, 1] range, the maximum power draw alowable
+    virtual double getMaxPowerLoad() {return 1.0;}
+
+    // prevent over-draw current
+    void limitPowerDraw();
 
     // pin behavior configurations
     std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;

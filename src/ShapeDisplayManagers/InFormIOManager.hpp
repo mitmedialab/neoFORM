@@ -31,6 +31,8 @@ public:
     vector<PinLocation> getDisabledPins() {
         return {};
     }
+
+    double getMaxPowerLoad() {return 0.5;}
     
     // should pins that appear stuck be turned off at regular intervals?
     bool enableStuckPinSafetyToggle = false;
