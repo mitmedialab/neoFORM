@@ -95,8 +95,8 @@ void PinDisabler::mousePressed(int x, int y, int mouse) {
         }
         // remove back pin
         settings.removeTag("pin_" + to_string(disabledPins.size()-1));
-        settings.setValue("num", (int)disabledPins.size());
         disabledPins.pop_back();
+        settings.setValue("num", (int)disabledPins.size());
     } else { // add a disabled pin
         settings.setValue("pin_" + to_string(disabledPins.size()) + ":X", gridPos.value().first);
         settings.setValue("pin_" + to_string(disabledPins.size()) + ":Y", gridPos.value().second);
