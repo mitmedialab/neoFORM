@@ -6,6 +6,7 @@
 //
 
 #include "AppManager.hpp"
+#include "PinDisabler.hpp"
 
 void AppManager::setup(){
     
@@ -49,6 +50,9 @@ void AppManager::setup(){
     
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
     applications["kinectHandWavy"] = kinectHandWavy;
+
+    pinDisabler = new PinDisabler(m_serialShapeIOManager, 609, 1, 302, 302);
+    applications["pinDisabler"] = pinDisabler;
     
     // give applications read access to input data
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
@@ -291,6 +295,8 @@ void AppManager::keyPressed(int key) {
             setCurrentApplication("kinectDebug");
         } else if (key == '5') {
             setCurrentApplication("kinectHandWavy");
+        } else if (key == '6') {
+            setCurrentApplication("pinDisabler");
         }
 
     // forward unreserved keys to the application
@@ -299,10 +305,13 @@ void AppManager::keyPressed(int key) {
     }
 }
 
+void AppManager::mousePressed(int x, int y, int button) {
+    currentApplication->mousePressed(x, y, button);
+};
+
 void AppManager::keyReleased(int key) {};
 void AppManager::mouseMoved(int x, int y) {};
 void AppManager::mouseDragged(int x, int y, int button) {};
-void AppManager::mousePressed(int x, int y, int button) {};
 void AppManager::mouseReleased(int x, int y, int button) {};
 void AppManager::windowResized(int w, int h) {};
 void AppManager::gotMessage(ofMessage msg) {};

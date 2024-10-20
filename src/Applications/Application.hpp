@@ -9,6 +9,7 @@
 #define Application_hpp
 
 #include <stdio.h>
+#include "ofEvents.h"
 #include "ofMain.h"
 #include "constants.h"
 #include "utils.hpp"
@@ -37,6 +38,7 @@ public:
     virtual string appInstructionsText() {return "";};
     virtual void drawDebugGui(int x, int y) {};
     virtual void keyPressed(int key) {};
+    virtual void mousePressed(int x, int y, int button) {};
 
     virtual string getName() {return "Application";};
 

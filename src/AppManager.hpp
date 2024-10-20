@@ -42,6 +42,8 @@
 
 #include "KinectHandWavy.hpp"
 
+#include "PinDisabler.hpp"
+
 class AppManager : public ofBaseApp {
     
 public:
@@ -82,6 +84,7 @@ private:
     AxisCheckerApp *axisCheckerApp;
     KinectDebugApp *kinectDebugApp;
     DepthDebugApp *depthDebugApp;
+    PinDisabler *pinDisabler;
     
     // mqtt application
     MqttTransmissionApp *mqttApp;

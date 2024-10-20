@@ -320,8 +320,7 @@ void SerialShapeIOManager::sendValueToAllBoards(unsigned char termId, unsigned c
 // Get disabled pins from settings
 vector<pair<int, int>> SerialShapeIOManager::getDisabledPins() {
     ofxXmlSettings settings;
-    // returns empty if no file is found
-    if (!settings.load("settings.xml")) return {};
+    settings.load("settings.xml");
 
     // singles out settings relevent to disabled pins
     settings.pushTag(getShapeDisplayName());
@@ -332,15 +331,14 @@ vector<pair<int, int>> SerialShapeIOManager::getDisabledPins() {
     vector<pair<int, int>> disabledPins = {};
     
     for (int i = 0; i < numDisabledPins; i++) {
-        settings.pushTag("pin " + to_string(i));
-        int x = settings.getValue("X", -1);
-        int y = settings.getValue("Y", -1);
+        int x = settings.getValue("pin_" + to_string(i) + ":X", -1);
+        int y = settings.getValue("pin_" + to_string(i) + ":Y", -1);
 
         // doesn't add invalid (out of range) pins
         if (x >= 0 && x < shapeDisplaySizeX && y >= 0 && y < shapeDisplaySizeY) {
             disabledPins.push_back({x, y});
         }
-        settings.popTag();
+        //settings.popTag();
     }
 
     settings.popTag();

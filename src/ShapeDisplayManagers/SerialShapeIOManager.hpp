@@ -81,6 +81,8 @@ public:
     
     int numberOfArduinos;
     
+    // specific to device pin-disabling, return pin location to disable
+    vector<pair<int, int>> getDisabledPins();
 
 protected:
     // manage the connection to the shape display
@@ -91,9 +93,6 @@ protected:
     // setup hardware-specific board configuration
     virtual void configureBoards() = 0;
     void printBoardConfiguration();
-    //
-    // specific to device pin-disabling, return pin location to disable
-    vector<pair<int, int>> getDisabledPins();
 
     // pin height data processors
     void toggleStuckPins();

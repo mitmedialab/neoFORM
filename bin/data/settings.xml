@@ -1,0 +1,14 @@
+<inFORM>
+    <disabledPins>
+        <num>1</num>
+        <pin_0>
+            <X>11</X>
+            <Y>9</Y>
+        </pin_0>
+    </disabledPins>
+</inFORM>
+<TRANSFORM>
+    <disabledPins>
+        <num>0</num>
+    </disabledPins>
+</TRANSFORM>
