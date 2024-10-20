@@ -76,9 +76,8 @@ void PinDisabler::mousePressed(int x, int y, int mouse) {
     if (!gridPos.has_value()) return;
 
     ofxXmlSettings settings;
-    settings.load("settings.xml");
-    settings.pushTag(m_CustomShapeDisplayManager->getShapeDisplayName());
-    settings.pushTag("disabledPins");
+    std::string name = m_CustomShapeDisplayManager->getShapeDisplayName() + "_pinsDisabled.xml";
+    settings.load(name);
 
     bool alreadyDisabled = disabledMap.count(gridPos.value()) > 0;
     if (alreadyDisabled) { //removed existing disabled pin
@@ -90,25 +89,23 @@ void PinDisabler::mousePressed(int x, int y, int mouse) {
             disabledPins[settingsPos] = disabledPins.back();
             disabledMap[disabledPins.back()] = settingsPos;
 
-            settings.setValue("pin_" + to_string(settingsPos) + ":X", gridPos.value().first);
-            settings.setValue("pin_" + to_string(settingsPos) + ":Y", gridPos.value().second);
+            settings.setValue("pin:X", gridPos.value().first, settingsPos);
+            settings.setValue("pin:Y", gridPos.value().second, settingsPos);
         }
         // remove back pin
-        settings.removeTag("pin_" + to_string(disabledPins.size()-1));
+        settings.removeTag("pin", disabledPins.size() - 1);
         disabledPins.pop_back();
         settings.setValue("num", (int)disabledPins.size());
     } else { // add a disabled pin
-        settings.setValue("pin_" + to_string(disabledPins.size()) + ":X", gridPos.value().first);
-        settings.setValue("pin_" + to_string(disabledPins.size()) + ":Y", gridPos.value().second);
         settings.setValue("num", (int)disabledPins.size() + 1);
+        settings.setValue("pin:X", gridPos.value().first, disabledPins.size());
+        settings.setValue("pin:Y", gridPos.value().second, disabledPins.size());
 
         disabledMap[gridPos.value()] = disabledPins.size();
         disabledPins.push_back(gridPos.value());
     }
 
-    settings.popTag();
-    settings.popTag();
-    settings.save("settings.xml");
+    settings.save(name);
 }
 
 
