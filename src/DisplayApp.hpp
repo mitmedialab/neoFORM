@@ -6,6 +6,8 @@
 
 class DisplayApp : public ofBaseApp{
 public:
+    DisplayApp(int startWidth, int startHeight) : width(startWidth), height(startHeight) {}
+
 		void setup();
 		void update();
 		void draw();
@@ -29,4 +31,6 @@ public:
     // lets main window access settings window stuff
     friend AppManager;
 protected:
+    int width;
+    int height;
 };

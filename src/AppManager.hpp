@@ -124,6 +124,7 @@ private:
 
     std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
     ofFbo graphicsForShapeDisplay;
+    std::atomic<bool> shapeDisplayGraphicsReady = false;
     ofPixels colorPixels;
     //ofPixels depthPixels;
     

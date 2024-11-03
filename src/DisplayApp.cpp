@@ -13,6 +13,9 @@ void DisplayApp::draw(){
     ofBackground(0,0,0);
     ofSetColor(255);
 
+    //mainApp->graphicsForShapeDisplay.draw(0, 0, width, height);
+    mainApp->currentApplication->drawGraphicsForShapeDisplay(0, 0, width, height);
+    mainApp->shapeDisplayGraphicsReady = false;
 }
 
 void DisplayApp::exit() {
@@ -62,7 +65,8 @@ void DisplayApp::mouseExited(int x, int y){
 
 //--------------------------------------------------------------
 void DisplayApp::windowResized(int w, int h){
-
+    width = w;
+    height = h;
 }
 
 //--------------------------------------------------------------

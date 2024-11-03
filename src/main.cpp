@@ -26,7 +26,7 @@ int main( ){
     
     // seperate applications to make ofxGui happy
     auto manager = make_shared<AppManager>();
-    auto displayApp = make_shared<DisplayApp>();
+    auto displayApp = make_shared<DisplayApp>(600, 600);
 
     // let the two windows see each other
     displayApp->mainApp = manager;

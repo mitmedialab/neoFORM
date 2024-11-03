@@ -172,6 +172,7 @@ void AppManager::update(){
     ofBackground(0);
     ofSetColor(255);
     currentApplication->drawGraphicsForShapeDisplay(0, 0, 600, 800);
+    shapeDisplayGraphicsReady = true;
     graphicsForShapeDisplay.end();
     
     m_serialShapeIOManager->sendHeightsToShapeDisplay(heightsForShapeDisplay);
