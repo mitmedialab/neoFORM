@@ -4,7 +4,7 @@
 #include "AppManager.hpp"
 #include "ofxGui.h"
 
-class SettingsApp : public ofBaseApp{
+class DisplayApp : public ofBaseApp{
 public:
 		void setup();
 		void update();
@@ -29,8 +29,4 @@ public:
     // lets main window access settings window stuff
     friend AppManager;
 protected:
-    // new gui
-    ofxGuiGroup gui;
-    vector<ofxButton> modeButtons;
-    vector<string> modeNames;
 };

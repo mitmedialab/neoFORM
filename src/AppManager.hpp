@@ -67,11 +67,16 @@ public:
     void mouseEntered(int x, int y);
     void mouseExited(int x, int y);
     
-    shared_ptr<ofAppBaseWindow> settingsWindow;
+    shared_ptr<ofAppBaseWindow> displayWindow;
 
     // lets settings window access main window stuff
-    friend class SettingsApp;
+    friend class DisplayApp;
 private:
+    // new gui
+    ofxGuiGroup gui;
+    vector<ofxButton> modeButtons;
+    vector<string> modeNames;
+
     void setupShapeDisplayManagement();
     void updateDepthInputBoundaries();
     void setCurrentApplication(string appName);

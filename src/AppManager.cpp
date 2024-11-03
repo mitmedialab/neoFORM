@@ -36,7 +36,7 @@ void AppManager::setup(){
     applications["mqttTransmission"] = mqttApp;
 
     singlePinDebug = new SinglePinDebug(m_serialShapeIOManager,
-                                        1, 356, 605, 605);
+                                        401, 356, 605, 605);
     applications["singlePinDebug"] = singlePinDebug;
     
     videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
@@ -57,6 +57,32 @@ void AppManager::setup(){
     
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
     applications["kinectHandWavy"] = kinectHandWavy;
+
+    // innitialize GUI
+    gui.setup("modes:");
+    gui.setPosition(5, 35);
+
+    // IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
+    // of modeButtons will invalidate all existing pointers stored in gui.
+    // DO NOT .push_back MORE THAN applications.size()!!!!
+    modeButtons.reserve(applications.size());
+    for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
+        Application *app = iter->second;
+        
+        modeButtons.push_back(ofxButton());
+        modeNames.push_back(iter->first);
+        auto p_button = modeButtons.back().setup(app->getName());
+        gui.add(p_button);
+
+        /* This is deprecated and should be removed */
+        /* The apps have their own reference to the shape IO manager and can get the heights from the boards themselves, they don't need the app manager to do it for them. */
+        // shape display heights, if they are accessible
+        //if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
+        //    app->setHeightsFromShapeDisplayRef(&heightPixelsFromShapeDisplay);
+        //}
+        /* End deprecated */
+        
+    }
 
     
     // set default application
@@ -153,6 +179,13 @@ void AppManager::update(){
         m_serialShapeIOManager->setPinConfigs(pinConfigsForShapeDisplay);
         timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
     }
+
+    //set the application based on the GUI mode buttons
+    int i = 0;
+    for (string name : modeNames) {
+        if (modeButtons[i] && applications[name] != currentApplication) setCurrentApplication(name);
+        i++;
+    }
 }
 
 // Takes a 2D vector of heights and converts it to an ofPixels object
@@ -179,13 +212,38 @@ ofPixels AppManager::convertHeightsToPixels(const std::vector<std::vector<unsign
 void AppManager::draw(){
     ofBackground(0,0,0);
     ofSetColor(255);
+
+    // draw text
+    int menuLeftCoordinate = 21;
+    int menuHeight = 350;
+    string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
+    ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
+    menuHeight += 30;
+    ofDrawBitmapString((string) "  '?' : " + (showGlobalGuiInstructions ? "hide" : "show") + " instructions", menuLeftCoordinate, menuHeight);
+    if (showGlobalGuiInstructions) {
+        menuHeight += 20;
+        ofDrawBitmapString((string) "  '1' - '9' : select application", menuLeftCoordinate, menuHeight);
+        menuHeight += 20;
+        ofDrawBitmapString((string) "  '.' : turn debug gui " + (showDebugGui ? "off" : "on"), menuLeftCoordinate, menuHeight);
+        menuHeight += 20;
+        ofDrawBitmapString((string) "  ' ' : " + (paused ? "play" : "pause"), menuLeftCoordinate, menuHeight);
+    }
+    menuHeight += 30;
+
+    // if there isn't already a debug gui, draw some more information
+    if (!showDebugGui || currentApplication == applications["water"] || currentApplication == applications["stretchy"]) {
+        ofDrawBitmapString(currentApplication->appInstructionsText(), menuLeftCoordinate, menuHeight);
+        menuHeight += 20;
+    }
+
+    gui.draw();
     
     // draw shape and color I/O images
 
     /* Draw the height data being returned for the pin heights by the arduinos */
-    ofDrawRectangle(0, 50, 302, 302);
+    ofDrawRectangle(400, 50, 302, 302);
     if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
-        ofDrawBitmapString("Current Physical Heights", 0, 40);
+        ofDrawBitmapString("Current Physical Heights", 400, 40);
         // Make a reference to the heights from the boards, this is memory safe because it doesn't copy the data.
         const auto& heightsFromBoards = m_serialShapeIOManager->getHeightsFromShapeDisplay();
         
@@ -193,25 +251,25 @@ void AppManager::draw(){
         ofPixels pixelsFromBoards = convertHeightsToPixels(heightsFromBoards);
         ofImage imageFromBoards = ofImage(pixelsFromBoards);
         setImageNotBlurry(imageFromBoards);
-        imageFromBoards.draw(1, 51, 300, 300);
+        imageFromBoards.draw(401, 51, 300, 300);
     }
     
-    ofDrawRectangle(305, 50, 302, 302);
-    ofDrawBitmapString("Heights Being Sent", 300, 40);
+    ofDrawRectangle(705, 50, 302, 302);
+    ofDrawBitmapString("Heights Being Sent", 700, 40);
     ofImage heightImageForShapeDisplay = ofImage(heightPixelsForShapeDisplay);
     setImageNotBlurry(heightImageForShapeDisplay);
-    heightImageForShapeDisplay.draw(306, 51, 300, 300);
+    heightImageForShapeDisplay.draw(706, 51, 300, 300);
     
     // display grid position of mouse in pin height input/output
-    auto mouseGridPos = getMouseCoordinateInGrid(0, 50, 302, 302, m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY);
-    if (!mouseGridPos.has_value()) mouseGridPos = getMouseCoordinateInGrid(305, 50, 302, 302, m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY);
+    auto mouseGridPos = getMouseCoordinateInGrid(400, 50, 302, 302, m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY);
+    if (!mouseGridPos.has_value()) mouseGridPos = getMouseCoordinateInGrid(705, 50, 302, 302, m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY);
     if (mouseGridPos.has_value()) {
         auto pos = mouseGridPos.value();
         ofDrawBitmapString("Pixel Row: " + to_string(pos.second) + "   Pixel Column: " + to_string(pos.first), 20, 20);
     }
 
-    ofDrawRectangle(0, 355, 607, 607);
-    graphicsForShapeDisplay.draw(1, 356, 605, 605);
+    ofDrawRectangle(400, 355, 607, 607);
+    graphicsForShapeDisplay.draw(401, 356, 605, 605);
     
     //ofDrawRectangle(913, 1, 302, 302);
     //ofImage colorImage = ofImage(colorPixels);
@@ -220,7 +278,7 @@ void AppManager::draw(){
 
     // draw this app's debugging gui, if selected
     if (showDebugGui) {
-        currentApplication->drawDebugGui(1, 305);
+        currentApplication->drawDebugGui(401, 305);
     }
 
 }
@@ -246,8 +304,8 @@ void AppManager::updateDepthInputBoundaries() {
 void AppManager::exit() {
     // make other windows shut down
 
-    if (settingsWindow != nullptr) {
-        settingsWindow->setWindowShouldClose();
+    if (displayWindow != nullptr) {
+        displayWindow->setWindowShouldClose();
     }
 
     // delete m_serialShapeIOManager to shut down the shape display

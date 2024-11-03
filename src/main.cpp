@@ -1,4 +1,4 @@
-#include "SettingsApp.hpp"
+#include "DisplayApp.hpp"
 #include "ofMain.h"
 #include "ofApp.h"
 #include "AppManager.hpp"
@@ -8,32 +8,32 @@
 int main( ){
     // create main window with specific location
 	  ofGLFWWindowSettings settings;
-	  settings.setSize(610, 1060);
-	  settings.setPosition(glm::vec2(400,0));
+	  settings.setSize(1010, 1060);
+	  settings.setPosition(glm::vec2(0,0));
 	  settings.resizable = true;
     settings.title = "main";
     auto mainWindow = ofCreateWindow(settings);
 
-    // create settings window
-	  settings.setSize(400, 600);
-	  settings.setPosition(glm::vec2(0,0));
+    // create display window
+	  settings.setSize(600, 600);
+	  settings.setPosition(glm::vec2(1020,0));
 	  settings.resizable = true;
-    settings.title = "settings";
+    settings.title = "display";
 	  // uncomment next line to share main's OpenGL resources with gui
 	  //settings.shareContextWith = mainWindow;
-	  auto settingsWindow = ofCreateWindow(settings);
+	  auto displayWindow = ofCreateWindow(settings);
 	  //settingsWindow->setVerticalSync(false);
     
     // seperate applications to make ofxGui happy
     auto manager = make_shared<AppManager>();
-    auto settingsApp = make_shared<SettingsApp>();
+    auto displayApp = make_shared<DisplayApp>();
 
     // let the two windows see each other
-    settingsApp->mainApp = manager;
-    manager->settingsWindow = settingsWindow;
+    displayApp->mainApp = manager;
+    manager->displayWindow = displayWindow;
 
     ofRunApp(mainWindow, manager);
-    ofRunApp(settingsWindow, settingsApp);
+    ofRunApp(displayWindow, displayApp);
 	  ofRunMainLoop();
 
 }

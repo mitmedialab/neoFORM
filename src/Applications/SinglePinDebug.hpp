@@ -18,7 +18,7 @@ public:
     void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     
-    string appInstructionsText() {return "Hover over application window to raise pin under cursor";}
+    string appInstructionsText() {return "Hover over application window\nto raise pin under cursor";}
     string getName() {return "Single Pin Debug";}
 
     int graphicsX;
