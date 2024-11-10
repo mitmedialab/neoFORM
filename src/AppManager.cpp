@@ -10,6 +10,7 @@
 #include "ofEvents.h"
 #include "ofGraphics.h"
 #include "utils.hpp"
+#include <iterator>
 
 void AppManager::setup(){
     
@@ -321,7 +322,7 @@ void AppManager::keyPressed(int key) {
     // keys used by app manager must be registered as reserved keys
     const int reservedKeysLength = 13;
     const int reservedKeys[reservedKeysLength] = {
-        '/', '?', '.', ' ', '1', '2', '3', '4',  '6', '7', '8', '9'
+        '/', '?', '.', ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9'
     };
     const int *reservedKeysEnd = reservedKeys + reservedKeysLength;
 
@@ -333,7 +334,20 @@ void AppManager::keyPressed(int key) {
             showDebugGui = !showDebugGui;
         } else if (key == ' ') {
             paused = !paused;
-        } /*else if (key == '1') {
+        } else if (key > '0' && key <= '9' && (key - '0') < applications.size()) {
+            int num = key - '0';
+            for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
+                // skip over empty entries created by checks
+                if (iter->second == nullptr) continue;
+                num--;
+                // num == 0 when iter gets to the Nth app
+                if (num == 0) {
+                    setCurrentApplication(iter->first);
+                    break;
+                }
+            }
+        }
+        /*else if (key == '1') {
             setCurrentApplication("mqttTransmission");
         } else if (key == '2') {
             setCurrentApplication("axisChecker");
