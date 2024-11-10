@@ -1,3 +1,4 @@
+#include "ProjectorApp.hpp"
 #include "DisplayApp.hpp"
 #include "ofMain.h"
 #include "ofApp.h"
@@ -24,16 +25,27 @@ int main( ){
 	  auto displayWindow = ofCreateWindow(settings);
 	  //settingsWindow->setVerticalSync(false);
     
-    // seperate applications to make ofxGui happy
+    // create display window
+	  settings.setSize(600, 600);
+	  settings.setPosition(glm::vec2(1020,600));
+	  settings.resizable = true;
+    settings.title = "projector";
+	  auto projectorWindow = ofCreateWindow(settings);
+    
+    // seperate applications (needed for some openframeworks stuff)
     auto manager = make_shared<AppManager>();
     auto displayApp = make_shared<DisplayApp>(600, 600);
+    auto projectorApp = make_shared<ProjectorApp>(600, 600);
 
-    // let the two windows see each other
+    // let the windows see each other
     displayApp->mainApp = manager;
     manager->displayWindow = displayWindow;
+    projectorApp->mainApp = manager;
+    manager->projectorWindow = projectorWindow;
 
     ofRunApp(mainWindow, manager);
     ofRunApp(displayWindow, displayApp);
+    ofRunApp(projectorWindow, projectorApp);
 	  ofRunMainLoop();
 
 }

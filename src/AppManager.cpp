@@ -308,6 +308,9 @@ void AppManager::exit() {
     if (displayWindow != nullptr) {
         displayWindow->setWindowShouldClose();
     }
+    if (projectorWindow != nullptr) {
+        projectorWindow->setWindowShouldClose();
+    }
 
     // delete m_serialShapeIOManager to shut down the shape display
     delete m_serialShapeIOManager;

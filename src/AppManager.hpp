@@ -68,9 +68,11 @@ public:
     void mouseExited(int x, int y);
     
     shared_ptr<ofAppBaseWindow> displayWindow;
+    shared_ptr<ofAppBaseWindow> projectorWindow;
 
     // lets settings window access main window stuff
     friend class DisplayApp;
+    friend class ProjectorApp;
 private:
     // new gui
     ofxGuiGroup gui;
