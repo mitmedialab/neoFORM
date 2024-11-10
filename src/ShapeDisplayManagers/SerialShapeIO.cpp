@@ -84,7 +84,7 @@ void SerialShapeIO::threadedFunction() {
             // and according to http://stackoverflow.com/questions/14340485/getting-stuck-in-usleep1
             // usleep is deprecated
             // so instead use nanosleep
-            timespec twentieth_of_second[] = {{0, 50'000'000}};
+            timespec twentieth_of_second[] = {{0, 50000000}};
             nanosleep(twentieth_of_second, NULL);
         }
         
