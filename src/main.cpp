@@ -12,14 +12,14 @@ int main( ){
 	  settings.setSize(1010, 1060);
 	  settings.setPosition(glm::vec2(0,0));
 	  settings.resizable = true;
-    settings.title = "main";
+    settings.title = "control window";
     auto mainWindow = ofCreateWindow(settings);
 
     // create display window
 	  settings.setSize(600, 600);
 	  settings.setPosition(glm::vec2(1020,0));
 	  settings.resizable = true;
-    settings.title = "display";
+    settings.title = "public display window";
 	  // uncomment next line to share main's OpenGL resources with gui
 	  //settings.shareContextWith = mainWindow;
 	  auto displayWindow = ofCreateWindow(settings);
@@ -29,7 +29,7 @@ int main( ){
 	  settings.setSize(600, 600);
 	  settings.setPosition(glm::vec2(1020,600));
 	  settings.resizable = true;
-    settings.title = "projector";
+    settings.title = "projector window";
 	  auto projectorWindow = ofCreateWindow(settings);
     
     // seperate applications (needed for some openframeworks stuff)
