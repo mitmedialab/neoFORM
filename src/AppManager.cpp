@@ -363,46 +363,6 @@ void AppManager::keyPressed(int key) {
     }
 }
 
-//void AppManager::setupSettingsWindow() {
-//};
-
-//void AppManager::drawSettingsWindow(ofEventArgs & args) {
-//    ofBackground(0,0,0);
-//    ofSetColor(255);
-//
-//    // draw text
-//    int menuLeftCoordinate = 21;
-//    int menuHeight = 350;
-//    string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
-//    ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
-//    menuHeight += 30;
-//    ofDrawBitmapString((string) "  '?' : " + (showGlobalGuiInstructions ? "hide" : "show") + " instructions", menuLeftCoordinate, menuHeight);
-//    if (showGlobalGuiInstructions) {
-//        menuHeight += 20;
-//        ofDrawBitmapString((string) "  '1' - '9' : select application", menuLeftCoordinate, menuHeight);
-//        menuHeight += 20;
-//        ofDrawBitmapString((string) "  '.' : turn debug gui " + (showDebugGui ? "off" : "on"), menuLeftCoordinate, menuHeight);
-//        menuHeight += 20;
-//        ofDrawBitmapString((string) "  ' ' : " + (paused ? "play" : "pause"), menuLeftCoordinate, menuHeight);
-//    }
-//    menuHeight += 30;
-//
-//    // if there isn't already a debug gui, draw some more information
-//    if (!showDebugGui || currentApplication == applications["water"] || currentApplication == applications["stretchy"]) {
-//        // Removed as depthPixels is never written to
-//        
-//        //ofDrawRectangle(913, 305, 302, 302);
-//        //ofImage depthImage = ofImage(depthPixels);
-//        //setImageNotBlurry(depthImage);
-//        //depthImage.draw(914, 306, 300, 300);
-//
-//        ofDrawBitmapString(currentApplication->appInstructionsText(), menuLeftCoordinate, menuHeight);
-//        menuHeight += 20;
-//    }
-//
-//    gui.draw();
-//};
-
 void AppManager::keyReleased(int key) {};
 void AppManager::mouseMoved(int x, int y) {};
 void AppManager::mouseDragged(int x, int y, int button) {};
