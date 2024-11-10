@@ -17,8 +17,8 @@ void SinglePinDebug::update(float dt) {
     int sizeY = m_CustomShapeDisplayManager->shapeDisplaySizeY;
     auto mouseGridPos = getMouseCoordinateInGrid(graphicsX, graphicsY, graphicsWidth, graphicsHeight, sizeX, sizeY);
 
-    if (mouseGridPos.has_value()) {
-        auto pos = mouseGridPos.value();
+    if (mouseGridPos.exists) {
+        auto pos = mouseGridPos.coordinate;
         int xy = heightsForShapeDisplay.getPixelIndex(pos.first, pos.second);
         heightsForShapeDisplay[xy] = 255;
     }

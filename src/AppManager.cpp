@@ -263,9 +263,9 @@ void AppManager::draw(){
     
     // display grid position of mouse in pin height input/output
     auto mouseGridPos = getMouseCoordinateInGrid(400, 50, 302, 302, m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY);
-    if (!mouseGridPos.has_value()) mouseGridPos = getMouseCoordinateInGrid(705, 50, 302, 302, m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY);
-    if (mouseGridPos.has_value()) {
-        auto pos = mouseGridPos.value();
+    if (!mouseGridPos.exists) mouseGridPos = getMouseCoordinateInGrid(705, 50, 302, 302, m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY);
+    if (mouseGridPos.exists) {
+        auto pos = mouseGridPos.coordinate;
         ofDrawBitmapString("Pixel Row: " + to_string(pos.second) + "   Pixel Column: " + to_string(pos.first), 20, 20);
     }
 
