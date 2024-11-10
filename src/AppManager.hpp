@@ -48,10 +48,8 @@ class AppManager : public ofBaseApp {
     
 public:
     void setup();
-    //void setupSettingsWindow();
     void update();
     void draw();
-    //void drawSettingsWindow(ofEventArgs & args);
     void exit();
     
     void keyPressed(int key);
