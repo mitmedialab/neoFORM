@@ -13,9 +13,7 @@ void DisplayApp::draw(){
     ofBackground(0,0,0);
     ofSetColor(255);
 
-    //mainApp->graphicsForShapeDisplay.draw(0, 0, width, height);
-    mainApp->currentApplication->drawGraphicsForShapeDisplay(0, 0, width, height);
-    mainApp->shapeDisplayGraphicsReady = false;
+    mainApp->currentApplication->drawGraphicsForPublicDisplay(0, 0, width, height);
 }
 
 void DisplayApp::exit() {
