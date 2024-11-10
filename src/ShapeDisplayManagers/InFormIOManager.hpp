@@ -26,6 +26,11 @@ public:
         // This is a method instead of a property only to simplify the inheritance by making the superclass declaration virtual.
         return "inFORM";
     }
+
+    // specify pins to disable here, in (x, y)
+    vector<PinLocation> getDisabledPins() {
+        return {};
+    }
     
     // should pins that appear stuck be turned off at regular intervals?
     bool enableStuckPinSafetyToggle = false;
