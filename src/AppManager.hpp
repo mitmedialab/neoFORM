@@ -13,7 +13,9 @@
 // basics
 #include "ofMain.h"
 #include "constants.h"
+#include "ofParameter.h"
 #include "utils.hpp"
+#include "ofxGui.h"
 
 // shape display managers
 #include "PinConfigs.h"
@@ -28,7 +30,7 @@
 
 // debugging applications
 #include "AxisCheckerApp.hpp"
-
+#include "SinglePinDebug.hpp"
 #include "KinectDebugApp.hpp"
 
 // mqtt application
@@ -63,11 +65,21 @@ public:
     void mouseEntered(int x, int y);
     void mouseExited(int x, int y);
     
-private:
-    void setupShapeDisplayManagement();
-    void setCurrentApplication(string appName);
-    void updateDepthInputBoundaries();
+    shared_ptr<ofAppBaseWindow> displayWindow;
+    shared_ptr<ofAppBaseWindow> projectorWindow;
 
+    // lets settings window access main window stuff
+    friend class DisplayApp;
+    friend class ProjectorApp;
+private:
+    // new gui
+    ofxGuiGroup gui;
+    vector<ofxButton> modeButtons;
+    vector<string> modeNames;
+
+    void setupShapeDisplayManagement();
+    void updateDepthInputBoundaries();
+    void setCurrentApplication(string appName);
     // interfaces to the peripherals
     SerialShapeIOManager *m_serialShapeIOManager;
     
@@ -80,7 +92,8 @@ private:
     
     // debugging applications
     AxisCheckerApp *axisCheckerApp;
-    KinectDebugApp *kinectDebugApp;
+    SinglePinDebug *singlePinDebug;
+    //KinectDebugApp *kinectDebugApp;
     DepthDebugApp *depthDebugApp;
     
     // mqtt application
@@ -112,7 +125,7 @@ private:
     std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
     ofFbo graphicsForShapeDisplay;
     ofPixels colorPixels;
-    ofPixels depthPixels;
+    //ofPixels depthPixels;
     
     ofPixels convertHeightsToPixels(const std::vector<std::vector<unsigned char>>& heights);
 };

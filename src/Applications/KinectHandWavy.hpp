@@ -19,6 +19,8 @@ public:
     
     KinectHandWavy(KinectManager* kinectManager);
     KinectHandWavy(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager);
+
+    string getName() {return "Kinect Hand-Wavy";}
     
     void setup();
     void update(float dt);

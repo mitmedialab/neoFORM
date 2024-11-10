@@ -6,6 +6,11 @@
 //
 
 #include "AppManager.hpp"
+#include "SinglePinDebug.hpp"
+#include "ofEvents.h"
+#include "ofGraphics.h"
+#include "utils.hpp"
+#include <iterator>
 
 void AppManager::setup(){
     
@@ -16,7 +21,7 @@ void AppManager::setup(){
     
     // initialize shape display and set up helper objects
     setupShapeDisplayManagement();
-    
+
     // setup external devices (e.g., kinect)
     //kinectManager = new KinectManager();
     // Depth thresholds for the kinect are set here.
@@ -30,6 +35,10 @@ void AppManager::setup(){
     // set up applications
     mqttApp = new MqttTransmissionApp(m_serialShapeIOManager);
     applications["mqttTransmission"] = mqttApp;
+
+    singlePinDebug = new SinglePinDebug(m_serialShapeIOManager,
+                                        401, 356, 605, 605);
+    applications["singlePinDebug"] = singlePinDebug;
     
     videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
     applications["videoPlayer"] = videoPlayerApp;
@@ -49,10 +58,22 @@ void AppManager::setup(){
     
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
     applications["kinectHandWavy"] = kinectHandWavy;
-    
-    // give applications read access to input data
+
+    // innitialize GUI
+    gui.setup("modes:");
+    gui.setPosition(5, 35);
+
+    // IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
+    // of modeButtons will invalidate all existing pointers stored in gui.
+    // DO NOT .push_back MORE THAN applications.size()!!!!
+    modeButtons.reserve(applications.size());
     for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
         Application *app = iter->second;
+        
+        modeButtons.push_back(ofxButton());
+        modeNames.push_back(iter->first);
+        auto p_button = modeButtons.back().setup(app->getName());
+        gui.add(p_button);
 
         /* This is deprecated and should be removed */
         /* The apps have their own reference to the shape IO manager and can get the heights from the boards themselves, they don't need the app manager to do it for them. */
@@ -63,6 +84,7 @@ void AppManager::setup(){
         /* End deprecated */
         
     }
+
     
     // set default application
     setCurrentApplication("mqttTransmission");
@@ -124,7 +146,7 @@ void AppManager::update(){
     timeOfLastUpdate = currentTime;
 
     // copy heights and pin configs from application
-    bool pinConfigsAreStale;
+    bool pinConfigsAreStale = false;
     if (!paused) {
         currentApplication->update(dt);
         currentApplication->getHeightsForShapeDisplay(heightPixelsForShapeDisplay);
@@ -158,6 +180,13 @@ void AppManager::update(){
         m_serialShapeIOManager->setPinConfigs(pinConfigsForShapeDisplay);
         timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
     }
+
+    //set the application based on the GUI mode buttons
+    int i = 0;
+    for (string name : modeNames) {
+        if (modeButtons[i] && applications[name] != currentApplication) setCurrentApplication(name);
+        i++;
+    }
 }
 
 // Takes a 2D vector of heights and converts it to an ofPixels object
@@ -184,33 +213,6 @@ ofPixels AppManager::convertHeightsToPixels(const std::vector<std::vector<unsign
 void AppManager::draw(){
     ofBackground(0,0,0);
     ofSetColor(255);
-    
-    // draw shape and color I/O images
-
-    /* Draw the height data being returned for the pin heights by the arduinos */
-    ofDrawRectangle(1, 1, 302, 302);
-    if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
-        // Make a reference to the heights from the boards, this is memory safe because it doesn't copy the data.
-        const auto& heightsFromBoards = m_serialShapeIOManager->getHeightsFromShapeDisplay();
-        
-        // Convert the heights to pixels and draw them with an ofImage
-        ofPixels pixelsFromBoards = convertHeightsToPixels(heightsFromBoards);
-        ofImage(pixelsFromBoards).draw(2, 2, 300, 300);
-    }
-    
-    ofDrawRectangle(305, 1, 302, 302);
-    ofImage(heightPixelsForShapeDisplay).draw(306, 2, 300, 300);
-    
-    ofDrawRectangle(609, 1, 302, 302);
-    graphicsForShapeDisplay.draw(610, 2, 300, 300);
-    
-    ofRect(913, 1, 302, 302);
-    ofImage(colorPixels).draw(914, 2, 300, 300);
-
-    // draw this app's debugging gui, if selected
-    if (showDebugGui) {
-        currentApplication->drawDebugGui(1, 305);
-    }
 
     // draw text
     int menuLeftCoordinate = 21;
@@ -231,13 +233,55 @@ void AppManager::draw(){
 
     // if there isn't already a debug gui, draw some more information
     if (!showDebugGui || currentApplication == applications["water"] || currentApplication == applications["stretchy"]) {
-        ofRect(913, 305, 302, 302);
-        ofImage(depthPixels).draw(914, 306, 300, 300);
-
         ofDrawBitmapString(currentApplication->appInstructionsText(), menuLeftCoordinate, menuHeight);
         menuHeight += 20;
     }
+
+    gui.draw();
     
+    // draw shape and color I/O images
+
+    /* Draw the height data being returned for the pin heights by the arduinos */
+    ofDrawRectangle(400, 50, 302, 302);
+    if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
+        ofDrawBitmapString("Current Physical Heights", 400, 40);
+        // Make a reference to the heights from the boards, this is memory safe because it doesn't copy the data.
+        const auto& heightsFromBoards = m_serialShapeIOManager->getHeightsFromShapeDisplay();
+        
+        // Convert the heights to pixels and draw them with an ofImage
+        ofPixels pixelsFromBoards = convertHeightsToPixels(heightsFromBoards);
+        ofImage imageFromBoards = ofImage(pixelsFromBoards);
+        setImageNotBlurry(imageFromBoards);
+        imageFromBoards.draw(401, 51, 300, 300);
+    }
+    
+    ofDrawRectangle(705, 50, 302, 302);
+    ofDrawBitmapString("Heights Being Sent", 700, 40);
+    ofImage heightImageForShapeDisplay = ofImage(heightPixelsForShapeDisplay);
+    setImageNotBlurry(heightImageForShapeDisplay);
+    heightImageForShapeDisplay.draw(706, 51, 300, 300);
+    
+    // display grid position of mouse in pin height input/output
+    auto mouseGridPos = getMouseCoordinateInGrid(400, 50, 302, 302, m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY);
+    if (!mouseGridPos.has_value()) mouseGridPos = getMouseCoordinateInGrid(705, 50, 302, 302, m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY);
+    if (mouseGridPos.has_value()) {
+        auto pos = mouseGridPos.value();
+        ofDrawBitmapString("Pixel Row: " + to_string(pos.second) + "   Pixel Column: " + to_string(pos.first), 20, 20);
+    }
+
+    ofDrawRectangle(400, 355, 607, 607);
+    graphicsForShapeDisplay.draw(401, 356, 605, 605);
+    
+    //ofDrawRectangle(913, 1, 302, 302);
+    //ofImage colorImage = ofImage(colorPixels);
+    //setImageNotBlurry(colorImage);
+    //colorImage.draw(914, 2, 300, 300);
+
+    // draw this app's debugging gui, if selected
+    if (showDebugGui) {
+        currentApplication->drawDebugGui(401, 305);
+    }
+
 }
 
 
@@ -259,6 +303,15 @@ void AppManager::updateDepthInputBoundaries() {
 }
 
 void AppManager::exit() {
+    // make other windows shut down
+
+    if (displayWindow != nullptr) {
+        displayWindow->setWindowShouldClose();
+    }
+    if (projectorWindow != nullptr) {
+        projectorWindow->setWindowShouldClose();
+    }
+
     // delete m_serialShapeIOManager to shut down the shape display
     delete m_serialShapeIOManager;
 }
@@ -281,17 +334,28 @@ void AppManager::keyPressed(int key) {
             showDebugGui = !showDebugGui;
         } else if (key == ' ') {
             paused = !paused;
-        } else if (key == '1') {
+        } else if (key > '0' && key <= '9' && (key - '0') < applications.size()) {
+            int num = key - '0';
+            for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
+                // skip over empty entries created by checks
+                if (iter->second == nullptr) continue;
+                num--;
+                // num == 0 when iter gets to the Nth app
+                if (num == 0) {
+                    setCurrentApplication(iter->first);
+                    break;
+                }
+            }
+        }
+        /*else if (key == '1') {
             setCurrentApplication("mqttTransmission");
         } else if (key == '2') {
             setCurrentApplication("axisChecker");
         } else if (key == '3') {
             setCurrentApplication("videoPlayer");
         } else if (key == '4') {
-            setCurrentApplication("kinectDebug");
-        } else if (key == '5') {
             setCurrentApplication("kinectHandWavy");
-        }
+        }*/
 
     // forward unreserved keys to the application
     } else {

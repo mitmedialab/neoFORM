@@ -34,6 +34,8 @@ public:
 
     virtual void update(float dt) {};
     virtual void drawGraphicsForShapeDisplay(int x, int y, int width, int height) {};
+    virtual void drawGraphicsForPublicDisplay(int x, int y, int width, int height) {};
+    virtual void drawGraphicsForProjector(int x, int y, int width, int height) {};
     virtual string appInstructionsText() {return "";};
     virtual void drawDebugGui(int x, int y) {};
     virtual void keyPressed(int key) {};
