@@ -45,6 +45,10 @@ public:
         return heightsFromShapeDisplay;
     }
     
+    const std::vector<std::vector<unsigned char>>& getHeightsForShapeDisplay() const {
+        return heightsForShapeDisplay;
+    }
+    
     void clearShapeDisplayHeights(int value=0);
 
     // setters for pin config values
@@ -81,6 +85,10 @@ public:
     
     int numberOfArduinos;
     
+    
+    // shape display height values (both intended and actual values)
+    std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
+    std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
 
 protected:
     // manage the connection to the shape display
@@ -123,10 +131,6 @@ protected:
     std::vector<std::unique_ptr<SerialShapeIO>> serialConnections;
 
     std::vector<SerialPinBoard> pinBoards;
-
-    // shape display height values (both intended and actual values)
-    std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
-    std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
 
     // pin behavior configurations
     std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
