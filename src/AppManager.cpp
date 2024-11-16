@@ -168,30 +168,30 @@ void AppManager::update() {
 		if (pinConfigsAreStale) {
 			currentApplication->getPinConfigsForShapeDisplay(pinConfigsForShapeDisplay);
 		}
-}
-
-// Render the shape preview from the app into the graphicsForShapeDisplay
-// frame buffer.
-
-graphicsForShapeDisplay.begin();
-ofBackground(0);
-ofSetColor(255);
-currentApplication->drawGraphicsForShapeDisplay(0, 0, 600, 800);
-graphicsForShapeDisplay.end();
-
-m_serialShapeIOManager->sendHeightsToShapeDisplay(heightsForShapeDisplay);
-if (pinConfigsAreStale) {
-	m_serialShapeIOManager->setPinConfigs(pinConfigsForShapeDisplay);
-	timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
-}
-
-// set the application based on the GUI mode buttons
-int i = 0;
-for (string name : modeNames) {
-	if (modeButtons[i] && applications[name] != currentApplication)
-		setCurrentApplication(name);
-	i++;
-}
+	}
+	
+	// Render the shape preview from the app into the graphicsForShapeDisplay
+	// frame buffer.
+	
+	graphicsForShapeDisplay.begin();
+	ofBackground(0);
+	ofSetColor(255);
+	currentApplication->drawGraphicsForShapeDisplay(0, 0, 600, 800);
+	graphicsForShapeDisplay.end();
+	
+	m_serialShapeIOManager->sendHeightsToShapeDisplay(heightsForShapeDisplay);
+	if (pinConfigsAreStale) {
+		m_serialShapeIOManager->setPinConfigs(pinConfigsForShapeDisplay);
+		timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
+	}
+	
+	// set the application based on the GUI mode buttons
+	int i = 0;
+	for (string name : modeNames) {
+		if (modeButtons[i] && applications[name] != currentApplication)
+			setCurrentApplication(name);
+		i++;
+	}
 }
 
 // Takes a 2D vector of heights and converts it to an ofPixels object
