@@ -9,6 +9,7 @@
 #define EquationMode_hpp
 
 #include "Application.hpp"
+#include "ofColor.h"
 #include <stdio.h>
 
 class EquationMode : public Application {
@@ -30,6 +31,7 @@ public:
   void update(float dt);
   void updateHeights();
   void rotate(float theta);
+  void drawGraphicsForPublicDisplay(int x, int y, int width, int height);
 
   bool transitioning;
   bool firstFrame;
@@ -65,6 +67,15 @@ private:
   ofPixels m_EquationPixels;
   ofImage m_EquationImage;
   ofPixels ProjectorHeightMapPixels;
+
+  const ofColor graphLowColor = ofColor::darkBlue;
+  const ofColor graphHighColor = ofColor::orange;
+  // angles in degrees
+  float graphAngle = 0.0;
+  // in degrees/second
+  float graphRotationSpeed = 20.0;
+  const float graphHeight = 0.4;
+  ofMesh graph;
 };
 
 #endif /* EquationMode_hpp */

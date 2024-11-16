@@ -6,6 +6,7 @@
 //
 
 #include "EquationMode.hpp"
+#include "ofGraphicsConstants.h"
 
 #include <iostream>
 #include <cmath>
@@ -50,6 +51,32 @@ void EquationMode::setup(){
             heightsCopy[x][y] = 0;
         }
     }
+
+	// initiallize graph, associating each vertex with a color
+	// vertecies are between -1 and 1, scaled when drawing
+	float scale = 2.0 / std::max(cols - 1, rows - 1);
+	graph.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+	for (int x = 0; x < cols; x++) {
+		for (int y = 0; y < rows; y++) {
+			graph.addVertex(ofPoint(scale * (x - cols/2.0), scale * (y - rows/2.0), 0));
+			graph.addColor(graphLowColor);
+		}
+	}
+
+	// initiallize lines between vertecies
+	for (int x = 0; x < cols; x++) {
+		for (int y = 0; y < rows - 1; y++) {
+			graph.addIndex(x * rows + y);
+			graph.addIndex(x * rows + y + 1);
+		}
+	}
+
+	for (int y = 0; y < rows; y++) {
+		for (int x = 0; x < cols - 1; x++) {
+			graph.addIndex(y + x * rows);
+			graph.addIndex(y + (x+1) * rows);
+		}
+	}
 
     transitioning = false;
     firstFrame = true;
@@ -103,6 +130,7 @@ float EquationMode::equation6(float x, float y) {
 
 void EquationMode::update(float dt){
     timeControl++;
+	graphAngle += ofGetLastFrameTime() * graphRotationSpeed;
     if (transitioning || firstFrame) {
         updateHeights();
         firstFrame = false;
@@ -180,6 +208,13 @@ void EquationMode::updateHeights() {
             m_EquationPixels.setColor(i, j, ofColor(heights[i][j]));
         }
     }
+	
+    for (int x = 0; x < cols; x++) {
+        for (int y = 0; y < rows; y++) {
+			auto vert = graph.getVertex(x * rows + y);
+			graph.setVertex(x * rows + y, {vert.x, vert.y, graphHeight * heights[x][y] / 255.0});
+        }
+    }
     
     for (int x = 0; x < cols; x++) {
         for (int y = 0; y < rows; y++) {
@@ -211,6 +246,28 @@ void EquationMode::updateHeights() {
 //--------------------------------------------------------------------------
 // Everything for graphics and mapping heights to color depth map
 //--------------------------------------------------------------------------
+
+void EquationMode::drawGraphicsForPublicDisplay(int x, int y, int width, int height) {
+	float scale = std::min(width/2.0, height/2.0);
+	// ofPushMatrix prevents orientation functions from effecting anything outside this function
+	ofPushMatrix();
+
+	// NOTE: openFrameworks right-multiplies matrix transformations, 
+	// meaning you need to specify them in REVERSE ORDER
+	// (translate -> scale -> rotate)
+	//
+	// align to camera nicely
+	ofTranslate(x + width/2.0, y + height/2.0, -scale);
+	ofScale(scale);
+	ofRotateDeg(50, 1, 0, 0);
+
+	// rotate graph over time
+	ofRotateDeg(graphAngle, 0, 0, 1);
+
+
+	graph.draw();
+	ofPopMatrix();
+}
 
 std::tuple<int, int, int> EquationMode::heightPixelToMapColor(int Height) {
     std::tuple<int, int, int> heightColors[] = {
