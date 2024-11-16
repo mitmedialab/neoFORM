@@ -31,8 +31,10 @@ public:
   //...
   // void equationN();
 
+  static const int numEquations = 6;
+
   // allows easier use of equations
-  EquationPointer equations[7] = {
+  EquationPointer equations[numEquations] = {
 	  &EquationMode::equation1,
 	  &EquationMode::equation2,
 	  &EquationMode::equation3,
@@ -41,9 +43,6 @@ public:
 	  &EquationMode::equation6,
 	  //...
 	  // &EquationMode::equationN,
-
-	  // extra equation1 for smooth transitioning
-	  &EquationMode::equation1,
   };
 
   string getName() { return "Equation Mode"; }
@@ -79,7 +78,7 @@ public:
   float y_trans;
   int count;
 
-  int equationNum;
+  int equationIndex;
   float **heights;
   float **heightsCopy;
 

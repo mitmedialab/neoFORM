@@ -19,7 +19,7 @@ EquationMode::EquationMode(SerialShapeIOManager *theCustomShapeDisplayManager) :
 
 void EquationMode::setup(){
     
-    equationNum = 1;
+    equationIndex = 0;
     timeControl = 0;
     cols = (m_CustomShapeDisplayManager)->shapeDisplaySizeX;
     rows = (m_CustomShapeDisplayManager)->shapeDisplaySizeY;
@@ -140,7 +140,7 @@ float EquationMode::runCurrentEq(float x, float y) {
 		float value2 = (this->*equations[transitionEq2])(x, y);
 		return (1 - alpha) * value1 + alpha * value2;
 	} else {
-		return (this->*equations[equationNum])(x, y);
+		return (this->*equations[equationIndex])(x, y);
 	}
 }
 
@@ -154,9 +154,9 @@ void EquationMode::update(float dt){
         firstFrame = false;
     } else {
         if (timeControl % 150 == 0) {
-            int curr = equationNum;
-            equationNum = equationNum % 6 + 1;
-            startTransition(curr, equationNum);
+            int curr = equationIndex;
+            equationIndex = (equationIndex + 1) % numEquations;
+            startTransition(curr, equationIndex);
         }
     }
 }
@@ -169,7 +169,7 @@ void EquationMode::updateHeights() {
         if (transitionFrameCount >= numFrames) {
             transitioning = false;
             transitionFrameCount = 0;
-            equationNum = transitionEq2;
+            equationIndex = transitionEq2;
         }
     }
 
