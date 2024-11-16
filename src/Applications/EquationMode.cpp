@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <stdexcept>
 
 
 EquationMode::EquationMode(SerialShapeIOManager *theCustomShapeDisplayManager) : Application(theCustomShapeDisplayManager){
@@ -129,6 +130,12 @@ float EquationMode::equation6(float x, float y) {
 }
 
 float EquationMode::runCurrentEq(float x, float y) {
+	// safety check for future maintainers
+	if (transitionEq2 >= numEquations || transitionEq1 >= numEquations || equationIndex >= numEquations) {
+		cout << ("Equation Mode tried to segmentation fault!") << endl;
+		return 0.0;
+	}
+
 	if (transitioning) {
         float alpha = (float)transitionFrameCount / numFrames;
 

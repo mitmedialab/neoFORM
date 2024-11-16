@@ -33,7 +33,7 @@ public:
 
   static const int numEquations = 6;
 
-  // allows easier use of equations
+  // allows easier use of equations (yes the "EquationMode::" is necessary)
   EquationPointer equations[numEquations] = {
 	  &EquationMode::equation1,
 	  &EquationMode::equation2,
