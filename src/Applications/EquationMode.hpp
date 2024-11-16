@@ -88,6 +88,7 @@ private:
   ofImage m_EquationImage;
   ofPixels ProjectorHeightMapPixels;
 
+  const int graphDetailMultple = 2;
   // angles in degrees
   float graphAngle = 0.0;
   // in degrees/second

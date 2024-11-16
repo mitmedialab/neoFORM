@@ -56,11 +56,13 @@ void EquationMode::setup(){
 
 	// initiallize graph, associating each vertex with a color
 	// vertecies are between -1 and 1, scaled when drawing
-	float scale = 2.0 / std::max(cols - 1, rows - 1);
+	int graphCols = graphDetailMultple * cols;
+	int graphRows = graphDetailMultple * rows;
+	float scale = 2.0 / std::max(graphCols - 1, graphRows - 1);
 	graph.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
-	for (int x = 0; x < cols; x++) {
-		for (int y = 0; y < rows; y++) {
-			graph.addVertex(ofPoint(scale * (x - cols/2.0), scale * (y - rows/2.0), 0));
+	for (int x = 0; x < graphCols * graphDetailMultple; x++) {
+		for (int y = 0; y < graphRows; y++) {
+			graph.addVertex(ofPoint(scale * (x - graphCols/2.0), scale * (y - graphRows/2.0), 0));
 			float r, g, b;
 			std::tie(r, g, b) = heightPixelToMapColor(0);
 			graph.addColor({r, g, b});
@@ -68,17 +70,17 @@ void EquationMode::setup(){
 	}
 
 	// initiallize lines between vertecies
-	for (int x = 0; x < cols; x++) {
-		for (int y = 0; y < rows - 1; y++) {
-			graph.addIndex(x * rows + y);
-			graph.addIndex(x * rows + y + 1);
+	for (int x = 0; x < graphCols; x++) {
+		for (int y = 0; y < graphRows - 1; y++) {
+			graph.addIndex(x * graphRows + y);
+			graph.addIndex(x * graphRows + y + 1);
 		}
 	}
 
-	for (int y = 0; y < rows; y++) {
-		for (int x = 0; x < cols - 1; x++) {
-			graph.addIndex(y + x * rows);
-			graph.addIndex(y + (x+1) * rows);
+	for (int y = 0; y < graphRows; y++) {
+		for (int x = 0; x < graphCols - 1; x++) {
+			graph.addIndex(y + x * graphRows);
+			graph.addIndex(y + (x+1) * graphRows);
 		}
 	}
 
@@ -193,14 +195,17 @@ void EquationMode::updateHeights() {
         }
     }
 	
-    for (int x = 0; x < cols; x++) {
-        for (int y = 0; y < rows; y++) {
-			auto vert = graph.getVertex(x * rows + y);
-			graph.setVertex(x * rows + y, {vert.x, vert.y, graphHeight * heights[x][y] / 255.0});
+	int graphCols = graphDetailMultple * cols;
+	int graphRows = graphDetailMultple * rows;
+    for (int x = 0; x < graphCols; x++) {
+        for (int y = 0; y < graphRows; y++) {
+			float height = runCurrentEq(x / float(graphDetailMultple), y / float(graphDetailMultple));
+			auto vert = graph.getVertex(x * graphRows + y);
+			graph.setVertex(x * graphRows + y, {vert.x, vert.y, graphHeight * height / 255.0});
 
 			float r, g, b;
-			std::tie(r, g, b) = heightPixelToMapColor(heights[x][y]);
-			graph.setColor(x * rows + y, {r/255.0f, g/255.0f, b/255.0f});
+			std::tie(r, g, b) = heightPixelToMapColor(height);
+			graph.setColor(x * graphRows + y, {r/255.0f, g/255.0f, b/255.0f});
         }
     }
     
