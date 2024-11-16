@@ -17,6 +17,11 @@ public:
   EquationMode(SerialShapeIOManager *theCustomShapeDisplayManager);
 
   void setup();
+
+  // declares an alias of (the type of) member function pointers matching the equations
+  typedef float (EquationMode::*EquationPointer)(float, float);
+
+  float runCurrentEq(float x, float y);
   float equation1(float x, float y);
   float equation2(float x, float y);
   float equation3(float x, float y);
@@ -25,6 +30,21 @@ public:
   float equation6(float x, float y);
   //...
   // void equationN();
+
+  // allows easier use of equations
+  EquationPointer equations[7] = {
+	  &EquationMode::equation1,
+	  &EquationMode::equation2,
+	  &EquationMode::equation3,
+	  &EquationMode::equation4,
+	  &EquationMode::equation5,
+	  &EquationMode::equation6,
+	  //...
+	  // &EquationMode::equationN,
+
+	  // extra equation1 for smooth transitioning
+	  &EquationMode::equation1,
+  };
 
   string getName() { return "Equation Mode"; }
 

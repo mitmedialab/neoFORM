@@ -6,6 +6,7 @@
 //
 
 #include "EquationMode.hpp"
+#include "ofAppRunner.h"
 #include "ofGraphicsConstants.h"
 
 #include <iostream>
@@ -127,6 +128,21 @@ float EquationMode::equation6(float x, float y) {
     return 127.0 + 0.9 * 127.0 * std::sin(frequency * ((float)x + (float)y));
 }
 
+float EquationMode::runCurrentEq(float x, float y) {
+	if (transitioning) {
+        float alpha = (float)transitionFrameCount / numFrames;
+
+		// member function pointer syntax is kinda upgly
+		// refer to these stackoverflow posts for more info:
+		// https://stackoverflow.com/questions/1485983/how-can-i-create-a-pointer-to-a-member-function-and-call-it
+		// https://stackoverflow.com/questions/15035905/setting-a-pointer-to-a-non-static-member-function
+		float value1 = (this->*equations[transitionEq1])(x, y);
+		float value2 = (this->*equations[transitionEq2])(x, y);
+		return (1 - alpha) * value1 + alpha * value2;
+	} else {
+		return (this->*equations[equationNum])(x, y);
+	}
+}
 
 
 
@@ -147,63 +163,22 @@ void EquationMode::update(float dt){
 
 
 void EquationMode::updateHeights() {
+	
     if (transitioning) {
-        float alpha = (float)transitionFrameCount / numFrames;
-
-        for (int x = 0; x < cols; x++) {
-            for (int y = 0; y < rows; y++) {
-                float value1 = (transitionEq1 == 1) ? equation1(x, y) : (transitionEq1 == 2) ? equation2(x, y) : (transitionEq1 == 3) ? equation3(x, y) : (transitionEq1 == 4) ? equation4(x, y) : (transitionEq1 == 5) ? equation5(x, y) : equation6(x, y);
-                float value2 = (transitionEq2 == 1) ? equation1(x, y) : (transitionEq2 == 2) ? equation2(x, y) : (transitionEq2 == 3) ? equation3(x, y) : (transitionEq2 == 4) ? equation4(x, y) : (transitionEq2 == 5) ? equation5(x, y) : equation6(x, y);
-                heights[x][y] = (1 - alpha) * value1 + alpha * value2;
-            }
-        }
-
         transitionFrameCount++;
         if (transitionFrameCount >= numFrames) {
             transitioning = false;
             transitionFrameCount = 0;
             equationNum = transitionEq2;
-            updateHeights();
-        }
-    } else {
-        if (equationNum == 1) {
-            for (int x = 0; x < cols; x++) {
-                for (int y = 0; y < rows; y++) {
-                    heights[x][y] = equation1((float)x, (float)y);
-                }
-            }
-        } else if (equationNum == 2) {
-            for (int x = 0; x < cols; x++) {
-                for (int y = 0; y < rows; y++) {
-                    heights[x][y] = equation2(x, y);
-                }
-            }
-        } else if (equationNum == 3) {
-            for (int x = 0; x < cols; x++) {
-                for (int y = 0; y < rows; y++) {
-                    heights[x][y] = equation3((float)x, (float)y);
-                }
-            }
-        } else if (equationNum == 4) {
-            for (int x = 0; x < cols; x++) {
-                for (int y = 0; y < rows; y++) {
-                    heights[x][y] = equation4((float)x, (float)y);
-                }
-            }
-        } else if (equationNum == 5) {
-            for (int x = 0; x < cols; x++) {
-                for (int y = 0; y < rows; y++) {
-                    heights[x][y] = equation5((float)x, (float)y);
-                }
-            }
-        } else if (equationNum == 6) {
-            for (int x = 0; x < cols; x++) {
-                for (int y = 0; y < rows; y++) {
-                    heights[x][y] = equation6(x, y);
-                }
-            }
         }
     }
+
+	for (int x = 0; x < cols; x++) {
+		for (int y = 0; y < rows; y++) {
+			heights[x][y] = runCurrentEq(x, y);
+		}
+	}
+
 
     for (int i = 0; i < cols; i++) {
         for (int j = 0; j < rows; j++) {
@@ -234,17 +209,9 @@ void EquationMode::updateHeights() {
     for (int x = 0; x < cols*10; x++) {
         for (int y = 0; y < rows*10; y++) {
             int r, g, b;
-            if (equationNum == 1){
-                std::tuple<int, int, int> projector_color = heightPixelToMapColor(equation1((float)x/10.0, (float)y/10.0));
-                std::tie(r, g, b) = projector_color;
-                ProjectorHeightMapPixels.setColor(x, y, ofColor(r, g, b));
-            }
-            else if (equationNum == 2){
-                std::tuple<int, int, int> projector_color = heightPixelToMapColor(equation2((float)x/10.0, (float)y/10.0));
-                std::tie(r, g, b) = projector_color;
-                ProjectorHeightMapPixels.setColor(x, y, ofColor(r, g, b));
-            }
-            
+			std::tuple<int, int, int> projector_color = heightPixelToMapColor(runCurrentEq(float(x)/10.0, float(y)/10.0));
+            std::tie(r, g, b) = projector_color;
+            ProjectorHeightMapPixels.setColor(x, y, ofColor(r, g, b));
         }
     }
 }
