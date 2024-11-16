@@ -268,12 +268,16 @@ std::tuple<int, int, int> EquationMode::heightPixelToMapColor(int Height) {
     return std::make_tuple(r, g, b);
 }
 
+void EquationMode::drawGraphicsForProjector(int x, int y, int width, int height) {
+    ofImage(ProjectorHeightMapPixels).draw(x, y, width, height);
+}
+
 void EquationMode::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
     // Draw the current video frame as a base; .
 //    m_EquationImage.setFromPixels(m_EquationPixels);
 //    m_EquationImage.draw(30, 300, 544, 128);
-    ofImage(heightsForShapeDisplay).draw(x, y, width, height);
-    ofImage(ProjectorHeightMapPixels).draw(1,1,600,800);
+    //ofImage(heightsForShapeDisplay).draw(x, y, width, height);
+    ofImage(ProjectorHeightMapPixels).draw(x, y, width, height);
     
     
 }

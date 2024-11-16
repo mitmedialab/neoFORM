@@ -51,6 +51,7 @@ public:
   void updateHeights();
   void rotate(float theta);
   void drawGraphicsForPublicDisplay(int x, int y, int width, int height);
+  void drawGraphicsForProjector(int x, int y, int width, int height);
 
   bool transitioning;
   bool firstFrame;
