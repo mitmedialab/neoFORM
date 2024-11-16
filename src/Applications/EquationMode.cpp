@@ -218,7 +218,7 @@ void EquationMode::updateHeights() {
 
 			float r, g, b;
 			std::tie(r, g, b) = heightPixelToMapColor(heights[x][y]);
-			graph.setColor(x * rows + y, {r, g, b});
+			graph.setColor(x * rows + y, {r/255.0f, g/255.0f, b/255.0f});
         }
     }
     
@@ -260,12 +260,12 @@ void EquationMode::drawGraphicsForPublicDisplay(int x, int y, int width, int hei
 
 	// NOTE: openFrameworks right-multiplies matrix transformations, 
 	// meaning you need to specify them in REVERSE ORDER
-	// (translate -> scale -> rotate)
+	// (translate -> rotate -> scale)
 	//
 	// align to camera nicely
 	ofTranslate(x + width/2.0, y + height/2.0, -scale);
-	ofScale(scale);
 	ofRotateDeg(50, 1, 0, 0);
+	ofScale(scale); // translation isn't scaled by this
 
 	// rotate graph over time
 	ofRotateDeg(graphAngle, 0, 0, 1);
@@ -283,7 +283,7 @@ std::tuple<int, int, int> EquationMode::heightPixelToMapColor(int Height) {
     float segments[] = {0.0f, 51.0f, 102.0f, 153.0f, 204.0f, 255.0f};
     
     int i;
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 4; i++) {
         if (Height < segments[i+1]) break;
     }
     float ratio = (Height - segments[i]) / (segments[i+1] - segments[i]);

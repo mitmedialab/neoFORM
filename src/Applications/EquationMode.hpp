@@ -72,7 +72,7 @@ private:
   float graphAngle = 0.0;
   // in degrees/second
   float graphRotationSpeed = 20.0;
-  const float graphHeight = 0.4;
+  const float graphHeight = 0.2;
   ofMesh graph;
 };
 
