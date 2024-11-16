@@ -66,7 +66,7 @@ public:
   void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
   void drawSectionPreviewFrameBuffer(int x, int y, int width, int height);
 
-  std::tuple<int, int, int> heightPixelToMapColor(int Height);
+  ofColor heightPixelToMapColor(int Height);
 
   int cols;
   int rows;

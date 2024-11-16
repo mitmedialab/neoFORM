@@ -63,9 +63,7 @@ void EquationMode::setup(){
 	for (int x = 0; x < graphCols * graphDetailMultple; x++) {
 		for (int y = 0; y < graphRows; y++) {
 			graph.addVertex(ofPoint(scale * (x - graphCols/2.0), scale * (y - graphRows/2.0), 0));
-			float r, g, b;
-			std::tie(r, g, b) = heightPixelToMapColor(0);
-			graph.addColor({r, g, b});
+			graph.addColor(heightPixelToMapColor(0));
 		}
 	}
 
@@ -203,9 +201,7 @@ void EquationMode::updateHeights() {
 			auto vert = graph.getVertex(x * graphRows + y);
 			graph.setVertex(x * graphRows + y, {vert.x, vert.y, graphHeight * height / 255.0});
 
-			float r, g, b;
-			std::tie(r, g, b) = heightPixelToMapColor(height);
-			graph.setColor(x * graphRows + y, {r/255.0f, g/255.0f, b/255.0f});
+			graph.setColor(x * graphRows + y, heightPixelToMapColor(height));
         }
     }
     
@@ -220,10 +216,7 @@ void EquationMode::updateHeights() {
     
     for (int x = 0; x < cols*10; x++) {
         for (int y = 0; y < rows*10; y++) {
-            int r, g, b;
-			std::tuple<int, int, int> projector_color = heightPixelToMapColor(runCurrentEq(float(x)/10.0, float(y)/10.0));
-            std::tie(r, g, b) = projector_color;
-            ProjectorHeightMapPixels.setColor(x, y, ofColor(r, g, b));
+            ProjectorHeightMapPixels.setColor(x, y, heightPixelToMapColor(runCurrentEq(float(x)/10.0, float(y)/10.0)));
         }
     }
 }
@@ -254,8 +247,8 @@ void EquationMode::drawGraphicsForPublicDisplay(int x, int y, int width, int hei
 	ofPopMatrix();
 }
 
-std::tuple<int, int, int> EquationMode::heightPixelToMapColor(int Height) {
-    std::tuple<int, int, int> heightColors[] = {
+ofColor EquationMode::heightPixelToMapColor(int Height) {
+    ofColor heightColors[] = {
         {0,0,255},{0,255,255},{0,255,0},{255,255,0},{255,165,0},{255,0,0}
     };
     
@@ -266,11 +259,7 @@ std::tuple<int, int, int> EquationMode::heightPixelToMapColor(int Height) {
         if (Height < segments[i+1]) break;
     }
     float ratio = (Height - segments[i]) / (segments[i+1] - segments[i]);
-    int r = std::get<0>(heightColors[i]) + ratio * (std::get<0>(heightColors[i+1]) - std::get<0>(heightColors[i]));
-    int g = std::get<1>(heightColors[i]) + ratio * (std::get<1>(heightColors[i+1]) - std::get<1>(heightColors[i]));
-    int b = std::get<2>(heightColors[i]) + ratio * (std::get<2>(heightColors[i+1]) - std::get<2>(heightColors[i]));
-    
-    return std::make_tuple(r, g, b);
+	return (1.0f - ratio) * heightColors[i] + ratio * heightColors[i + 1];
 }
 
 void EquationMode::drawGraphicsForProjector(int x, int y, int width, int height) {
