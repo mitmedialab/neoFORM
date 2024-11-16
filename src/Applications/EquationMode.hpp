@@ -68,8 +68,6 @@ private:
   ofImage m_EquationImage;
   ofPixels ProjectorHeightMapPixels;
 
-  const ofColor graphLowColor = ofColor::darkBlue;
-  const ofColor graphHighColor = ofColor::orange;
   // angles in degrees
   float graphAngle = 0.0;
   // in degrees/second

@@ -59,7 +59,9 @@ void EquationMode::setup(){
 	for (int x = 0; x < cols; x++) {
 		for (int y = 0; y < rows; y++) {
 			graph.addVertex(ofPoint(scale * (x - cols/2.0), scale * (y - rows/2.0), 0));
-			graph.addColor(graphLowColor);
+			float r, g, b;
+			std::tie(r, g, b) = heightPixelToMapColor(0);
+			graph.addColor({r, g, b});
 		}
 	}
 
@@ -213,6 +215,10 @@ void EquationMode::updateHeights() {
         for (int y = 0; y < rows; y++) {
 			auto vert = graph.getVertex(x * rows + y);
 			graph.setVertex(x * rows + y, {vert.x, vert.y, graphHeight * heights[x][y] / 255.0});
+
+			float r, g, b;
+			std::tie(r, g, b) = heightPixelToMapColor(heights[x][y]);
+			graph.setColor(x * rows + y, {r, g, b});
         }
     }
     
