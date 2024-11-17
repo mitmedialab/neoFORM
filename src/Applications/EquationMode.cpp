@@ -23,11 +23,16 @@ EquationMode::EquationMode(SerialShapeIOManager *theCustomShapeDisplayManager) :
 }
 
 void EquationMode::publicDisplaySetup() {
+	// allows mipmaps
+	ofDisableArbTex();
 	for (int i = 0; i < numEquations; i++) {
 		equationImages.push_back(ofImage());
 		stringstream name;
 		name << "EquationModeImages/Equation_" << i + 1 << ".png";
 		equationImages[i].load(name.str());
+		equationImages[i].getTexture().enableMipmap();
+		equationImages[i].getTexture().generateMipmap();
+		equationImages[i].getTexture().setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 	}
 }
 
