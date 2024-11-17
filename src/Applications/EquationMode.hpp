@@ -95,6 +95,8 @@ private:
   float graphRotationSpeed = 20.0;
   const float graphHeight = 0.4;
   ofMesh graph;
+  ofMesh graphBacking;
+  float backingDistance = 0.01;
 };
 
 #endif /* EquationMode_hpp */

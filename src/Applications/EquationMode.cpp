@@ -8,6 +8,7 @@
 #include "EquationMode.hpp"
 #include "ofAppRunner.h"
 #include "ofConstants.h"
+#include "ofGraphics.h"
 #include "ofGraphicsConstants.h"
 
 #include <iostream>
@@ -60,10 +61,13 @@ void EquationMode::setup(){
 	int graphRows = graphDetailMultple * rows;
 	float scale = 2.0 / std::max(graphCols - 1, graphRows - 1);
 	graph.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
-	for (int x = 0; x < graphCols * graphDetailMultple; x++) {
+	graphBacking.setMode(ofPrimitiveMode::OF_PRIMITIVE_TRIANGLES);
+	for (int x = 0; x < graphCols; x++) {
 		for (int y = 0; y < graphRows; y++) {
 			graph.addVertex(ofPoint(scale * (x - graphCols/2.0), scale * (y - graphRows/2.0), 0));
+			graphBacking.addVertex(ofPoint(scale * (x - graphCols/2.0), scale * (y - graphRows/2.0), -backingDistance));
 			graph.addColor(heightPixelToMapColor(0));
+			graphBacking.addColor(ofColor::black);
 		}
 	}
 
@@ -79,6 +83,20 @@ void EquationMode::setup(){
 		for (int x = 0; x < graphCols - 1; x++) {
 			graph.addIndex(y + x * graphRows);
 			graph.addIndex(y + (x+1) * graphRows);
+		}
+	}
+
+	// initiallize triangles in backing
+	for (int x = 0; x < graphCols - 1; x++) {
+		for (int y = 0; y < graphRows - 1; y++) {
+			//triangle 1
+			graphBacking.addIndex(y + x * graphRows);
+			graphBacking.addIndex((y+1) + x * graphRows);
+			graphBacking.addIndex((y+1) + (x+1) * graphRows);
+			//triangle 2
+			graphBacking.addIndex(y + x * graphRows);
+			graphBacking.addIndex(y + (x+1) * graphRows);
+			graphBacking.addIndex((y+1) + (x+1) * graphRows);
 		}
 	}
 
@@ -199,6 +217,7 @@ void EquationMode::updateHeights() {
 			float height = runCurrentEq(x / float(graphDetailMultple), y / float(graphDetailMultple));
 			auto vert = graph.getVertex(x * graphRows + y);
 			graph.setVertex(x * graphRows + y, {vert.x, vert.y, graphHeight * height / 255.0});
+			graphBacking.setVertex(x * graphRows + y, {vert.x, vert.y, graphHeight * height / 255.0 - backingDistance});
 
 			graph.setColor(x * graphRows + y, heightPixelToMapColor(height));
         }
@@ -242,7 +261,9 @@ void EquationMode::drawGraphicsForPublicDisplay(int x, int y, int width, int hei
 	ofRotateDeg(graphAngle, 0, 0, 1);
 
 
+	ofEnableDepthTest();
 	graph.draw();
+	graphBacking.draw();
 	ofPopMatrix();
 }
 
