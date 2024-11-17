@@ -108,43 +108,38 @@ void EquationMode::setup(){
 
 float EquationMode::equation1(float x, float y){
     // gaussian
-    float center_x = cols/2.0;
-    float center_y = rows/2.0;
-    float sigma = 5.0f;
+	float scale = std::max(cols, rows) / 3.0;
+    float eq_x = (x- cols/2.0)/scale;
+    float eq_y = (y- rows/2.0)/scale;
 
-    return 255.0 / 1.2 * (exp(-(((float)x - center_x) * ((float)x - center_x) + ((float)y - center_y) * ((float)y - center_y)) / (2.0 * sigma * sigma)) - exp(-(((float)cols - center_x) * ((float)cols - center_x) + ((float)rows - center_y) * ((float)rows - center_y)) / (2.0 * sigma * sigma))) / (1.0 - exp(-(((float)cols - center_x) * ((float)cols - center_x) + ((float)rows - center_y) * ((float)rows - center_y)) / (2.0 * sigma * sigma)));
+	return 255.0 * exp(-(eq_x * eq_x + eq_y * eq_y)) / exp(0);
 }
 
 float EquationMode::equation2(float x, float y) {
-    return 127.0 / 1.5 * std::cos(sqrt((((float)x - 0.5 * (float)cols) * ((float)x - 0.5 * (float)cols)) + ((float)y - 0.5 * (float)rows) * ((float)y - 0.5 * (float)rows))) + 127.0;
+	float scale = std::max(cols, rows) / 3.0;
+    float eq_x = (x- cols/2.0)/scale;
+    float eq_y = (y- rows/2.0)/scale;
+	float radius = sqrt(eq_x * eq_x + eq_y * eq_y);
+
+    return 127.0 * std::cos(8 * radius) + 127.0;
 }
 
 float EquationMode::equation3(float x, float y) {
-    return 127.0 + 127.0 / 1.5 * std::sin((float)x * 0.5) * std::cos((float)y * 0.5);
+    return 127.0 + 127.0 * std::sin((float)x * 0.5) * std::cos((float)y * 0.5);
 }
 
 float EquationMode::equation4(float x, float y) {
-    float A = 127.0;
-    float B = 127.0;
-    float u = (2.0 * x / cols - 1.0);
-    float v = (2.0 * y / rows - 1.0);
-    float value = A * (u * u - v * v);
-    float normalizedValue = (value + A) * (255.0 / (2.0 * A));
-    return normalizedValue;
+    float eq_x = (2.0 * x / cols - 1.0);
+    float eq_y = (2.0 * y / rows - 1.0);
+    float value = 127.0 * (eq_x * eq_x - eq_y * eq_y);
+    return value + 127.0;
 }
 
 float EquationMode::equation5(float x, float y) {
-    float amplitude = 127.0 * 0.8;
-    float frequency = 0.3;
-    float offset = 127.0;
-    float value = amplitude * std::sin(frequency * (x - y)) + offset;
-    return std::max(0.0f, std::min(255.0f, value));
-}
-
-
-float EquationMode::equation6(float x, float y) {
-    float frequency = 0.5;
-    return 127.0 + 0.9 * 127.0 * std::sin(frequency * ((float)x + (float)y));
+	float scale = std::max(cols, rows) / 8.0;
+    float eq_x = (x- cols/2.0)/scale;
+    float eq_y = (y- rows/2.0)/scale;
+    return 127.0 * std::sin(eq_x - eq_y) + 127.0;
 }
 
 float EquationMode::runCurrentEq(float x, float y) {

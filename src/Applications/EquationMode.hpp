@@ -27,11 +27,10 @@ public:
   float equation3(float x, float y);
   float equation4(float x, float y);
   float equation5(float x, float y);
-  float equation6(float x, float y);
   //...
   // void equationN();
 
-  static const int numEquations = 6;
+  static const int numEquations = 5;
 
   // allows easier use of equations (yes the "EquationMode::" is necessary)
   EquationPointer equations[numEquations] = {
@@ -40,7 +39,6 @@ public:
 	  &EquationMode::equation3,
 	  &EquationMode::equation4,
 	  &EquationMode::equation5,
-	  &EquationMode::equation6,
 	  //...
 	  // &EquationMode::equationN,
   };
