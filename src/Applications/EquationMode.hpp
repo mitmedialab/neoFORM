@@ -55,8 +55,8 @@ public:
 
   bool transitioning;
   bool firstFrame;
-  int transitionEq1;
-  int transitionEq2;
+  int transitionEq1 = 0;
+  int transitionEq2 = 0;
   int transitionFrameCount;
   static const int transitionDuration = 10;
   int numFrames;
@@ -79,7 +79,7 @@ public:
   float y_trans;
   int count;
 
-  int equationIndex;
+  int equationIndex = 0;
   float **heights;
   float **heightsCopy;
 
@@ -93,7 +93,7 @@ private:
   float graphAngle = 0.0;
   // in degrees/second
   float graphRotationSpeed = 20.0;
-  const float graphHeight = 0.2;
+  const float graphHeight = 0.4;
   ofMesh graph;
 };
 

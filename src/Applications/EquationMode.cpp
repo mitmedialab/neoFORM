@@ -7,6 +7,7 @@
 
 #include "EquationMode.hpp"
 #include "ofAppRunner.h"
+#include "ofConstants.h"
 #include "ofGraphicsConstants.h"
 
 #include <iostream>
@@ -19,7 +20,6 @@ EquationMode::EquationMode(SerialShapeIOManager *theCustomShapeDisplayManager) :
 }
 
 void EquationMode::setup(){
-    
     equationIndex = 0;
     timeControl = 0;
     cols = (m_CustomShapeDisplayManager)->shapeDisplaySizeX;
@@ -170,7 +170,6 @@ void EquationMode::update(float dt){
 
 
 void EquationMode::updateHeights() {
-	
     if (transitioning) {
         transitionFrameCount++;
         if (transitionFrameCount >= numFrames) {
