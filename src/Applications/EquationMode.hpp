@@ -17,6 +17,8 @@ public:
   EquationMode(SerialShapeIOManager *theCustomShapeDisplayManager);
 
   void setup();
+  // opengl resources are specific to ofApp, so for example images must be loaded in the same ofApp they are drawn in
+  virtual void publicDisplaySetup();
 
   // declares an alias of (the type of) member function pointers matching the equations
   typedef float (EquationMode::*EquationPointer)(float, float);
@@ -31,6 +33,8 @@ public:
   // void equationN();
 
   static const int numEquations = 5;
+
+  std::vector<ofImage> equationImages;
 
   // allows easier use of equations (yes the "EquationMode::" is necessary)
   EquationPointer equations[numEquations] = {
@@ -56,7 +60,6 @@ public:
   int transitionEq1 = 0;
   int transitionEq2 = 0;
   int transitionFrameCount;
-  static const int transitionDuration = 10;
   int numFrames;
 
   void startTransition(int newEq1, int newEq2);

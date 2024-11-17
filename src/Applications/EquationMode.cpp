@@ -10,14 +10,25 @@
 #include "ofConstants.h"
 #include "ofGraphics.h"
 #include "ofGraphicsConstants.h"
+#include "ofTexture.h"
 
 #include <iostream>
+#include <sstream>
 #include <cmath>
 #include <stdexcept>
 
 
 EquationMode::EquationMode(SerialShapeIOManager *theCustomShapeDisplayManager) : Application(theCustomShapeDisplayManager){
     setup();
+}
+
+void EquationMode::publicDisplaySetup() {
+	for (int i = 0; i < numEquations; i++) {
+		equationImages.push_back(ofImage());
+		stringstream name;
+		name << "EquationModeImages/Equation_" << i + 1 << ".png";
+		equationImages[i].load(name.str());
+	}
 }
 
 void EquationMode::setup(){
@@ -256,10 +267,32 @@ void EquationMode::drawGraphicsForPublicDisplay(int x, int y, int width, int hei
 	ofRotateDeg(graphAngle, 0, 0, 1);
 
 
+	// allows backing to be drawn under graph while obscuring parts of it
 	ofEnableDepthTest();
 	graph.draw();
 	graphBacking.draw();
 	ofPopMatrix();
+
+	// allows image to be drawn over graph
+	ofDisableDepthTest();
+	if (transitioning) {
+		int eq = transitionFrameCount > numFrames/2 ? transitionEq2 : transitionEq1;
+		float imageWidth = scale * equationImages[eq].getWidth()/1000.0;
+		float imageHeight = scale * equationImages[eq].getHeight()/1000.0;
+		float imageX = x + width/2.0 - imageWidth/2.0;
+		float imageY = y + height/8.0 - imageHeight/2.0;
+		equationImages[eq].draw(imageX, imageY, imageWidth, imageHeight);
+
+		float fadeAmount = std::abs(transitionFrameCount - numFrames/2)/float(numFrames/2);
+		ofSetColor(ofColor::black, 255.0 - 255.0 * fadeAmount);	
+		ofDrawRectangle(imageX, imageY, imageWidth, imageHeight);
+	} else {
+		float imageWidth = scale * equationImages[equationIndex].getWidth()/1000.0;
+		float imageHeight = scale * equationImages[equationIndex].getHeight()/1000.0;
+		float imageX = x + width/2.0 - imageWidth/2.0;
+		float imageY = y + height/8.0 - imageHeight/2.0;
+		equationImages[equationIndex].draw(imageX, imageY, imageWidth, imageHeight);
+	}
 }
 
 ofColor EquationMode::heightPixelToMapColor(int Height) {
