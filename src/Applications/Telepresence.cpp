@@ -12,6 +12,7 @@ Telepresence::Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, K
 	// lazy way to ensure image is allocated to correct dimensions
 	ofShortImage im;
 	kinectManager->getRawDepthPixels(im);
+	//kinectManager->crop(im);
 	refinedImage = im;
 }
 
@@ -22,6 +23,7 @@ void Telepresence::update(float dt) {
 
 	ofShortImage depth;
 	kinectManager->getRawDepthPixels(depth.getPixels());
+	//kinectManager->crop(depth);
 
 	int i = 0;
 	for (auto pix : depth.getPixels()) {

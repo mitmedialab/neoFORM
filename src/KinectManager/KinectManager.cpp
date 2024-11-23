@@ -21,7 +21,7 @@ KinectManager::KinectManager(int pNearThreshold, int pFarThreshold, int pContour
     contourTrackingOn = true;
 
     // determine if we use mask
-    bool settingsExist = settings.loadFile("settings.xml");
+    bool settingsExist = settings.load("settings.xml");
     cout << "Awaiting Configuration of Mask \n";
     if (settingsExist){
         int width  = settings.getValue("width", 0);
@@ -38,6 +38,9 @@ KinectManager::KinectManager(int pNearThreshold, int pFarThreshold, int pContour
             // Otherwise set the mask to the native kinect image dimensions (effectively no mask).
             m_mask.set(0, 0, kinect.width, kinect.height);
         }
+    } else {
+        // Otherwise set the mask to the native kinect image dimensions (effectively no mask).
+        m_mask.set(0, 0, kinect.width, kinect.height);
     }
     
     
@@ -146,6 +149,14 @@ ofxCvGrayscaleImage KinectManager::cropCvGrayscale(const ofxCvGrayscaleImage& in
     croppedImage.setFromPixels(inputPixels);
 
     return croppedImage;
+}
+
+void KinectManager::crop(ofImage &image) {
+	image.crop(m_mask.x, m_mask.y, m_mask.width, m_mask.width);
+}
+
+void KinectManager::crop(ofShortImage &image) {
+	image.crop(m_mask.x, m_mask.y, m_mask.width, m_mask.width);
 }
 
 void KinectManager::calculateThresholdsAndModifyImages(ofxCvGrayscaleImage& inputImage){

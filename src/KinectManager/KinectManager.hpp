@@ -39,6 +39,9 @@ public:
     void calculateThresholdsAndModifyImages(ofxCvGrayscaleImage& inputImage);
     
     int numAvailableDevices();
+
+	void crop(ofImage &image);
+	void crop(ofShortImage &image);
     
     bool isFrameNew();
     
