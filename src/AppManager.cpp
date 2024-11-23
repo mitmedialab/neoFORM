@@ -60,7 +60,7 @@ void AppManager::setup(){
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
     applications["kinectHandWavy"] = kinectHandWavy;
 
-	telepresence = new Telepresence(m_serialShapeIOManager, kinectManager);
+	telepresence = new Telepresence(m_serialShapeIOManager, kinectManager, 80, 1000);
 	applications["telepresence"] = telepresence;
 
     // innitialize GUI

@@ -12,14 +12,16 @@
 
 class Telepresence : public Application {
 public:
-	Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager);
+	Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager, int nearClip, int farClip);
 	void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     
     string getName() {return "Telepresence";}
 private:
     KinectManager* kinectManager;
-	ofPixels refinedImage;
+	int nearClip;
+	int farClip;
+	ofImage refinedImage;
 };
 
 #endif //Telepresence_hpp
