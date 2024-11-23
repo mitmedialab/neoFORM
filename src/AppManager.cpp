@@ -7,6 +7,7 @@
 
 #include "AppManager.hpp"
 #include "SinglePinDebug.hpp"
+#include "Telepresence.hpp"
 #include "ofEvents.h"
 #include "ofGraphics.h"
 #include "utils.hpp"
@@ -58,6 +59,9 @@ void AppManager::setup(){
     
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
     applications["kinectHandWavy"] = kinectHandWavy;
+
+	telepresence = new Telepresence(m_serialShapeIOManager, kinectManager);
+	applications["telepresence"] = telepresence;
 
     // innitialize GUI
     gui.setup("modes:");

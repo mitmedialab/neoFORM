@@ -43,6 +43,7 @@
 #include "DepthDebugApp.hpp"
 
 #include "KinectHandWavy.hpp"
+#include "Telepresence.hpp"
 
 class AppManager : public ofBaseApp {
     
@@ -104,6 +105,9 @@ private:
     
     // hand wavy application
     KinectHandWavy *kinectHandWavy;
+
+	// Telepresence
+	Telepresence *telepresence;
     
     // program state
     bool paused = false;

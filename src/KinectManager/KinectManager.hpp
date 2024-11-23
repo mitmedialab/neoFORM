@@ -31,6 +31,8 @@ public:
     void getColorPixels(ofPixels &pixels);
     
     void getDepthPixels(ofPixels &pixels);
+
+	void getRawDepthPixels(ofPixels &pixels);
     
     void setDepthClipping(int near, int far);
     

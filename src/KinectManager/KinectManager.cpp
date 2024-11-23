@@ -176,6 +176,10 @@ void KinectManager::getDepthPixels(ofPixels &pixels) {
     pixels = depthPixels;
 }
 
+void KinectManager::getRawDepthPixels(ofPixels &pixels) {
+	pixels = kinect.getRawDepthPixels();
+}
+
 void KinectManager::setDepthClipping(int near, int far) {
     if (near < 500 || far > 4000) {
         cout << "[notice ] KinectManager: depth clipping values outside the " <<
