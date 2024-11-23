@@ -32,7 +32,7 @@ public:
     
     void getDepthPixels(ofPixels &pixels);
 
-	void getRawDepthPixels(ofPixels &pixels);
+	void getRawDepthPixels(ofShortPixels &pixels);
     
     void setDepthClipping(int near, int far);
     

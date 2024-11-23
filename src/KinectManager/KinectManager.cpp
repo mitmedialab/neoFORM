@@ -6,6 +6,7 @@
 //
 
 #include "KinectManager.hpp"
+#include "ofGLUtils.h"
 
 KinectManager::KinectManager(){
     baseSetup();
@@ -176,7 +177,7 @@ void KinectManager::getDepthPixels(ofPixels &pixels) {
     pixels = depthPixels;
 }
 
-void KinectManager::getRawDepthPixels(ofPixels &pixels) {
+void KinectManager::getRawDepthPixels(ofShortPixels &pixels) {
 	pixels = kinect.getRawDepthPixels();
 }
 
