@@ -15,6 +15,7 @@ public:
 	Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager, int nearClip, int farClip);
 	void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
+	void drawGraphicsForPublicDisplay(int x, int y, int width, int height);
     
     string getName() {return "Telepresence";}
 private:
@@ -22,6 +23,7 @@ private:
 	int nearClip;
 	int farClip;
 	ofImage refinedImage;
+	ofVideoGrabber cam;
 };
 
 #endif //Telepresence_hpp

@@ -14,9 +14,13 @@ Telepresence::Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, K
 	kinectManager->getRawDepthPixels(im);
 	//kinectManager->crop(im);
 	refinedImage = im;
+
+	cam.initGrabber(720, 1280);
 }
 
 void Telepresence::update(float dt) {
+	cam.update();
+
 	if (!kinectManager->isConnected()) return;
 
 	kinectManager->update();
@@ -44,9 +48,13 @@ void Telepresence::update(float dt) {
 void Telepresence::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
 	if (!kinectManager->isConnected()) return;
 
-	ofShortImage depth;
-	kinectManager->getRawDepthPixels(depth.getPixels());
-	depth.update();
+	//ofShortImage depth;
+	//kinectManager->getRawDepthPixels(depth.getPixels());
+	//depth.update();
 
-	depth.draw(x, y, width, height);
+	refinedImage.draw(x, y, width, height);
+}
+
+void Telepresence::drawGraphicsForPublicDisplay(int x, int y, int width, int height) {
+	cam.draw(x, y, width, height);
 }
