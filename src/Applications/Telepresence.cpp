@@ -13,10 +13,10 @@ Telepresence::Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, K
 		Application(theCustomShapeDisplayManager), kinectManager(theKinectManager), 
 		nearClip(nearClip), farClip(farClip), maxOutDist(maxOutDist), bottomOutDist(bottomOutDist), cam(cam) {
 	// lazy way to ensure image is allocated to correct dimensions
-	ofShortImage im;
-	kinectManager->getRawDepthPixels(im);
+	//ofShortImage im;
+	//kinectManager->getRawDepthPixels(im);
 	//kinectManager->crop(im);
-	refinedImage = im;
+	//refinedImage = im;
 }
 
 void Telepresence::update(float dt) {
@@ -28,17 +28,20 @@ void Telepresence::update(float dt) {
 	kinectManager->getRawDepthPixels(depth.getPixels());
 	//kinectManager->crop(depth);
 
+	ofImage tmpImage = depth;
 	int i = 0;
 	for (auto pix : depth.getPixels()) {
 		if (pix > farClip || pix < nearClip || pix > bottomOutDist) {
-			refinedImage.getPixels()[i] = 0.0;
+			tmpImage.getPixels()[i] = 0.0;
 		} else if (pix < maxOutDist) {
-			refinedImage.getPixels()[i] = 254.0;
+			tmpImage.getPixels()[i] = 254.0;
 		} else {
-			refinedImage.getPixels()[i] = 254.0f * (1.0f - (pix - maxOutDist) / float(bottomOutDist - maxOutDist));
+			tmpImage.getPixels()[i] = 254.0f * (1.0f - (pix - maxOutDist) / float(bottomOutDist - maxOutDist));
 		}
 		i++;
 	}
+	kinectManager->crop(tmpImage);
+	refinedImage = tmpImage;
 	refinedImage.update();
 	
 	ofImage out = refinedImage;
@@ -49,10 +52,6 @@ void Telepresence::update(float dt) {
 void Telepresence::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
 	if (!kinectManager->isConnected()) return;
 
-	//ofShortImage depth;
-	//kinectManager->getRawDepthPixels(depth.getPixels());
-	//depth.update();
-	
 	refinedImage.draw(x, y, width, height);
 }
 
