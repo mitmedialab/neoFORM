@@ -1,11 +1,17 @@
 #include "DisplayApp.hpp"
 
+DisplayApp::~DisplayApp() {
+	mainApp->cam = nullptr;
+}
+
 //--------------------------------------------------------------
 void DisplayApp::setup(){
+	cam.setup(1920, 1080);
 }
 
 //--------------------------------------------------------------
 void DisplayApp::update(){
+	cam.update();
 }
 
 //--------------------------------------------------------------

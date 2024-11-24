@@ -7,6 +7,7 @@
 class DisplayApp : public ofBaseApp{
 public:
     DisplayApp(int startWidth, int startHeight) : width(startWidth), height(startHeight) {}
+	~DisplayApp();
 
 		void setup();
 		void update();
@@ -27,6 +28,9 @@ public:
 
     // main window
     shared_ptr<AppManager> mainApp;
+
+	// camera
+	ofVideoGrabber cam;
     
     // lets main window access settings window stuff
     friend AppManager;

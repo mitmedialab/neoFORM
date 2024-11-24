@@ -42,6 +42,7 @@ int main( ){
     manager->displayWindow = displayWindow;
     projectorApp->mainApp = manager;
     manager->projectorWindow = projectorWindow;
+	manager->cam = &displayApp->cam;
 
     ofRunApp(mainWindow, manager);
     ofRunApp(displayWindow, displayApp);

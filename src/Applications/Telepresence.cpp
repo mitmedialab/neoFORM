@@ -6,21 +6,20 @@
 //
 
 #include "Telepresence.hpp"
+#include "ofVideoGrabber.h"
 
-Telepresence::Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager, int nearClip, int farClip) : 
-	Application(theCustomShapeDisplayManager), kinectManager(theKinectManager), nearClip(nearClip), farClip(farClip) {
+Telepresence::Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager, 
+						   int nearClip, int farClip, int maxOutDist, int bottomOutDist, ofVideoGrabber *cam) : 
+		Application(theCustomShapeDisplayManager), kinectManager(theKinectManager), 
+		nearClip(nearClip), farClip(farClip), maxOutDist(maxOutDist), bottomOutDist(bottomOutDist), cam(cam) {
 	// lazy way to ensure image is allocated to correct dimensions
 	ofShortImage im;
 	kinectManager->getRawDepthPixels(im);
 	//kinectManager->crop(im);
 	refinedImage = im;
-
-	cam.initGrabber(720, 1280);
 }
 
 void Telepresence::update(float dt) {
-	cam.update();
-
 	if (!kinectManager->isConnected()) return;
 
 	kinectManager->update();
@@ -31,10 +30,12 @@ void Telepresence::update(float dt) {
 
 	int i = 0;
 	for (auto pix : depth.getPixels()) {
-		if (pix < nearClip || pix > farClip) {
-			refinedImage.getPixels()[i] /= 2;
+		if (pix > farClip || pix < nearClip || pix > bottomOutDist) {
+			refinedImage.getPixels()[i] = 0.0;
+		} else if (pix < maxOutDist) {
+			refinedImage.getPixels()[i] = 254.0;
 		} else {
-			refinedImage.getPixels()[i] = 255.0f * (1.0f - (pix - nearClip) / float(farClip - nearClip));
+			refinedImage.getPixels()[i] = 254.0f * (1.0f - (pix - maxOutDist) / float(bottomOutDist - maxOutDist));
 		}
 		i++;
 	}
@@ -51,10 +52,13 @@ void Telepresence::drawGraphicsForShapeDisplay(int x, int y, int width, int heig
 	//ofShortImage depth;
 	//kinectManager->getRawDepthPixels(depth.getPixels());
 	//depth.update();
-
+	
 	refinedImage.draw(x, y, width, height);
 }
 
 void Telepresence::drawGraphicsForPublicDisplay(int x, int y, int width, int height) {
-	cam.draw(x, y, width, height);
+	float aspectRatio = cam->getWidth() / cam->getHeight();
+	float displayWidth = height * aspectRatio;
+
+	cam->draw(x + (width - displayWidth)/2, y, displayWidth, height);
 }

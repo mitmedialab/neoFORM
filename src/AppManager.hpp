@@ -69,10 +69,14 @@ public:
     shared_ptr<ofAppBaseWindow> displayWindow;
     shared_ptr<ofAppBaseWindow> projectorWindow;
 
+	// pointer to camera, lives in DisplayApp
+	ofVideoGrabber *cam;
+
     // lets settings window access main window stuff
     friend class DisplayApp;
     friend class ProjectorApp;
 private:
+
     // new gui
     ofxGuiGroup gui;
     vector<ofxButton> modeButtons;
