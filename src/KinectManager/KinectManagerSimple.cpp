@@ -1,5 +1,5 @@
 //
-//  KinectManagerSimple.cpp
+//  KinectManagerSimpleSimple.cpp
 //  neoForm
 //
 //  Created by Charles Reischer on 12/7/24.
@@ -11,7 +11,7 @@
 #include "KinectManagerSimple.hpp"
 #include "ofxXmlSettings.h"
 
-KinectManager::KinectManager(short nearClip, short farClip) {
+KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
     if (kinect.numAvailableDevices()>0){
         kinect.setRegistration(true); // enable depth->video image calibration
         kinect.init();
@@ -69,7 +69,7 @@ KinectManager::KinectManager(short nearClip, short farClip) {
     }
 }
 
-void KinectManager::update() {
+void KinectManagerSimple::update() {
 	if (!is_connected || !kinect.isConnected()) {
 		return;
 	}
@@ -83,15 +83,15 @@ void KinectManager::update() {
     }
 }
 
-ofShortPixels KinectManager::getDepthPixels() {
+ofShortPixels KinectManagerSimple::getDepthPixels() {
 	return depthPixels;
 }
 
-ofPixels KinectManager::getColorPixels() {
+ofPixels KinectManagerSimple::getColorPixels() {
 	return colorPixels;
 }
 
-void KinectManager::thresholdInterp(ofShortPixels &pix, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue) {
+void KinectManagerSimple::thresholdInterp(ofShortPixels &pix, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue) {
 	for (unsigned short &pixel : pix) {
 		if (pixel < lowThresh) {
 			pixel = lowValue;
@@ -105,26 +105,26 @@ void KinectManager::thresholdInterp(ofShortPixels &pix, unsigned short lowThresh
 	}
 }
 
-void KinectManager::setDepthClipping(short near, short far) {
+void KinectManagerSimple::setDepthClipping(short near, short far) {
     if (near < 500 || far > 4000) {
-        cout << "[notice ] KinectManager: depth clipping values outside the " <<
+        cout << "[notice ] KinectManagerSimple: depth clipping values outside the " <<
                 "range 500 - 4000 are likely to produce noisy data" << endl;
     }
 
     kinect.setDepthClipping(near, far);
 }
 
-void KinectManager::crop(ofImage &image) {
+void KinectManagerSimple::crop(ofImage &image) {
 	image.crop(mask.x, mask.y, mask.width, mask.width);
 }
 
-void KinectManager::crop(ofShortImage &image) {
+void KinectManagerSimple::crop(ofShortImage &image) {
 	image.crop(mask.x, mask.y, mask.width, mask.width);
 }
 
-KinectManager::~KinectManager() {
+KinectManagerSimple::~KinectManagerSimple() {
     kinect.setCameraTiltAngle(0); // zero the tilt on exit
     kinect.close();
 }
 
-#endif //KinectManagerSimple_cpp
+#endif //KinectManagerSimpleSimple_cpp

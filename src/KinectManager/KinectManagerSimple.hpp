@@ -10,10 +10,10 @@
 #include "ofxOpenCv.h"
 #include "ofxXmlSettings.h"
 
-class KinectManager {
+class KinectManagerSimple {
 public:
-	KinectManager(short nearClip = 500, short farClip = 3800);
-    ~KinectManager();
+	KinectManagerSimple(short nearClip = 500, short farClip = 3800);
+    ~KinectManagerSimple();
     void update();
 	ofShortPixels getDepthPixels();
 	ofPixels getColorPixels();
