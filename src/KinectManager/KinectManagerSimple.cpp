@@ -16,9 +16,9 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
         kinect.setRegistration(true); // enable depth->video image calibration
         kinect.init();
         kinect.open();
-		is_connected = true;
+		isConnected = true;
     } else {
-		is_connected = false;
+		isConnected = false;
 		// dummy values to prevent errors/crash when kinect is not connected
     	colorPixels.allocate(1, 1, OF_IMAGE_COLOR);
     	depthPixels.allocate(1, 1, OF_IMAGE_GRAYSCALE);
@@ -70,7 +70,7 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
 }
 
 void KinectManagerSimple::update() {
-	if (!is_connected || !kinect.isConnected()) {
+	if (!isConnected || !kinect.isConnected()) {
 		return;
 	}
     kinect.update();
@@ -99,8 +99,8 @@ void KinectManagerSimple::thresholdInterp(ofShortPixels &pix, unsigned short low
 			pixel = highValue;
 		} else {
 			// linear interpolation
-			double l = (pixel - lowThresh) / double(highThresh - lowThresh);
-			pixel = l * highValue + (1.0 - l) * lowValue;
+			float l = (pixel - lowThresh) / float(highThresh - lowThresh);
+			pixel = l * highValue + (1.0f - l) * lowValue;
 		}
 	}
 }

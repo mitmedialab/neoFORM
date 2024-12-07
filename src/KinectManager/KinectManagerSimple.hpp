@@ -6,6 +6,7 @@
 //
 
 #include <stdio.h>
+#include "ofxCvContourFinder.h"
 #include "ofxKinect.h"
 #include "ofxOpenCv.h"
 #include "ofxXmlSettings.h"
@@ -16,16 +17,21 @@ public:
     ~KinectManagerSimple();
     void update();
 	ofShortPixels getDepthPixels();
+	ofShortPixels getContourPixels();
 	ofPixels getColorPixels();
 	void crop(ofImage &pix);
 	void crop(ofShortImage &pix);
 	void setDepthClipping(short nearClip, short farClip);
 	void thresholdInterp(ofShortPixels &pix, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue);
 
-protected:
-	bool is_connected;
+public:
 	ofRectangle mask;
+
+protected:
 	ofxKinect kinect;
+
+	bool isConnected;
 	ofShortPixels depthPixels;
+	ofShortPixels contourPixels;
 	ofPixels colorPixels;
 };
