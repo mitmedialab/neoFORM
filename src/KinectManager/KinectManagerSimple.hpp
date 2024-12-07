@@ -5,6 +5,9 @@
 //  Created by Charles Reischer on 12/7/24.
 //
 
+#ifndef KinectManagerSimple_hpp
+#define KinectManagerSimple_hpp
+
 #include <stdio.h>
 #include "ofxCvContourFinder.h"
 #include "ofxKinect.h"
@@ -19,8 +22,8 @@ public:
 	ofShortPixels getDepthPixels();
 	ofShortPixels getContourPixels();
 	ofPixels getColorPixels();
-	void crop(ofImage &pix);
-	void crop(ofShortImage &pix);
+	void crop(ofPixels &pix);
+	void crop(ofShortPixels &pix);
 	void setDepthClipping(short nearClip, short farClip);
 	void thresholdInterp(ofShortPixels &pix, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue);
 
@@ -35,3 +38,5 @@ protected:
 	ofShortPixels contourPixels;
 	ofPixels colorPixels;
 };
+
+#endif //KinectManagerSimple_hpp

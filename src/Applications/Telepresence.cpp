@@ -8,7 +8,7 @@
 #include "Telepresence.hpp"
 #include "ofVideoGrabber.h"
 
-Telepresence::Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager, 
+Telepresence::Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManagerSimple *theKinectManager, 
 						   int nearClip, int farClip, int maxOutDist, int bottomOutDist, ofVideoGrabber *cam) : 
 		Application(theCustomShapeDisplayManager), kinectManager(theKinectManager), 
 		nearClip(nearClip), farClip(farClip), maxOutDist(maxOutDist), bottomOutDist(bottomOutDist), cam(cam) {
@@ -20,38 +20,20 @@ Telepresence::Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, K
 }
 
 void Telepresence::update(float dt) {
-	if (!kinectManager->isConnected()) return;
-
 	kinectManager->update();
 
-	ofShortImage depth;
-	kinectManager->getRawDepthPixels(depth.getPixels());
-	//kinectManager->crop(depth);
+	ofShortPixels depth = kinectManager->getDepthPixels();
+	kinectManager->crop(depth);
+	kinectManager->thresholdInterp(depth, maxOutDist, bottomOutDist, 254, 0);
 
-	ofImage tmpImage = depth;
-	int i = 0;
-	for (auto pix : depth.getPixels()) {
-		if (pix > farClip || pix < nearClip || pix > bottomOutDist) {
-			tmpImage.getPixels()[i] = 0.0;
-		} else if (pix < maxOutDist) {
-			tmpImage.getPixels()[i] = 254.0;
-		} else {
-			tmpImage.getPixels()[i] = 254.0f * (1.0f - (pix - maxOutDist) / float(bottomOutDist - maxOutDist));
-		}
-		i++;
-	}
-	kinectManager->crop(tmpImage);
-	refinedImage = tmpImage;
-	refinedImage.update();
-	
+	refinedImage = ofPixels(depth);
+
 	ofImage out = refinedImage;
 	out.resize(m_CustomShapeDisplayManager->shapeDisplaySizeX, m_CustomShapeDisplayManager->shapeDisplaySizeY);
 	heightsForShapeDisplay = out.getPixels();
 }
 
 void Telepresence::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
-	if (!kinectManager->isConnected()) return;
-
 	refinedImage.draw(x, y, width, height);
 }
 

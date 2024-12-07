@@ -20,11 +20,11 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
     } else {
 		isConnected = false;
 		// dummy values to prevent errors/crash when kinect is not connected
-    	colorPixels.allocate(1, 1, OF_IMAGE_COLOR);
-    	depthPixels.allocate(1, 1, OF_IMAGE_GRAYSCALE);
+    	colorPixels.allocate(2, 2, OF_IMAGE_COLOR);
+    	depthPixels.allocate(2, 2, OF_IMAGE_GRAYSCALE);
 		colorPixels.setColor({0, 0, 0, 1});
 		depthPixels.setColor({0});
-        mask.set(0, 0, 1, 1);
+        mask.set(0, 0, 2, 2);
 		return;
 	}
 	
@@ -114,12 +114,12 @@ void KinectManagerSimple::setDepthClipping(short near, short far) {
     kinect.setDepthClipping(near, far);
 }
 
-void KinectManagerSimple::crop(ofImage &image) {
-	image.crop(mask.x, mask.y, mask.width, mask.width);
+void KinectManagerSimple::crop(ofPixels &pix) {
+	pix.crop(mask.x, mask.y, mask.width, mask.width);
 }
 
-void KinectManagerSimple::crop(ofShortImage &image) {
-	image.crop(mask.x, mask.y, mask.width, mask.width);
+void KinectManagerSimple::crop(ofShortPixels &pix) {
+	pix.crop(mask.x, mask.y, mask.width, mask.width);
 }
 
 KinectManagerSimple::~KinectManagerSimple() {

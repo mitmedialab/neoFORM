@@ -69,7 +69,7 @@ InFormIOManager::InFormIOManager() {
 }
 
 // Secondary Constructor delegates to the primary constructor and adds the kinect reference.
-InFormIOManager::InFormIOManager(KinectManager* kinectRef) : InFormIOManager() {
+InFormIOManager::InFormIOManager(KinectManagerSimple* kinectRef) : InFormIOManager() {
     m_kinectManagerRef = kinectRef;
 }
 
@@ -132,7 +132,9 @@ ofPixels InFormIOManager::cropToActiveSurface(ofPixels fullSurface) {
     // Inform needs no cropping, but it does need to be resized to pin dimensions of the active surface.
     // NOTE video mode doesn't need resizing, so check to see if the dimensions differ before resizing.
     if (fullSurface.getWidth() != shapeDisplaySizeX || fullSurface.getHeight() != shapeDisplaySizeY) {
-        fullSurface.resize(shapeDisplaySizeX, shapeDisplaySizeY);
+		ofImage fullSurfaceIm = fullSurface;
+        fullSurfaceIm.resize(shapeDisplaySizeX, shapeDisplaySizeY);
+		fullSurface = fullSurfaceIm.getPixels();
     }
 
     return fullSurface;

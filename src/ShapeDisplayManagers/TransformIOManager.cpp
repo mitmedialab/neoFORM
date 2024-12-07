@@ -72,7 +72,7 @@ TransformIOManager::TransformIOManager() {
 }
 
 // Secondary Constructor delegates to the primary constructor and adds the kinect reference.
-TransformIOManager::TransformIOManager(KinectManager* kinectRef) : TransformIOManager() {
+TransformIOManager::TransformIOManager(KinectManagerSimple* kinectRef) : TransformIOManager() {
     m_kinectManagerRef = kinectRef;
 }
 
@@ -155,7 +155,11 @@ ofPixels TransformIOManager::cropToActiveSurface( ofPixels fullSurface ) {
     ofPixels combinedActiveZones = combineActiveZones(fullSurface, sections);
     
     // Scale and rotate the combined active zones
-    combinedActiveZones.resize(shapeDisplaySizeX, shapeDisplaySizeY);
+	// (uses ofImage for smooth resizing)
+	ofImage combinedActiveZonesIm = combinedActiveZones;
+    combinedActiveZonesIm.resize(shapeDisplaySizeX, shapeDisplaySizeY);
+	combinedActiveZones = combinedActiveZonesIm.getPixels();
+
     combinedActiveZones.rotate90(2);
     
     // Return the cropped and transformed image

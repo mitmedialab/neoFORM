@@ -17,7 +17,7 @@
 #include "SerialShapeIO.hpp"
 
 // includes for the sensor classes, e.g., Kinect
-#include "KinectManager.hpp"
+#include "KinectManagerSimple.hpp"
 
 class SerialPinBoard {
 public:
@@ -32,7 +32,7 @@ public:
 class SerialShapeIOManager {
 public:
     SerialShapeIOManager();
-    SerialShapeIOManager(KinectManager* kinectRef);
+    SerialShapeIOManager(KinectManagerSimple* kinectRef);
     // Destructor
     virtual ~SerialShapeIOManager(){
         disconnectFromDisplay();
@@ -151,7 +151,7 @@ protected:
     int geebsTEMP[8];
     ofPixels feebsTEMP;
     
-    KinectManager* m_kinectManagerRef;
+    KinectManagerSimple* m_kinectManagerRef;
     
     // Shape display hardware constants (previously defined using #define preprocessor statements.
     // These values are designed to be overridden by their respective individual shape display sub-classes (Transform, Inform, Cooperform, ets.)

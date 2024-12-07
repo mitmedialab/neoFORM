@@ -13,7 +13,7 @@
 
 class Telepresence : public Application {
 public:
-	Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager, 
+	Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManagerSimple *theKinectManager, 
 			  int nearClip, int farClip, int maxOutDist, int bottomOutDist, ofVideoGrabber *cam);
 	void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
@@ -21,7 +21,7 @@ public:
     
     string getName() {return "Telepresence";}
 private:
-    KinectManager* kinectManager;
+    KinectManagerSimple* kinectManager;
 	int nearClip;
 	int farClip;
 	int maxOutDist;

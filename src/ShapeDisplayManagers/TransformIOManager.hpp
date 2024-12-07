@@ -19,7 +19,7 @@ class TransformIOManager : public SerialShapeIOManager {
 public:
     TransformIOManager();
 
-    TransformIOManager(KinectManager* kinectRef);
+    TransformIOManager(KinectManagerSimple* kinectRef);
 
     // the name of this shape display
     string getShapeDisplayName() {
