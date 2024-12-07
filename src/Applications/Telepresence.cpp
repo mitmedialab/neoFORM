@@ -24,7 +24,7 @@ void Telepresence::update(float dt) {
 
 	ofShortPixels depth = kinectManager->getDepthPixels();
 	kinectManager->crop(depth);
-	kinectManager->thresholdInterp(depth, maxOutDist, bottomOutDist, 254, 0);
+	kinectManager->thresholdInterp(depth, bottomOutDist, maxOutDist, 0, 255 * 256);
 
 	refinedImage = ofPixels(depth);
 

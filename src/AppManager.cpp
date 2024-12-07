@@ -60,8 +60,9 @@ void AppManager::setup(){
     kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager,kinectManager);
     applications["kinectHandWavy"] = kinectHandWavy;
 
+	// *256 exists because unsigned shorts range between 0 and 256 * 256 - 1
 	telepresence = new Telepresence(m_serialShapeIOManager, kinectManager,
-								 20, 1800, 800, 1000, cam);
+								 20, 1800, 255 * 256, 4 * 256, cam);
 	applications["telepresence"] = telepresence;
 
     // innitialize GUI

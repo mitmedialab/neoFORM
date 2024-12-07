@@ -132,8 +132,14 @@ void KinectHandWavy::updateHeights() {
 ofxCvGrayscaleImage KinectHandWavy::getBlurredDepthImg() {
 	ofShortPixels pix = m_kinectManager->getDepthPixels();
 	m_kinectManager->crop(pix);
+	//clip far pixels
+	for (unsigned short &pixel : pix) {
+		if (pixel < 180 * 256) {
+			pixel = 0;
+		}
+	}
 	// set every non-clipped value to pure white
-	m_kinectManager->thresholdInterp(pix, 2, 3, 0, 255);
+	m_kinectManager->thresholdInterp(pix, 2, 3, 0, 255 * 256);
 
 	// need to use ofxCvGrayscale for blurring
     ofxCvGrayscaleImage blurredDepthImg;
