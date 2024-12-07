@@ -5,6 +5,9 @@
 //  Created by admin on 10/18/22.
 //
 
+//essentially comments out code
+#if FALSE
+
 #include "KinectDebugApp.hpp"
 
 #include "ofxXmlSettings.h"
@@ -283,3 +286,5 @@ void KinectDebugApp::updateHeights() {
 
 
 }
+
+#endif

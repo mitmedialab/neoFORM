@@ -5,6 +5,9 @@
 //  Created by admin on 10/18/22.
 //
 
+// esentially comments out code
+#define KinectDebugApp_hpp
+
 #ifndef KinectDebugApp_hpp
 #define KinectDebugApp_hpp
 
