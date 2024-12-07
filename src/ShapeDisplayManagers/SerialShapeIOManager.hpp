@@ -57,7 +57,7 @@ public:
     virtual string getShapeDisplayName() { return "Shape Display Name"; }
     
     // Dan and Jonathan Custom API-like commands
-    virtual ofPixels getKinectStream(){return feebsTEMP;}
+    //virtual ofPixels getKinectStream(){return feebsTEMP;}
     
     // Virtual class for hardware specific pin layouts.
     virtual ofPixels cropToActiveSurface(ofPixels fullSurface) = 0;

@@ -129,16 +129,16 @@ void TransformIOManager::configureBoards() {
     boardsAreConfigured = true;
 }
 
-ofPixels TransformIOManager::getKinectStream(){
-    m_kinectManagerRef->update();
-    
-    //basic test
-    // Uses the opencv cropped contour rectangle to crop the kinect depth pixels to only be in the size and shape of the transform
-    ofPixels m_videoPixels = m_kinectManagerRef->getCroppedPixels((m_kinectManagerRef->depthPixels));//video.getPixels();
-
-    
-    return m_videoPixels;
-}
+//ofPixels TransformIOManager::getKinectStream(){
+//    m_kinectManagerRef->update();
+//    
+//    //basic test
+//    // Uses the opencv cropped contour rectangle to crop the kinect depth pixels to only be in the size and shape of the transform
+//    ofPixels m_videoPixels = m_kinectManagerRef->getCroppedPixels((m_kinectManagerRef->depthPixels));//video.getPixels();
+//
+//    
+//    return m_videoPixels;
+//}
 
 // This function takes the full surface image and removes all of the non-active zones, so only
 // the active zones are left. It does this by defining rectangles for each of the active zones,
