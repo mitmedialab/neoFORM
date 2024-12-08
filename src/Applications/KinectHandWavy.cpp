@@ -57,8 +57,8 @@ void KinectHandWavy::drawGraphicsForShapeDisplay(int x, int y, int width, int he
     drawPreviewMaskRectangle();
 
     //*** Preview shape display pixels
-    ofxCvGrayscaleImage blurredDepthImg = getBlurredDepthImg();
-    blurredDepthImg.draw(2, 400, blurredDepthImg.getWidth(), blurredDepthImg.getHeight());
+    m_kinectManager->crop(depthImg.getPixels());
+    depthImg.draw(2, 400, depthImg.getWidth(), depthImg.getHeight());
 
     //*** Contours are disabled, but maybe they will be useful in the future.
     //m_kinectManager->drawContours();
@@ -119,35 +119,15 @@ void KinectHandWavy::drawPreviewActuatedSections() {
 }
 
 void KinectHandWavy::updateHeights() {
-    // Add blur to the depth image.
-    ofxCvGrayscaleImage blurredDepthImg = getBlurredDepthImg();
+	ofShortPixels pix = m_kinectManager->getDepthPixels();
+	m_kinectManager->crop(pix);
+	m_kinectManager->thresholdInterp(pix, 200*256, 220*256, 0, 255*256);
     
     // Pass the current depth image to the shape display manager to get the actuated pixels.
-    ofPixels livePixels = m_CustomShapeDisplayManager->cropToActiveSurface( blurredDepthImg.getPixels() );
+    ofPixels livePixels = m_CustomShapeDisplayManager->cropToActiveSurface( pix);
     
     // Directly copy all pixels from livePixels to heightsForShapeDisplay.
     heightsForShapeDisplay = livePixels;
-}
-
-ofxCvGrayscaleImage KinectHandWavy::getBlurredDepthImg() {
-	ofShortPixels pix = m_kinectManager->getDepthPixels();
-	m_kinectManager->crop(pix);
-	//clip far pixels
-	for (unsigned short &pixel : pix) {
-		if (pixel < 180 * 256) {
-			pixel = 0;
-		}
-	}
-	// set every non-clipped value to pure white
-	m_kinectManager->thresholdInterp(pix, 2, 3, 0, 255 * 256);
-
-	// need to use ofxCvGrayscale for blurring
-    ofxCvGrayscaleImage blurredDepthImg;
-	blurredDepthImg.allocate(pix.getWidth(), pix.getHeight());
-	blurredDepthImg.setFromPixels(pix);
-    blurredDepthImg.blurGaussian(41);
-    
-    return blurredDepthImg;
 }
 
 void KinectHandWavy::keyPressed(int Key) {

@@ -38,8 +38,6 @@ private:
     
     ofPixels rawSurfaceDepth;
     
-    ofxCvGrayscaleImage getBlurredDepthImg();
-    
     // Preview utility functions
     void drawPreviewMaskRectangle();
     void drawPreviewActuatedSections();
