@@ -44,8 +44,8 @@ void PinDisabler::drawGraphicsForShapeDisplay(int x, int y, int width, int heigh
 
     // set pixel under mouse yellow
     auto mouseGridPos = getMouseCoordinateInGrid(graphicsX, graphicsY, graphicsWidth, graphicsHeight, sizeX, sizeY);
-    if (mouseGridPos.has_value()) {
-        disabledPixels.setColor(mouseGridPos.value().first, mouseGridPos.value().second, {255, 255, 0, 255});
+    if (mouseGridPos.exists) {
+        disabledPixels.setColor(mouseGridPos.coordinate.first, mouseGridPos.coordinate.second, {255, 255, 0, 255});
     }
 
     disabledPixels.update();
@@ -73,24 +73,24 @@ void PinDisabler::mousePressed(int x, int y, int mouse) {
     auto gridPos = getMouseCoordinateInGrid(graphicsX, graphicsY, graphicsWidth, graphicsHeight,
         m_CustomShapeDisplayManager->shapeDisplaySizeX, m_CustomShapeDisplayManager->shapeDisplaySizeY);
 
-    if (!gridPos.has_value()) return;
+    if (!gridPos.exists) return;
 
     ofxXmlSettings settings;
     std::string name = m_CustomShapeDisplayManager->getShapeDisplayName() + "_pinsDisabled.xml";
     settings.load(name);
 
-    bool alreadyDisabled = disabledMap.count(gridPos.value()) > 0;
+    bool alreadyDisabled = disabledMap.count(gridPos.coordinate) > 0;
     if (alreadyDisabled) { //removed existing disabled pin
-        int settingsPos = disabledMap[gridPos.value()];
-        disabledMap.erase(gridPos.value());
+        int settingsPos = disabledMap[gridPos.coordinate];
+        disabledMap.erase(gridPos.coordinate);
 
         // swap back with pin
         if (settingsPos != disabledPins.size() - 1) {
             disabledPins[settingsPos] = disabledPins.back();
             disabledMap[disabledPins.back()] = settingsPos;
 
-            settings.setValue("pin:X", gridPos.value().first, settingsPos);
-            settings.setValue("pin:Y", gridPos.value().second, settingsPos);
+            settings.setValue("pin:X", gridPos.coordinate.first, settingsPos);
+            settings.setValue("pin:Y", gridPos.coordinate.second, settingsPos);
         }
         // remove back pin
         settings.removeTag("pin", disabledPins.size() - 1);
@@ -98,11 +98,11 @@ void PinDisabler::mousePressed(int x, int y, int mouse) {
         settings.setValue("num", (int)disabledPins.size());
     } else { // add a disabled pin
         settings.setValue("num", (int)disabledPins.size() + 1);
-        settings.setValue("pin:X", gridPos.value().first, disabledPins.size());
-        settings.setValue("pin:Y", gridPos.value().second, disabledPins.size());
+        settings.setValue("pin:X", gridPos.coordinate.first, disabledPins.size());
+        settings.setValue("pin:Y", gridPos.coordinate.second, disabledPins.size());
 
-        disabledMap[gridPos.value()] = disabledPins.size();
-        disabledPins.push_back(gridPos.value());
+        disabledMap[gridPos.coordinate] = disabledPins.size();
+        disabledPins.push_back(gridPos.coordinate);
     }
 
     settings.save(name);

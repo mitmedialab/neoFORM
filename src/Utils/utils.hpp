@@ -13,7 +13,12 @@
 #include "ofMain.h"
 
 // returns "empty" if mouse is outside of grid
-optional<pair<int, int>> getMouseCoordinateInGrid(int gridX, int gridY, int gridWidth, int gridHeight, int numXCells, int numYCells);
+struct PossibleCoordinate {
+	std::pair<int, int> coordinate;
+	bool exists;
+};
+
+PossibleCoordinate getMouseCoordinateInGrid(int gridX, int gridY, int gridWidth, int gridHeight, int numXCells, int numYCells);
 
 double elapsedTimeInSeconds();
 
