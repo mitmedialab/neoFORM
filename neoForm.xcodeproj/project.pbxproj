@@ -57,6 +57,7 @@
 		ACE7DC9A3223ED5EE1B80074 /* cameras.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DBD37876A11E46E4D7069B3 /* cameras.c */; };
 		B006626C26FF99AB717C7CD4 /* utf8_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = D1822FF66A31138F103D3C2F /* utf8_mosq.c */; };
 		B94766EA2C3105CC00877064 /* InFormIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B94766E82C3105CC00877064 /* InFormIOManager.cpp */; };
+		B9A93ECE2D062AC6005B9CF4 /* PinDisabler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A93ECC2D062AC6005B9CF4 /* PinDisabler.cpp */; };
 		B9A9F318297DF82000ACC2F8 /* KinectManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F2F5297DF82000ACC2F8 /* KinectManager.cpp */; };
 		B9A9F319297DF82000ACC2F8 /* SerialIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F2FA297DF82000ACC2F8 /* SerialIOManager.cpp */; };
 		B9A9F31A297DF82000ACC2F8 /* ShapeIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F2FD297DF82000ACC2F8 /* ShapeIOManager.cpp */; };
@@ -514,6 +515,8 @@
 		B8F39F6EBA0607ECB7D18D89 /* handle_disconnect.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = handle_disconnect.c; path = "../../../addons/ofxMQTT-1.5.0/libs/mosquitto/src/handle_disconnect.c"; sourceTree = SOURCE_ROOT; };
 		B94766E82C3105CC00877064 /* InFormIOManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InFormIOManager.cpp; sourceTree = "<group>"; };
 		B94766E92C3105CC00877064 /* InFormIOManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = InFormIOManager.hpp; sourceTree = "<group>"; };
+		B9A93ECC2D062AC6005B9CF4 /* PinDisabler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PinDisabler.cpp; sourceTree = "<group>"; };
+		B9A93ECD2D062AC6005B9CF4 /* PinDisabler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PinDisabler.hpp; sourceTree = "<group>"; };
 		B9A9F2F5297DF82000ACC2F8 /* KinectManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KinectManager.cpp; sourceTree = "<group>"; };
 		B9A9F2F6297DF82000ACC2F8 /* KinectManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KinectManager.hpp; sourceTree = "<group>"; };
 		B9A9F2F8297DF82000ACC2F8 /* PinConfigs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PinConfigs.h; sourceTree = "<group>"; };
@@ -2017,6 +2020,8 @@
 				B9A9F309297DF82000ACC2F8 /* AxisChecker.cpp */,
 				B9A9F30C297DF82000ACC2F8 /* MqttTransmissionApp.hpp */,
 				B9A9F30A297DF82000ACC2F8 /* MqttTransmissionApp.cpp */,
+				B9A93ECD2D062AC6005B9CF4 /* PinDisabler.hpp */,
+				B9A93ECC2D062AC6005B9CF4 /* PinDisabler.cpp */,
 				B9A9F30D297DF82000ACC2F8 /* VideoPlayerApp.hpp */,
 				B9A9F30B297DF82000ACC2F8 /* VideoPlayerApp.cpp */,
 				84B1DCFF2B792D8500DE7B7B /* KinectHandWavy.hpp */,
@@ -2748,6 +2753,7 @@
 				7373FA1D6BAC0EBE8E566798 /* handle_suback.c in Sources */,
 				B9A9F321297DF82000ACC2F8 /* VideoPlayerApp.cpp in Sources */,
 				B9A9F320297DF82000ACC2F8 /* MqttTransmissionApp.cpp in Sources */,
+				B9A93ECE2D062AC6005B9CF4 /* PinDisabler.cpp in Sources */,
 				2204C4DF724114D119D079CF /* handle_unsuback.c in Sources */,
 				3FAB4AA959CCEACE3846AA95 /* helpers.c in Sources */,
 				E83929F2342F0975F4CCF9B1 /* logging_mosq.c in Sources */,
