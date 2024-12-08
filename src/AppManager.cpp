@@ -62,7 +62,7 @@ void AppManager::setup(){
 
 	// *256 exists because unsigned shorts range between 0 and 256 * 256 - 1
 	telepresence = new Telepresence(m_serialShapeIOManager, kinectManager,
-								 20, 1800, 255 * 256, 4 * 256, cam);
+								 255 * 256, 140 * 256, cam);
 	applications["telepresence"] = telepresence;
 
     // innitialize GUI

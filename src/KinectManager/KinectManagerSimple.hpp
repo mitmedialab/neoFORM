@@ -16,7 +16,7 @@
 
 class KinectManagerSimple {
 public:
-	KinectManagerSimple(short nearClip = 500, short farClip = 3800);
+	KinectManagerSimple(short nearClip = 400, short farClip = 3800);
     ~KinectManagerSimple();
     void update();
 	ofShortPixels getDepthPixels();

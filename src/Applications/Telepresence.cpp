@@ -9,9 +9,9 @@
 #include "ofVideoGrabber.h"
 
 Telepresence::Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManagerSimple *theKinectManager, 
-						   int nearClip, int farClip, int maxOutDist, int bottomOutDist, ofVideoGrabber *cam) : 
+						   int maxOutDist, int bottomOutDist, ofVideoGrabber *cam) : 
 		Application(theCustomShapeDisplayManager), kinectManager(theKinectManager), 
-		nearClip(nearClip), farClip(farClip), maxOutDist(maxOutDist), bottomOutDist(bottomOutDist), cam(cam) {
+		maxOutDist(maxOutDist), bottomOutDist(bottomOutDist), cam(cam) {
 	// lazy way to ensure image is allocated to correct dimensions
 	//ofShortImage im;
 	//kinectManager->getRawDepthPixels(im);
