@@ -22,6 +22,8 @@ public:
     WaveModeContours(KinectManager* kinectManager);
     WaveModeContours(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager);
     
+    string getName() {return "Interactive Wave";};
+    
     void setup();
     void update(float dt);
     
