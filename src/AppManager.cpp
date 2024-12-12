@@ -56,12 +56,6 @@ void AppManager::setup() {
 	kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager, kinectManager);
 	applications["kinectHandWavy"] = kinectHandWavy;
 	
-	interactiveWave = new InteractiveWave(m_serialShapeIOManager, kinectManager);
-	applications["interactiveWave"] = interactiveWave;
-	
-	intWave2 = new IntWave2(m_serialShapeIOManager, kinectManager);
-	applications["intWave2"] = intWave2;
-	
 	equationMode = new EquationMode(m_serialShapeIOManager);
 	applications["equationMode"] = equationMode;
 	

@@ -44,10 +44,6 @@
 
 #include "KinectHandWavy.hpp"
 
-#include "InteractiveWave.hpp"
-
-#include "IntWave2.hpp"
-
 #include "EquationMode.hpp"
 
 #include "WaveModeContours.hpp"
@@ -113,10 +109,6 @@ private:
     
     // hand wavy application
     KinectHandWavy *kinectHandWavy;
-    
-    InteractiveWave *interactiveWave;
-    
-    IntWave2 *intWave2;
     
     EquationMode *equationMode;
     
