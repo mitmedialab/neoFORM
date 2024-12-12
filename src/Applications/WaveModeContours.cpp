@@ -161,6 +161,7 @@ void WaveModeContours::updateMask(){
         }
     }
     
+    // Apply a ripple effect to the center of the surface every 5 seconds.
     if (timeControl % 100 <= 5) {
         applyRippleEffect(cols / 2, rows / 2);
     }
@@ -168,6 +169,7 @@ void WaveModeContours::updateMask(){
     lastContourCentroids = currentCentroids;
 }
 
+// Applies a raindrop-like ripple effect to the surface at the given coordinates.
 void WaveModeContours::applyRippleEffect(int x, int y) {
     int strength = 100;
     int radius = 3;
