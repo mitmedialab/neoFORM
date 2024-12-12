@@ -50,8 +50,9 @@ void AppManager::setup() {
 	// kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
 	// applications["kinectDebug"] = kinectDebugApp;
 	
-	depthDebugApp = new DepthDebugApp(m_serialShapeIOManager);
-	applications["depthDebug"] = depthDebugApp;
+    // DepthDebug is not currently active.
+	//depthDebugApp = new DepthDebugApp(m_serialShapeIOManager);
+	//applications["depthDebug"] = depthDebugApp;
 	
 	kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager, kinectManager);
 	applications["kinectHandWavy"] = kinectHandWavy;
