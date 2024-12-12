@@ -217,9 +217,9 @@ void WaveModeContours::updatePreviousWallMask() {
 }
 
 ofxCvGrayscaleImage WaveModeContours::getBlurredDepthImg() {
-    ofxCvGrayscaleImage blurredDepthImg = m_kinectManager->depthImg;
-    blurredDepthImg.blurGaussian(1);
-
+    ofxCvGrayscaleImage blurredDepthImg = m_kinectManager->croppedDepthImg;
+    blurredDepthImg.blurGaussian(41);
+    
     return blurredDepthImg;
 }
 
@@ -268,50 +268,38 @@ std::tuple<int, int, int> WaveModeContours::heightPixelToMapColor(int Height) {
     return std::make_tuple(r, g, b);
 }
     
+// This is responsible for drawing the on screen preview of the app's behavior.
 void WaveModeContours::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
-    //*** Draw the color pixels for reference.
-//    m_kinectManager->colorImg.draw(2, 2, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+    // prevents running without kinectManager
+    if (!m_kinectManager->isConnected()) return;
 
+    //*** Draw the color pixels for reference.
+    m_kinectManager->colorImg.draw(2, 2, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+    
     //*** Overlay the depth image on top of the color image.
-//    Set the color to white with 50% opacity
-//    ofSetColor(255, 255, 255, 127);
+    // Set the color to white with 50% opacity
+    ofSetColor(255, 255, 255, 127);
 
     // Draw the depth image
     m_kinectManager->depthImg.draw(2, 2, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
 
     // Reset the color to fully opaque white
-    ofSetColor(255, 255, 255, 127);
+    ofSetColor(255, 255, 255, 255);
 
-//    //*** Draw the mask rectangle
+    //*** Draw the mask rectangle
     drawPreviewMaskRectangle();
-//
-//    //*** Preview shape display pixels
-//    ofxCvGrayscaleImage blurredDepthImg = getBlurredDepthImg();
-//    blurredDepthImg.draw(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
-//
-//    //*** Contours are disabled, but maybe they will be useful in the future.
-    contourFinder.draw(0, 0, 640, 480);
-    ofColor c(255, 255, 255);
-    ofSetLineWidth(3);
-    ofNoFill();
-    
-    for (int i = 0; i < contourFinder.nBlobs; i++) {
-        ofRectangle r = contourFinder.blobs.at(i).boundingRect;
-        c.setHsb(i * 64, 255, 255);
-        ofSetColor(c);
-        ofDrawRectangle(r);
-        if (m_contoursRecordedFlag < 1) {
-            m_capturedContours.push_back(r);
-        }
-    }
-    m_contoursRecordedFlag = 1;
-//
-//    //*** Draw preview of the actuated pixel regions (sections).
-    drawPreviewActuatedSections();
 
-//    ofImage(heightsForShapeDisplay).draw(30, 300, width, height);
-//    ofImage(ProjectorHeightMapPixels).draw(1,1,600,800);
-//    NOTE: uncomment the above line to get the projector heatmap back
+    //*** Preview shape display pixels
+    ofxCvGrayscaleImage blurredDepthImg = getBlurredDepthImg();
+    blurredDepthImg.draw(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+
+    //*** Contours are disabled, but maybe they will be useful in the future.
+    //m_kinectManager->drawContours();
+
+    if ( m_CustomShapeDisplayManager->getShapeDisplayName() == "TRANSFORM" ) {
+        //*** Draw preview of the actuated pixel regions (sections).
+        drawPreviewActuatedSections();
+    }
 }
 
 void WaveModeContours::drawSectionPreviewFrameBuffer(int x, int y, int width, int height){
