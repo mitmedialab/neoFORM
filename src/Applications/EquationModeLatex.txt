@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage[dvipsnames]{xcolor}
+\pagecolor{black}
+\color{white}
+
+\title{inFORM equation mode equations}
+\author{Charles Reischer}
+\date{November 2024}
+
+\begin{document}
+
+\maketitle
+
+\section{Equation 1}
+{\huge $$e^{-(x^2+y^2)}$$}
+
+\section{Equation 2}
+{\huge $$\cos(\sqrt{x^2+y^2})$$}
+
+\section{Equation 3}
+{\huge $$\sin{x} + \cos{y}$$}
+
+\section{Equation 4}
+{\huge $$x^2 - y^2$$}
+
+\section{Equation 5}
+{\huge $$sin(x - y)$$}
+
+\end{document}
