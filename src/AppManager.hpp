@@ -50,6 +50,9 @@
 
 #include "TransitionApp.hpp"
 
+#include "AmbientWave.hpp"
+
+
 
 class AppManager : public ofBaseApp {
     
@@ -115,8 +118,13 @@ private:
     EquationMode *equationMode;
     
     WaveModeContours *waveModeContours;
-	TransitionApp *transitionApp;
-	bool applicationSwitchBlocked = false;
+
+	  TransitionApp *transitionApp;
+	  bool applicationSwitchBlocked = false;
+
+
+    AmbientWave *ambientWave;
+
     
     // program state
     bool paused = false;

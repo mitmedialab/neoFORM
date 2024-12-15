@@ -6,6 +6,7 @@
 //
 
 #include "AppManager.hpp"
+#include "AmbientWave.hpp"
 #include "SinglePinDebug.hpp"
 #include "TransitionApp.hpp"
 #include "ofEvents.h"
@@ -67,6 +68,9 @@ void AppManager::setup() {
 	// not in applications list
 	transitionApp = new TransitionApp(m_serialShapeIOManager);
 	
+	ambientWave = new AmbientWave(m_serialShapeIOManager);
+	applications["AmbientWave"] = ambientWave;
+
 	// innitialize GUI
 	gui.setup("modes:");
 	gui.setPosition(5, 35);
