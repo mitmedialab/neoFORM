@@ -23,7 +23,6 @@ void TransitionApp::startTransition(Application* start, Application* end, float 
 	transitionProgress = 0.0f;
 	appManagerPointer = pointerToActiveApplication;
 	appManagerBlock = pointerToBlock;
-	std::cout << "transition started" << std::endl;
 }
 
 void TransitionApp::update(float dt) {
@@ -37,7 +36,6 @@ void TransitionApp::update(float dt) {
 		// manually sets the appManager's active app
 		*appManagerPointer = endApp;
 		*appManagerBlock = false;
-		std::cout << "switched!" << std::endl;
 		endApp->update(dt);
 		return;
 	}
