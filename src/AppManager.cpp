@@ -6,6 +6,7 @@
 //
 
 #include "AppManager.hpp"
+#include "AmbientWave.hpp"
 #include "SinglePinDebug.hpp"
 #include "ofEvents.h"
 #include "ofGraphics.h"
@@ -63,6 +64,9 @@ void AppManager::setup() {
 	waveModeContours = new WaveModeContours(m_serialShapeIOManager, kinectManager);
 	applications["waveModeContours"] = waveModeContours;
 	
+	ambientWave = new AmbientWave(m_serialShapeIOManager);
+	applications["AmbientWave"] = ambientWave;
+
 	// innitialize GUI
 	gui.setup("modes:");
 	gui.setPosition(5, 35);
