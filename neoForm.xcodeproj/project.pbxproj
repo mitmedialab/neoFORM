@@ -76,6 +76,7 @@
 		B006626C26FF99AB717C7CD4 /* utf8_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = D1822FF66A31138F103D3C2F /* utf8_mosq.c */; };
 		B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECF8674C7975F1063C5E30CA /* ofxGuiGroup.cpp */; };
 		B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 802251BAF1B35B1D67B32FD0 /* ofxSliderGroup.cpp */; };
+		B917C91A2D0F882700F26C4C /* AmbientWave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917C9182D0F882700F26C4C /* AmbientWave.cpp */; };
 		B951ED692CEA6F6E00C74190 /* WaveModeContours.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B951ED652CEA6F6E00C74190 /* WaveModeContours.cpp */; };
 		B951ED6E2CEA703B00C74190 /* EquationMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B951ED6C2CEA703B00C74190 /* EquationMode.cpp */; };
 		BBC747EFA455E446D3C6C588 /* AppManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB71C7D49B032CA4888457E3 /* AppManager.cpp */; };
@@ -570,6 +571,8 @@
 		B88A80AA34B79BD6DA9253DE /* sse_utils.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = sse_utils.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv4/opencv2/core/sse_utils.hpp; sourceTree = SOURCE_ROOT; };
 		B8A2CBF3E24E6E5026B13A90 /* ofxBase3DVideo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxBase3DVideo.h; path = ../../../addons/ofxKinect/src/ofxBase3DVideo.h; sourceTree = SOURCE_ROOT; };
 		B8F39F6EBA0607ECB7D18D89 /* handle_disconnect.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = handle_disconnect.c; path = "../../../addons/ofxMQTT-1.5.0/libs/mosquitto/src/handle_disconnect.c"; sourceTree = SOURCE_ROOT; };
+		B917C9182D0F882700F26C4C /* AmbientWave.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AmbientWave.cpp; path = Applications/AmbientWave.cpp; sourceTree = "<group>"; };
+		B917C9192D0F882700F26C4C /* AmbientWave.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AmbientWave.hpp; path = Applications/AmbientWave.hpp; sourceTree = "<group>"; };
 		B91E6F7343623AFE1F02BF84 /* SerialShapeIO.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SerialShapeIO.hpp; path = src/ShapeDisplayManagers/SerialShapeIO.hpp; sourceTree = SOURCE_ROOT; };
 		B951ED652CEA6F6E00C74190 /* WaveModeContours.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveModeContours.cpp; path = Applications/WaveModeContours.cpp; sourceTree = "<group>"; };
 		B951ED662CEA6F6E00C74190 /* WaveModeContours.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = WaveModeContours.hpp; path = Applications/WaveModeContours.hpp; sourceTree = "<group>"; };
@@ -1691,6 +1694,8 @@
 		74241402394D5DFB2E6CA71C /* Applications */ = {
 			isa = PBXGroup;
 			children = (
+				B917C9182D0F882700F26C4C /* AmbientWave.cpp */,
+				B917C9192D0F882700F26C4C /* AmbientWave.hpp */,
 				4ECA76141F51D386216F24B9 /* Application.hpp */,
 				C3F510E4C333E859AB1F3C49 /* Application.cpp */,
 				EC74838243DCCD5CAF6A711F /* AxisChecker.hpp */,
@@ -2873,6 +2878,7 @@
 				10E6F4EE94C43550178020B8 /* messages_mosq.c in Sources */,
 				5844D53420F16F6C051AA093 /* misc_mosq.c in Sources */,
 				970F7BDF7CEC493324E54078 /* mosquitto.c in Sources */,
+				B917C91A2D0F882700F26C4C /* AmbientWave.cpp in Sources */,
 				D767A407D9E0B7926241E33A /* net_mosq.c in Sources */,
 				F360C8CA8B5E631F7D982BF7 /* net_mosq_ocsp.c in Sources */,
 				CFFFAD0843CA81DEAD230ACB /* options.c in Sources */,
