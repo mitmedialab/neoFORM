@@ -7,6 +7,11 @@
 
 #include "AmbientWave.hpp"
 
+double AmbientWave::wave(double x, double y, double k_x, double k_y, double phase) {
+	double omega = timescale * std::sqrt(std::sqrt(k_x * k_x + k_y * k_y));
+	return 0.5 + 0.5 * std::sin(k_x * x + k_y * y + omega * currentTime + phase);
+}
+
 void AmbientWave::update(float dt) {
 	currentTime += dt;	
 
@@ -14,7 +19,7 @@ void AmbientWave::update(float dt) {
 		for (int y = 0; y < heightsForShapeDisplay.getHeight(); y++) {
 			int index = heightsForShapeDisplay.getPixelIndex(x, y);
 
-			heightsForShapeDisplay[index] = 255.0 * (1.0 + std::sin(0.1*x + 0.04*y + 15.0*currentTime))/2.0;
+			heightsForShapeDisplay[index] = 180.0 * wave(x, y, 0.1, 0.04, 0);
 		}
 	}
 }

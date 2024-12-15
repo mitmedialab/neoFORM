@@ -17,6 +17,9 @@ public:
 	std::string getName() {return "Ambient Wave";}
     void update(float dt);
 private:
+	double wave(double x, double y, double k_x, double k_y, double phase);
+private:
+	const double timescale = 2.0;
 	double currentTime = 0.0;
 };
 
