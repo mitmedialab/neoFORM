@@ -48,6 +48,8 @@
 
 #include "WaveModeContours.hpp"
 
+#include "TransitionApp.hpp"
+
 
 class AppManager : public ofBaseApp {
     
@@ -113,6 +115,8 @@ private:
     EquationMode *equationMode;
     
     WaveModeContours *waveModeContours;
+	TransitionApp *transitionApp;
+	bool applicationSwitchBlocked = false;
     
     // program state
     bool paused = false;
