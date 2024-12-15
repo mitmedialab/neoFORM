@@ -48,6 +48,8 @@
 
 #include "WaveModeContours.hpp"
 
+#include "AmbientWave.hpp"
+
 
 class AppManager : public ofBaseApp {
     
@@ -113,6 +115,8 @@ private:
     EquationMode *equationMode;
     
     WaveModeContours *waveModeContours;
+
+	AmbientWave *ambientWave;
     
     // program state
     bool paused = false;
