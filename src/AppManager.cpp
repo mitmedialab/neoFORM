@@ -8,6 +8,7 @@
 #include "AppManager.hpp"
 #include "AmbientWave.hpp"
 #include "SinglePinDebug.hpp"
+#include "TransitionApp.hpp"
 #include "ofEvents.h"
 #include "ofGraphics.h"
 #include "utils.hpp"
@@ -63,6 +64,9 @@ void AppManager::setup() {
 	
 	waveModeContours = new WaveModeContours(m_serialShapeIOManager, kinectManager);
 	applications["waveModeContours"] = waveModeContours;
+
+	// not in applications list
+	transitionApp = new TransitionApp(m_serialShapeIOManager);
 	
 	ambientWave = new AmbientWave(m_serialShapeIOManager);
 	applications["AmbientWave"] = ambientWave;
@@ -297,11 +301,20 @@ void AppManager::draw() {
 }
 
 void AppManager::setCurrentApplication(string appName) {
+	if (applicationSwitchBlocked) return;
+
 	if (applications.find(appName) == applications.end()) {
 		throw "no application exists with name " + appName;
 	}
+
+	if (currentApplication == nullptr) {
+		currentApplication = applications[appName];
+	} else {
+		applicationSwitchBlocked = true;
+		transitionApp->startTransition(currentApplication, applications[appName], 0.6f, &currentApplication, &applicationSwitchBlocked);
+		currentApplication = transitionApp;
+	}
 	
-	currentApplication = applications[appName];
 	updateDepthInputBoundaries();
 }
 

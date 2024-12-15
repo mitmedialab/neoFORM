@@ -77,6 +77,7 @@
 		B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECF8674C7975F1063C5E30CA /* ofxGuiGroup.cpp */; };
 		B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 802251BAF1B35B1D67B32FD0 /* ofxSliderGroup.cpp */; };
 		B917C91A2D0F882700F26C4C /* AmbientWave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917C9182D0F882700F26C4C /* AmbientWave.cpp */; };
+		B917C91D2D0F8E3400F26C4C /* TransitionApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917C91B2D0F8E3300F26C4C /* TransitionApp.cpp */; };
 		B951ED692CEA6F6E00C74190 /* WaveModeContours.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B951ED652CEA6F6E00C74190 /* WaveModeContours.cpp */; };
 		B951ED6E2CEA703B00C74190 /* EquationMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B951ED6C2CEA703B00C74190 /* EquationMode.cpp */; };
 		BBC747EFA455E446D3C6C588 /* AppManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB71C7D49B032CA4888457E3 /* AppManager.cpp */; };
@@ -573,6 +574,8 @@
 		B8F39F6EBA0607ECB7D18D89 /* handle_disconnect.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = handle_disconnect.c; path = "../../../addons/ofxMQTT-1.5.0/libs/mosquitto/src/handle_disconnect.c"; sourceTree = SOURCE_ROOT; };
 		B917C9182D0F882700F26C4C /* AmbientWave.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AmbientWave.cpp; path = Applications/AmbientWave.cpp; sourceTree = "<group>"; };
 		B917C9192D0F882700F26C4C /* AmbientWave.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AmbientWave.hpp; path = Applications/AmbientWave.hpp; sourceTree = "<group>"; };
+		B917C91B2D0F8E3300F26C4C /* TransitionApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransitionApp.cpp; path = Applications/TransitionApp.cpp; sourceTree = "<group>"; };
+		B917C91C2D0F8E3300F26C4C /* TransitionApp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TransitionApp.hpp; path = Applications/TransitionApp.hpp; sourceTree = "<group>"; };
 		B91E6F7343623AFE1F02BF84 /* SerialShapeIO.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = SerialShapeIO.hpp; path = src/ShapeDisplayManagers/SerialShapeIO.hpp; sourceTree = SOURCE_ROOT; };
 		B951ED652CEA6F6E00C74190 /* WaveModeContours.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveModeContours.cpp; path = Applications/WaveModeContours.cpp; sourceTree = "<group>"; };
 		B951ED662CEA6F6E00C74190 /* WaveModeContours.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = WaveModeContours.hpp; path = Applications/WaveModeContours.hpp; sourceTree = "<group>"; };
@@ -2525,6 +2528,8 @@
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				3EE80DAFB34047B8B800B342 /* AppManager.hpp */,
 				FB71C7D49B032CA4888457E3 /* AppManager.cpp */,
+				B917C91B2D0F8E3300F26C4C /* TransitionApp.cpp */,
+				B917C91C2D0F8E3300F26C4C /* TransitionApp.hpp */,
 				4997C055D8B8304C523D6B00 /* DisplayApp.hpp */,
 				56B0CE0DEBBD93163AF7C1A2 /* DisplayApp.cpp */,
 				BDDCA57B66B030A4C45FF4D6 /* ProjectorApp.hpp */,
@@ -2906,6 +2911,7 @@
 				661A1991F5CE4CCC2919D8E7 /* ofxNetworkUtils.cpp in Sources */,
 				960D20B191346612D5C05A6A /* ofxTCPClient.cpp in Sources */,
 				125506CD3E5F428AAFE5CC65 /* ofxTCPManager.cpp in Sources */,
+				B917C91D2D0F8E3400F26C4C /* TransitionApp.cpp in Sources */,
 				66CA411C5A9664E27326BF36 /* ofxTCPServer.cpp in Sources */,
 				E2564CF7DDB3713772BB682E /* ofxUDPManager.cpp in Sources */,
 				250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */,

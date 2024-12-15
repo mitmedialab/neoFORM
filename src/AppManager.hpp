@@ -48,7 +48,10 @@
 
 #include "WaveModeContours.hpp"
 
+#include "TransitionApp.hpp"
+
 #include "AmbientWave.hpp"
+
 
 
 class AppManager : public ofBaseApp {
@@ -116,7 +119,12 @@ private:
     
     WaveModeContours *waveModeContours;
 
-	AmbientWave *ambientWave;
+	  TransitionApp *transitionApp;
+	  bool applicationSwitchBlocked = false;
+
+
+    AmbientWave *ambientWave;
+
     
     // program state
     bool paused = false;
