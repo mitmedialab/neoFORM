@@ -213,31 +213,49 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
     }
 }
 
-// Limit all values, to reduce the maximum transient power draw
+// Manages the power consumption of a shape display by limiting the total change in pin heights 
+// between the current and previous states. If the total change exceeds a specified power threshold, 
+// the function applies a dampening effect to the new pin positions to ensure the power draw remains
+// within the limit returned by the getMaxPowerLoad() function.
 void SerialShapeIOManager::limitPowerDraw() {
-    double totalCost = 0;
-    double cutoffScale = 3;
+    double totalCost = 0; // Initialize the total cost of height changes
+    double cutoffScale = 3; // Scale factor for limiting the pin height changes
+
+    // Calculate the total cost of the height changes
     for(int i = 0; i < shapeDisplaySizeX; i++) {
         for(int j = 0; j < shapeDisplaySizeY; j++) {
+            // Calculate the difference between current and previous heights
             double pinDiff = heightsForShapeDisplay[i][j] - (float)previousHeightsForShapeDisplay[i][j];
+            // Normalize the difference to a range of -1 to 1
             pinDiff /= pinHeightMax - pinHeightMin; // 1 for min -> max, 0 for h -> h, -1 for max -> min
+            // Calculate the cost as the absolute value of the normalized difference
             double cost = abs(pinDiff);
+            // Accumulate the total cost, applying the cutoff scale
             totalCost += cutoffScale*cost > 1 ? 1 : cutoffScale * cost;
         }
     }
 
+    // Check if the total cost exceeds the maximum allowable power load
     if (totalCost > shapeDisplaySizeX * shapeDisplaySizeY * getMaxPowerLoad()) {
+        // Calculate the scale ratio to limit the power draw
         double scaleRatio = (shapeDisplaySizeX * shapeDisplaySizeY *getMaxPowerLoad())/totalCost;
+
+        // Apply a dampening effect to the new pin positions
         for(int i = 0; i < shapeDisplaySizeX; i++) {
             for(int j = 0; j < shapeDisplaySizeY; j++) {
+                 // Calculate the difference between current and previous heights
                 double pinDiff = heightsForShapeDisplay[i][j] - (float)previousHeightsForShapeDisplay[i][j];
+                // Normalize the difference to a range of -1 to 1
                 pinDiff /= pinHeightMax - pinHeightMin; // 1 for min -> max, 0 for h -> h, -1 for max -> min
+                // Apply the cutoff scale to the difference
                 pinDiff = cutoffScale*pinDiff > 1 ? 1.0/cutoffScale : pinDiff;
+                // Adjust the current height based on the scale ratio
                 heightsForShapeDisplay[i][j] = previousHeightsForShapeDisplay[i][j] + (heightsForShapeDisplay[i][j] - (int)previousHeightsForShapeDisplay[i][j]) * scaleRatio;
             }
         }
     }
 
+    // Update the previous heights to the current heights
     previousHeightsForShapeDisplay = heightsForShapeDisplay;
 }
 
