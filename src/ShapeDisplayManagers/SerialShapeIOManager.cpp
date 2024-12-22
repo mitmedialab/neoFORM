@@ -213,6 +213,34 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
     }
 }
 
+// Limit all values, to reduce the maximum transient power draw
+void SerialShapeIOManager::limitPowerDraw() {
+    double totalCost = 0;
+    double cutoffScale = 3;
+    for(int i = 0; i < shapeDisplaySizeX; i++) {
+        for(int j = 0; j < shapeDisplaySizeY; j++) {
+            double pinDiff = heightsForShapeDisplay[i][j] - (float)previousHeightsForShapeDisplay[i][j];
+            pinDiff /= pinHeightMax - pinHeightMin; // 1 for min -> max, 0 for h -> h, -1 for max -> min
+            double cost = abs(pinDiff);
+            totalCost += cutoffScale*cost > 1 ? 1 : cutoffScale * cost;
+        }
+    }
+
+    if (totalCost > shapeDisplaySizeX * shapeDisplaySizeY * getMaxPowerLoad()) {
+        double scaleRatio = (shapeDisplaySizeX * shapeDisplaySizeY *getMaxPowerLoad())/totalCost;
+        for(int i = 0; i < shapeDisplaySizeX; i++) {
+            for(int j = 0; j < shapeDisplaySizeY; j++) {
+                double pinDiff = heightsForShapeDisplay[i][j] - (float)previousHeightsForShapeDisplay[i][j];
+                pinDiff /= pinHeightMax - pinHeightMin; // 1 for min -> max, 0 for h -> h, -1 for max -> min
+                pinDiff = cutoffScale*pinDiff > 1 ? 1.0/cutoffScale : pinDiff;
+                heightsForShapeDisplay[i][j] = previousHeightsForShapeDisplay[i][j] + (heightsForShapeDisplay[i][j] - (int)previousHeightsForShapeDisplay[i][j]) * scaleRatio;
+            }
+        }
+    }
+
+    previousHeightsForShapeDisplay = heightsForShapeDisplay;
+}
+
 // Copy data from storage in the 2D array to the corresponding arduino board
 // structures. Flip height values where needed to match the board's orientation.
 void SerialShapeIOManager::readyDataForArduinos() {
