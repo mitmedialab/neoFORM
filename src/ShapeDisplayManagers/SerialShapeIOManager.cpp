@@ -312,6 +312,9 @@ void SerialShapeIOManager::update() {
 
     // prepare height data for sending to shape display
     clipAllHeightValuesToBeWithinRange();
+    
+    // Run the power limiter, which keeps the power draw within the specified limit.
+    limitPowerDraw();
     readyDataForArduinos();
 
     // send height data. if the display talks back, ask it what it's doing
