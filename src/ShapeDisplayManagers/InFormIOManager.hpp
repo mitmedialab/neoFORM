@@ -32,6 +32,9 @@ public:
         return {};
     }
     
+    // inFORM has a power limitation, so we set a lower power load threshold here.
+    double getMaxPowerLoad() {return 0.1;}
+    
     // should pins that appear stuck be turned off at regular intervals?
     bool enableStuckPinSafetyToggle = false;
     
