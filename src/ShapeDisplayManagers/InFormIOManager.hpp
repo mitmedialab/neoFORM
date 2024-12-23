@@ -32,7 +32,7 @@ public:
         return {};
     }
     
-    // inFORM has a power limitation, so we set a lower power load threshold here.
+    // inFORM has a power limitation with the built in power supply, so we set a lower power load threshold here to avoid overloading the power supply.
     double getMaxPowerLoad() {return 0.1;}
     
     // should pins that appear stuck be turned off at regular intervals?
