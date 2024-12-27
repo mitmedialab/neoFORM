@@ -122,9 +122,19 @@ void KinectHandWavy::updateHeights() {
 	ofShortPixels pix = m_kinectManager->getDepthPixels();
 	m_kinectManager->crop(pix);
 	m_kinectManager->thresholdInterp(pix, 200*256, 220*256, 0, 255*256);
+
+    // Apply a blur to smooth out the kinect depth image.
+    // Convert the higher precision depth image to a lower precision OpenCV grayscale image in order to add a blur.
+    // This is the last stage of processing, so hopefully the downsampling won't impact the quality of the actuated pixels.
+    ofxCvGrayscaleImage grayImage;
+    grayImage.setFromPixels(pix);
+ 
+    // Apply a Gaussian blur
+    grayImage.blurGaussian(41);
     
-    // Pass the current depth image to the shape display manager to get the actuated pixels.
-    ofPixels livePixels = m_CustomShapeDisplayManager->cropToActiveSurface( pix);
+    // Pass the blurred depth image pixels to the shape display manager to get the actuated pixels.
+    // We can use the ofxGrayscaleImages getPixels, it appears to be compatible with passing the pix object.
+    ofPixels livePixels = m_CustomShapeDisplayManager->cropToActiveSurface( grayImage.getPixels() );
     
     // Directly copy all pixels from livePixels to heightsForShapeDisplay.
     heightsForShapeDisplay = livePixels;
