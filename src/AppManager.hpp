@@ -23,7 +23,7 @@
 #include "TransformIOManager.hpp"
 
 // External Device Managers
-#include "KinectManager.hpp"
+#include "KinectManagerSimple.hpp"
 
 // major classes
 #include "Application.hpp"
@@ -94,7 +94,7 @@ private:
     SerialShapeIOManager *m_serialShapeIOManager;
     
     // external devices
-    KinectManager *kinectManager;
+    KinectManagerSimple *kinectManager;
     
     // applications
     map<string, Application *> applications;

@@ -27,7 +27,7 @@ void AppManager::setup() {
 	// kinectManager = new KinectManager();
 	// Depth thresholds for the kinect are set here.
 	
-	kinectManager = new KinectManager(255, 90, 20);
+	kinectManager = new KinectManagerSimple();
 	
 	// zero timeOfLastUpdate tracker
 	timeOfLastUpdate = elapsedTimeInSeconds();
