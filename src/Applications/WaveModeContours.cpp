@@ -103,11 +103,28 @@ void WaveModeContours::update(float dt){
 }
 
 void WaveModeContours::updateMask(){
-    depthImg = m_kinectManager->croppedDepthImg;
-    depthImg.blurGaussian(1);
-    contourFinder.findContours(depthImg, 100, (m_kinectManager->imageWidth)*(m_kinectManager->imageHeight) / 2, 1, false);
     
-    maskPixels = depthImg.getPixels();
+    ofShortPixels pix = m_kinectManager->getDepthPixels();
+    m_kinectManager->crop(pix);
+    
+    // Apply thresholding and interpolation directly to the 16-bit depth pixel values
+    m_kinectManager->thresholdInterp(pix, 200*256, 220*256, 0, 255*256);
+    
+    // Cast the incoming ofShortPixels data to ofCvGrayscaleImage for the contour finder.
+    ofxCvGrayscaleImage grayImage;
+    grayImage.allocate(pix.getWidth(), pix.getHeight()); // Allocate with the correct dimensions
+    grayImage.setFromPixels(pix);
+    
+    // Blur the image to reduce noise
+    grayImage.blurGaussian(1);
+
+    // Calculate the maxArea for the contour finder based on the cropped image size.
+    int maxArea = ( grayImage.getWidth() * grayImage.getHeight() ) / 2;
+
+    // Find the contours in the cropped depth image.
+    contourFinder.findContours(grayImage, 100, maxArea, 1, false);
+    
+    maskPixels = grayImage.getPixels();
     std::vector<ofPoint> currentCentroids;
     
     float dist;
@@ -277,7 +294,7 @@ void WaveModeContours::drawGraphicsForShapeDisplay(int x, int y, int width, int 
     // Draw the depth image
     ofShortImage depthImg = m_kinectManager->getDepthPixels();
     depthImg.draw(2, 2, depthImg.getWidth(), depthImg.getHeight());
-
+    
     // Reset the color to fully opaque white
     ofSetColor(255, 255, 255, 255);
 
