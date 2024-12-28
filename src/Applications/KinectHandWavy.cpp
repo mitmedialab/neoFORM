@@ -122,6 +122,13 @@ void KinectHandWavy::updateHeights() {
     
     ofShortPixels pix = m_kinectManager->getDepthPixels();
     m_kinectManager->crop(pix);
+
+    // Apply thresholding and interpolation directly to the 16-bit depth pixel values.
+    // This effectively isolates a portion of the depth image that is within a certain range of values in z-space.
+    // Pixels with depth values below 51200 (200*256) are set to 0.
+    // Pixels with depth values above 56320 (220*256) are set to 65280 (255*256).
+    // Pixels with depth values between 51200 and 56320 are linearly interpolated between 0 and 65280.
+    // The function acts on a reference to the original object, so the original object is modified.
     m_kinectManager->thresholdInterp(pix, 200*256, 220*256, 0, 255*256);
     
     // Pass the current depth image to the shape display manager to get the actuated pixels.
