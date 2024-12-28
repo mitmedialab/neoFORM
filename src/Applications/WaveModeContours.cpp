@@ -13,7 +13,7 @@
 
 #include <algorithm>
 
-WaveModeContours::WaveModeContours(SerialShapeIOManager *theSerialShapeIOManager, KinectManager *theKinectManager) : Application(theSerialShapeIOManager) {
+WaveModeContours::WaveModeContours(SerialShapeIOManager *theSerialShapeIOManager, KinectManagerSimple *theKinectManager) : Application(theSerialShapeIOManager) {
     m_kinectManager = theKinectManager;
     setup();
 }
@@ -103,11 +103,28 @@ void WaveModeContours::update(float dt){
 }
 
 void WaveModeContours::updateMask(){
-    depthImg = m_kinectManager->croppedDepthImg;
-    depthImg.blurGaussian(1);
-    contourFinder.findContours(depthImg, 100, (m_kinectManager->imageWidth)*(m_kinectManager->imageHeight) / 2, 1, false);
     
-    maskPixels = depthImg.getPixels();
+    ofShortPixels pix = m_kinectManager->getDepthPixels();
+    m_kinectManager->crop(pix);
+    
+    // Apply thresholding and interpolation directly to the 16-bit depth pixel values
+    m_kinectManager->thresholdInterp(pix, 200*256, 220*256, 0, 255*256);
+    
+    // Cast the incoming ofShortPixels data to ofCvGrayscaleImage for the contour finder.
+    ofxCvGrayscaleImage grayImage;
+    grayImage.allocate(pix.getWidth(), pix.getHeight()); // Allocate with the correct dimensions
+    grayImage.setFromPixels(pix);
+    
+    // Blur the image to reduce noise
+    grayImage.blurGaussian(1);
+
+    // Calculate the maxArea for the contour finder based on the cropped image size.
+    int maxArea = ( grayImage.getWidth() * grayImage.getHeight() ) / 2;
+
+    // Find the contours in the cropped depth image.
+    contourFinder.findContours(grayImage, 100, maxArea, 1, false);
+    
+    maskPixels = grayImage.getPixels();
     std::vector<ofPoint> currentCentroids;
     
     float dist;
@@ -218,13 +235,6 @@ void WaveModeContours::updatePreviousWallMask() {
     }
 }
 
-ofxCvGrayscaleImage WaveModeContours::getBlurredDepthImg() {
-    ofxCvGrayscaleImage blurredDepthImg = m_kinectManager->croppedDepthImg;
-    blurredDepthImg.blurGaussian(41);
-    
-    return blurredDepthImg;
-}
-
 void WaveModeContours::updateHeights(){
 
     for (int x = 0; x < cols; x++) {
@@ -272,19 +282,19 @@ std::tuple<int, int, int> WaveModeContours::heightPixelToMapColor(int Height) {
     
 // This is responsible for drawing the on screen preview of the app's behavior.
 void WaveModeContours::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
-    // prevents running without kinectManager
-    if (!m_kinectManager->isConnected()) return;
 
     //*** Draw the color pixels for reference.
-    m_kinectManager->colorImg.draw(2, 2, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+    ofImage colorImg = m_kinectManager->getColorPixels();
+    colorImg.draw(2, 2, colorImg.getWidth(), colorImg.getHeight());
     
     //*** Overlay the depth image on top of the color image.
     // Set the color to white with 50% opacity
     ofSetColor(255, 255, 255, 127);
 
     // Draw the depth image
-    m_kinectManager->depthImg.draw(2, 2, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
-
+    ofShortImage depthImg = m_kinectManager->getDepthPixels();
+    depthImg.draw(2, 2, depthImg.getWidth(), depthImg.getHeight());
+    
     // Reset the color to fully opaque white
     ofSetColor(255, 255, 255, 255);
 
@@ -292,8 +302,8 @@ void WaveModeContours::drawGraphicsForShapeDisplay(int x, int y, int width, int 
     drawPreviewMaskRectangle();
 
     //*** Preview shape display pixels
-    ofxCvGrayscaleImage blurredDepthImg = getBlurredDepthImg();
-    blurredDepthImg.draw(2, 400, m_kinectManager->getImageWidth(), m_kinectManager->getImageHeight());
+    m_kinectManager->crop(depthImg.getPixels());
+    depthImg.draw(2, 400, depthImg.getWidth(), depthImg.getHeight());
 
     //*** Contours are disabled, but maybe they will be useful in the future.
     //m_kinectManager->drawContours();
@@ -316,10 +326,10 @@ void WaveModeContours::drawPreviewMaskRectangle() {
 
         // Draw the rectangle with the dimensions of the mask.
         ofDrawRectangle(
-                        m_kinectManager->m_mask.getX(),
-                        m_kinectManager->m_mask.getY(),
-                        m_kinectManager->m_mask.getWidth(),
-                        m_kinectManager->m_mask.getHeight()
+                        m_kinectManager->mask.getX(),
+                        m_kinectManager->mask.getY(),
+                        m_kinectManager->mask.getWidth(),
+                        m_kinectManager->mask.getHeight()
         );
 
         // Unset color and fill for future drawing operations
@@ -332,13 +342,13 @@ void WaveModeContours::drawPreviewActuatedSections() {
     float transformWidth = ((TransformIOManager*)m_CustomShapeDisplayManager)->m_Transform_W;
 
     // Get the actuated section dimensions from the CustomShapeDisplayManager
-    float pixelsPerInch = m_kinectManager->m_mask.getWidth() / transformWidth;
+    float pixelsPerInch = m_kinectManager->mask.getWidth() / transformWidth;
 
     std::vector<ofRectangle> sections = m_CustomShapeDisplayManager->createSections(pixelsPerInch);
 
     // Create a frame buffer with the same dimensions as the cropped signal.
     ofFbo fbo;
-    fbo.allocate(m_kinectManager->m_mask.getWidth(), m_kinectManager->m_mask.getHeight(), GL_RGBA); // GL_RGBA for transparency
+    fbo.allocate(m_kinectManager->mask.getWidth(), m_kinectManager->mask.getHeight(), GL_RGBA); // GL_RGBA for transparency
 
     // Begin drawing into the frame buffer
     fbo.begin();
@@ -352,7 +362,7 @@ void WaveModeContours::drawPreviewActuatedSections() {
 
     // End drawing into the frame buffer
     fbo.end();
-    fbo.draw(m_kinectManager->m_mask);
+    fbo.draw(m_kinectManager->mask);
 }
 
 void WaveModeContours::keyPressed(int Key) {
