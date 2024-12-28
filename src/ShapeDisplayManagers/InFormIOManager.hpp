@@ -19,7 +19,7 @@ class InFormIOManager : public SerialShapeIOManager {
 public:
     InFormIOManager();
     
-    InFormIOManager(KinectManager* kinectRef);
+    InFormIOManager(KinectManagerSimple* kinectRef);
     
     // Name to identify the shape display.
     string getShapeDisplayName() {

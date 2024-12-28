@@ -69,7 +69,7 @@ InFormIOManager::InFormIOManager() {
 }
 
 // Secondary Constructor delegates to the primary constructor and adds the kinect reference.
-InFormIOManager::InFormIOManager(KinectManager* kinectRef) : InFormIOManager() {
+InFormIOManager::InFormIOManager(KinectManagerSimple* kinectRef) : InFormIOManager() {
     m_kinectManagerRef = kinectRef;
 }
 
