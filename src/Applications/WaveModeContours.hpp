@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include "Application.hpp"
-#include "KinectManager.hpp"
+#include "KinectManagerSimple.hpp"
 #include "ofxKinect.h"
 #include "ofxOpenCv.h"
 #include "ofxXmlSettings.h"
@@ -19,8 +19,8 @@
 class WaveModeContours : public Application{
 public:
     
-    WaveModeContours(KinectManager* kinectManager);
-    WaveModeContours(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager);
+    WaveModeContours(KinectManagerSimple* kinectManager);
+    WaveModeContours(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManagerSimple *theKinectManager);
     
     string getName() {return "Interactive Wave";};
     
@@ -69,7 +69,7 @@ public:
     
     
 private:
-    KinectManager* m_kinectManager;
+    KinectManagerSimple* m_kinectManager;
     
     void updateHeights();
     
