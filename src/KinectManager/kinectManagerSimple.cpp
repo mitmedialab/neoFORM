@@ -121,11 +121,11 @@ void KinectManagerSimple::setDepthClipping(short near, short far) {
 }
 
 void KinectManagerSimple::crop(ofPixels &pix) {
-	pix.crop(mask.x, mask.y, mask.width, mask.width);
+	pix.crop(mask.x, mask.y, mask.width, mask.height);
 }
 
 void KinectManagerSimple::crop(ofShortPixels &pix) {
-	pix.crop(mask.x, mask.y, mask.width, mask.width);
+	pix.crop(mask.x, mask.y, mask.width, mask.height);
 }
 
 KinectManagerSimple::~KinectManagerSimple() {
