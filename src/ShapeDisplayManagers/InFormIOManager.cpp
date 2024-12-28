@@ -132,7 +132,12 @@ ofPixels InFormIOManager::cropToActiveSurface(ofPixels fullSurface) {
     // Inform needs no cropping, but it does need to be resized to pin dimensions of the active surface.
     // NOTE video mode doesn't need resizing, so check to see if the dimensions differ before resizing.
     if (fullSurface.getWidth() != shapeDisplaySizeX || fullSurface.getHeight() != shapeDisplaySizeY) {
-        fullSurface.resize(shapeDisplaySizeX, shapeDisplaySizeY);
+        // Convert to ofImage before resizing to improve quality.
+        ofImage fullSurfaceIm = fullSurface;
+        // Resize the image.
+        fullSurfaceIm.resize(shapeDisplaySizeX, shapeDisplaySizeY);
+        // Convert back to ofPixels for consistency.
+        fullSurface = fullSurfaceIm.getPixels();
     }
 
     return fullSurface;
