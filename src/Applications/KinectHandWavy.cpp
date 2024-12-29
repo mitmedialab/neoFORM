@@ -21,8 +21,6 @@ KinectHandWavy::KinectHandWavy(SerialShapeIOManager *theSerialShapeIOManager, Ki
     m_kinectManager = theKinectManager;
 }
 
-
-
 void KinectHandWavy::setup() {
     cout << "hello there hand wavy";
 }
