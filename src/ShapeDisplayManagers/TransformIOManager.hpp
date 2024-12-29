@@ -29,8 +29,6 @@ public:
     
     // should pins that appear stuck be turned off at regular intervals?
     bool enableStuckPinSafetyToggle = false;
-    
-    ofPixels getKinectStream();
 
     // ***********************
     // Transform Slicing Dimensions
