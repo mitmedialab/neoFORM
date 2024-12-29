@@ -144,12 +144,7 @@ ofPixels TransformIOManager::cropToActiveSurface( ofPixels fullSurface ) {
     ofPixels combinedActiveZones = combineActiveZones(fullSurface, sections);
     
     // Scale and rotate the combined active zones to match the display.
-    // First, convert to ofImage before resizing to improve quality.
-    ofImage combinedActiveZonesIm = combinedActiveZones;
-    // Resize the image.
-    combinedActiveZonesIm.resize(shapeDisplaySizeX, shapeDisplaySizeY);
-    // Convert back to ofPixels for consistency.
-    combinedActiveZones = combinedActiveZonesIm.getPixels();
+    combinedActiveZones.resize(shapeDisplaySizeX, shapeDisplaySizeY);
     
     combinedActiveZones.rotate90(2);
     
