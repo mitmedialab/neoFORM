@@ -132,6 +132,12 @@ ofPixels InFormIOManager::cropToActiveSurface(ofPixels fullSurface) {
     // Inform needs no cropping, but it does need to be resized to pin dimensions of the active surface.
     // NOTE video mode doesn't need resizing, so check to see if the dimensions differ before resizing.
     if (fullSurface.getWidth() != shapeDisplaySizeX || fullSurface.getHeight() != shapeDisplaySizeY) {
+        
+        // Originally we just resized directly, but for inForm there may be some quality benefit to converting to ofImage first.
+        // We're not doing this for TRANSFORM, because it messes up the escher mode video, so the original scaler is here commented out in case we decide to revert back.
+        //fullSurface.resize(shapeDisplaySizeX, shapeDisplaySizeY);
+
+        // This is the ofImage scaler, which may help smoothness? Maybe it makes a difference when working with 16 bit pixels versus 8 bit?
         // Convert to ofImage before resizing to improve quality.
         ofImage fullSurfaceIm = fullSurface;
         // Resize the image.
