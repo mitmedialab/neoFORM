@@ -1,12 +1,19 @@
 #include "DisplayApp.hpp"
 
+
+DisplayApp::~DisplayApp() {
+    mainApp->cam = nullptr;
+}
+
 //--------------------------------------------------------------
 void DisplayApp::setup(){
 	mainApp->equationMode->publicDisplaySetup();
+    cam.setup(1920, 1080);
 }
 
 //--------------------------------------------------------------
 void DisplayApp::update(){
+    cam.update();
 }
 
 //--------------------------------------------------------------
