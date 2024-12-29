@@ -58,6 +58,11 @@ void AppManager::setup() {
 	
 	kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager, kinectManager);
 	applications["kinectHandWavy"] = kinectHandWavy;
+    
+    // Telepresence mode takes 16 bit thresholding values as parameters here.
+    telepresence = new Telepresence(m_serialShapeIOManager, kinectManager,
+                                 255 * 256, 140 * 256, cam);
+    applications["telepresence"] = telepresence;
 	
 	equationMode = new EquationMode(m_serialShapeIOManager);
 	applications["equationMode"] = equationMode;

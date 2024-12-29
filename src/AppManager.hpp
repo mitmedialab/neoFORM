@@ -43,6 +43,7 @@
 #include "DepthDebugApp.hpp"
 
 #include "KinectHandWavy.hpp"
+#include "Telepresence.hpp"
 
 #include "EquationMode.hpp"
 
@@ -117,6 +118,9 @@ private:
     
     // hand wavy application
     KinectHandWavy *kinectHandWavy;
+    
+    // Telepresence
+    Telepresence *telepresence;
     
     EquationMode *equationMode;
     
