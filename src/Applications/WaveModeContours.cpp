@@ -21,8 +21,11 @@ WaveModeContours::WaveModeContours(SerialShapeIOManager *theSerialShapeIOManager
 
 void WaveModeContours::setup(){
     
+    // Get the dimensions of the shape display
     cols = (m_CustomShapeDisplayManager)->shapeDisplaySizeX;
     rows = (m_CustomShapeDisplayManager)->shapeDisplaySizeY;
+
+    // Allocate and initialize the internal wave pixels
     m_IntWavePixels.allocate(cols, rows, OF_IMAGE_GRAYSCALE);
     m_IntWavePixels.set(0);
     
@@ -34,11 +37,15 @@ void WaveModeContours::setup(){
     wallMask.resize(cols, std::vector<bool>(rows, false));
     previousWallMask.resize(cols, std::vector<bool>(rows, false));
     
+    // Initialize contour finder and last contour centroids
     contourFinder;
     lastContourCentroids;
     
     friction = 0.8;
     
+    // Initialize density and velocity arrays with sinusoidal values.
+    // This sets up an initial wave pattern for the fluid simulation.
+    // It is optional, the fluid simulation can be started with a blank state.
     for (int x = 0; x < cols; ++x) {
         for (int y = 0; y < rows; ++y) {
             double val = 0;
@@ -65,6 +72,9 @@ void WaveModeContours::setup(){
 // Put the functions for the wave operations here:
 //----------------------------------------------------
 
+// Called by solveFluid() on each cell in the fluid grid to update the velocity and density of the simulated fluid.
+// The velocity is adjusted based on friction and the difference between the sum of adjacent densities
+// and the current cell's density. The density is then updated by adding the new velocity.
 float WaveModeContours::getAdjacencyDensitySum(int x, int y){
     float sum = 0;
     if (x - 1 >= 0 and not wallMask[x - 1][y]){sum += density[x - 1][y];}
@@ -75,10 +85,16 @@ float WaveModeContours::getAdjacencyDensitySum(int x, int y){
 }
 
 void WaveModeContours::solveFluid(){
+    // Iterate over each cell in the fluid grid
     for (int x = 0; x < cols; x++){
         for (int y = 0; y < rows; y++){
-//        if (wallMask[x][y]){continue;}
+        // Update the velocity of the current cell
+        // The velocity is adjusted based on friction and the difference between the sum of adjacent densities
+        // and the current cell's density. This simulates the fluid dynamics.
         velocity[x][y] = friction * velocity[x][y] + (getAdjacencyDensitySum(x, y) - density[x][y] * 4.0) * 0.1;
+        
+        // Update the density of the current cell
+        // The density is updated by adding the new velocity to the current density.
         density[x][y] = density[x][y] + velocity[x][y];
         }
     }
@@ -96,8 +112,10 @@ void WaveModeContours::update(float dt){
     
 }
 
+// Processes incoming depth data, finds the contours of detected objects, and updates the matrix of detected obstacles (called walls here).
+// If a new wall is detected based on the last calculated matrix of wall positions, a ripple effect is applied to the fluid simulation at that location.
 void WaveModeContours::updateMask(){
-    
+    // Get the depth image from the Kinect manager and apply a Gaussian blur.
     ofShortPixels pix = m_kinectManager->getDepthPixels();
     m_kinectManager->crop(pix);
     
@@ -123,6 +141,9 @@ void WaveModeContours::updateMask(){
     
     float dist;
     int numBlobs = contourFinder.nBlobs;
+    
+    // For each detected blob, the centroid is calculated and stored.
+    // The mask pixels are updated based on the distance from the centroid.
     for (int i = 0; i < numBlobs; i++) {
         ofxCvBlob blob = contourFinder.blobs[i];
         ofPoint centroid = blob.centroid;
@@ -144,6 +165,7 @@ void WaveModeContours::updateMask(){
         }
     }
     
+    // Resizes the mask image to match the shape display size.
     ofImage img;
     img.setFromPixels(maskPixels);
     img.resize((m_CustomShapeDisplayManager)->shapeDisplaySizeX, (m_CustomShapeDisplayManager)->shapeDisplaySizeY);
@@ -176,6 +198,7 @@ void WaveModeContours::updateMask(){
     if (timeControl % 100 <= 5) {
         applyRippleEffect(cols / 2, rows / 2);
     }
+    // Updates the previous wall mask and stores the current centroids.
     updatePreviousWallMask();
     lastContourCentroids = currentCentroids;
 }
