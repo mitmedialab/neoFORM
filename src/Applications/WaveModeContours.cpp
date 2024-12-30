@@ -28,20 +28,14 @@ void WaveModeContours::setup(){
     
     timeControl = 0;
     
-    density = new float*[cols];
-    velocity = new float*[cols];
-    wallMask = new bool*[cols];
-    previousWallMask = new bool*[cols];
+    // Allocate memory for density, velocity, wallMask, and previousWallMask vectors
+    density.resize(cols, std::vector<float>(rows, 0));
+    velocity.resize(cols, std::vector<float>(rows, 0));
+    wallMask.resize(cols, std::vector<bool>(rows, false));
+    previousWallMask.resize(cols, std::vector<bool>(rows, false));
     
     contourFinder;
     lastContourCentroids;
-    
-    for (int x = 0; x < cols; x++){
-        density[x] = new float[rows];
-        velocity[x] = new float[rows];
-        wallMask[x] = new bool[rows];
-        previousWallMask[x] = new bool[rows];
-    }
     
     friction = 0.8;
     
