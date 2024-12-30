@@ -400,6 +400,33 @@ void WaveModeContours::drawPreviewActuatedSections() {
     fbo.draw(m_kinectManager->mask);
 }
 
+// Control the raindrop ripple effect with the keyboard.
+// Uses 2 different scales for the rainDropsPerSecond value, depending on whether it is less than 1 or greater than 1.
+// The rainDropsPerSecond value is changed by 0.2 if it is less than 1, and by 1 if it is greater than 1; this is to give more options for light rain.
 void WaveModeContours::keyPressed(int Key) {
+    
+    // Look for a ']', a forward arrow key press, or a an up arrow key press to increase the rainDropsPerSecond value.
+    if (Key == 93 || Key == 57358 || Key == 57357) {
+        // If rainDropsPerSecond is less than 1, increment it by .2
+        if (rainDropsPerSecond < 1) {
+            rainDropsPerSecond += 0.2;
+        } else {
+            // Otherwise, increment it by 1
+            rainDropsPerSecond += 1;
+        } 
+        cout << "Rain Drops Per Second: " << rainDropsPerSecond << endl;  
+    }
+    
+    // Look for a '[', backward arrow key press or a down arrow key to decrease the rainDropsPerSecond value.
+    if (Key == 91 || Key == 57356 || Key == 57359) {
+        // If rainDropsPerSecond is less than or equal to, decrement it by .2
+        if (rainDropsPerSecond > 0.01 && rainDropsPerSecond <= 1) { // 0.01 to account for minor floating point errors
+            rainDropsPerSecond -= 0.2;
+        } else if (rainDropsPerSecond > 1) {
+            // Otherwise, decrement it by 1
+            rainDropsPerSecond -= 1;
+        }
+        cout << "Rain Drops Per Second: " << rainDropsPerSecond << endl;
+    }
     
 }
