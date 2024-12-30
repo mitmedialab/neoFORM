@@ -11,6 +11,9 @@
 #include <cmath>
 #include <vector>
 
+#include <cstdlib> // Include for rand() and srand()
+#include <ctime>   // Include for time()
+
 #include <algorithm>
 
 WaveModeContours::WaveModeContours(SerialShapeIOManager *theSerialShapeIOManager, KinectManagerSimple *theKinectManager) : Application(theSerialShapeIOManager) {
@@ -28,9 +31,12 @@ void WaveModeContours::setup(){
     // Allocate and initialize the internal wave pixels
     m_IntWavePixels.allocate(cols, rows, OF_IMAGE_GRAYSCALE);
     m_IntWavePixels.set(0);
-    
-    timeControl = 0;
-    
+        
+    // Set the raindrop ripple effect parameters
+    timeControl = 0.0f; // Initialize timeControl
+    rainDropsPerSecond = 0.2; // Example initial value, can be adjusted during runtime
+    lastRippleTime = 0.0f; // Initialize the timer
+
     // Allocate memory for density, velocity, wallMask, and previousWallMask vectors
     density.resize(cols, std::vector<float>(rows, 0));
     velocity.resize(cols, std::vector<float>(rows, 0));
@@ -62,6 +68,9 @@ void WaveModeContours::setup(){
             previousWallMask[x][y] = wall;
         }
     }
+    
+    // Initialize a random seed for raindrop ripple position.
+    srand(static_cast<unsigned int>(time(0)));
     
     ProjectorHeightMapPixels.allocate(cols, rows, OF_IMAGE_COLOR);
     ProjectorHeightMapPixels.setColor(ofColor::black);
@@ -108,7 +117,9 @@ void WaveModeContours::update(float dt){
     solveFluid();
     updateHeights();
     updatePreviousWallMask();
-    timeControl++;
+
+    // Increment timeControl based on delta time
+    timeControl += dt;
     
 }
 
@@ -194,10 +205,17 @@ void WaveModeContours::updateMask(){
         }
     }
     
-    // Apply a ripple effect to the center of the surface every 5 seconds.
-    if (timeControl % 100 <= 5) {
-        applyRippleEffect(cols / 2, rows / 2);
+    // Calculate the interval based on rainDropsPerSecond
+    float interval = 1.0 / rainDropsPerSecond;
+
+    // Apply a raindrop ripple effect at a random location on the grid at the specified interval.
+    if (timeControl - lastRippleTime >= interval) {
+        int randomX = rand() % cols; // Generate a random x-coordinate within the grid
+        int randomY = rand() % rows; // Generate a random y-coordinate within the grid
+        applyRippleEffect(randomX, randomY);
+        lastRippleTime = timeControl; // Reset the timer
     }
+
     // Updates the previous wall mask and stores the current centroids.
     updatePreviousWallMask();
     lastContourCentroids = currentCentroids;

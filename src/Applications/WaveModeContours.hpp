@@ -31,7 +31,10 @@ public:
     int rows;
     float friction;
     
-    int timeControl;
+    // Raindrop ripple effect parameters
+    float timeControl;
+    float rainDropsPerSecond; // Variable to control the number of raindrops per second
+    float lastRippleTime; // Timer to track the last ripple effect time
     
     int highResCols;
     int highResRows;
