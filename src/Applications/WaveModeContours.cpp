@@ -14,6 +14,8 @@
 #include <cstdlib> // Include for rand() and srand()
 #include <ctime>   // Include for time()
 
+#include <iomanip> // Include for std::setprecision
+
 #include <algorithm>
 
 WaveModeContours::WaveModeContours(SerialShapeIOManager *theSerialShapeIOManager, KinectManagerSimple *theKinectManager) : Application(theSerialShapeIOManager) {
@@ -429,4 +431,15 @@ void WaveModeContours::keyPressed(int Key) {
         cout << "Rain Drops Per Second: " << rainDropsPerSecond << endl;
     }
     
+}
+
+string WaveModeContours::appInstructionsText() {
+    string instructions = (string) "Rainfall: \n";
+    instructions += "Use arrow or bracket keys to change rainfall.\n";
+
+    // Use stringstream to format rainDropsPerSecond to one decimal place
+    std::ostringstream stream;
+    stream << std::fixed << std::setprecision(1) << rainDropsPerSecond;
+    instructions += "Raindrops per second is " + stream.str() + "\n";
+    return instructions;
 }

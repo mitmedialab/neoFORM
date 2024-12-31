@@ -74,6 +74,7 @@ public:
     std::tuple<int, int, int> heightPixelToMapColor(int Height);
     std::vector<ofPoint> lastContourCentroids;
     
+    string appInstructionsText();
     
 private:
     KinectManagerSimple* m_kinectManager;
