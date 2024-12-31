@@ -11,6 +11,11 @@
 #include <cmath>
 #include <vector>
 
+#include <cstdlib> // Include for rand() and srand()
+#include <ctime>   // Include for time()
+
+#include <iomanip> // Include for std::setprecision
+
 #include <algorithm>
 
 WaveModeContours::WaveModeContours(SerialShapeIOManager *theSerialShapeIOManager, KinectManagerSimple *theKinectManager) : Application(theSerialShapeIOManager) {
@@ -21,30 +26,34 @@ WaveModeContours::WaveModeContours(SerialShapeIOManager *theSerialShapeIOManager
 
 void WaveModeContours::setup(){
     
+    // Get the dimensions of the shape display
     cols = (m_CustomShapeDisplayManager)->shapeDisplaySizeX;
     rows = (m_CustomShapeDisplayManager)->shapeDisplaySizeY;
+
+    // Allocate and initialize the internal wave pixels
     m_IntWavePixels.allocate(cols, rows, OF_IMAGE_GRAYSCALE);
     m_IntWavePixels.set(0);
+        
+    // Set the raindrop ripple effect parameters
+    timeControl = 0.0f; // Initialize timeControl
+    rainDropsPerSecond = 0.2; // Example initial value, can be adjusted during runtime
+    lastRippleTime = 0.0f; // Initialize the timer
+
+    // Allocate memory for density, velocity, wallMask, and previousWallMask vectors
+    density.resize(cols, std::vector<float>(rows, 0));
+    velocity.resize(cols, std::vector<float>(rows, 0));
+    wallMask.resize(cols, std::vector<bool>(rows, false));
+    previousWallMask.resize(cols, std::vector<bool>(rows, false));
     
-    timeControl = 0;
-    
-    density = new float*[cols];
-    velocity = new float*[cols];
-    wallMask = new bool*[cols];
-    previousWallMask = new bool*[cols];
-    
+    // Initialize contour finder and last contour centroids
     contourFinder;
     lastContourCentroids;
     
-    for (int x = 0; x < cols; x++){
-        density[x] = new float[rows];
-        velocity[x] = new float[rows];
-        wallMask[x] = new bool[rows];
-        previousWallMask[x] = new bool[rows];
-    }
-    
     friction = 0.8;
     
+    // Initialize density and velocity arrays with sinusoidal values.
+    // This sets up an initial wave pattern for the fluid simulation.
+    // It is optional, the fluid simulation can be started with a blank state.
     for (int x = 0; x < cols; ++x) {
         for (int y = 0; y < rows; ++y) {
             double val = 0;
@@ -62,6 +71,9 @@ void WaveModeContours::setup(){
         }
     }
     
+    // Initialize a random seed for raindrop ripple position.
+    srand(static_cast<unsigned int>(time(0)));
+    
     ProjectorHeightMapPixels.allocate(cols, rows, OF_IMAGE_COLOR);
     ProjectorHeightMapPixels.setColor(ofColor::black);
 }
@@ -71,6 +83,9 @@ void WaveModeContours::setup(){
 // Put the functions for the wave operations here:
 //----------------------------------------------------
 
+// Called by solveFluid() on each cell in the fluid grid to update the velocity and density of the simulated fluid.
+// The velocity is adjusted based on friction and the difference between the sum of adjacent densities
+// and the current cell's density. The density is then updated by adding the new velocity.
 float WaveModeContours::getAdjacencyDensitySum(int x, int y){
     float sum = 0;
     if (x - 1 >= 0 and not wallMask[x - 1][y]){sum += density[x - 1][y];}
@@ -81,10 +96,16 @@ float WaveModeContours::getAdjacencyDensitySum(int x, int y){
 }
 
 void WaveModeContours::solveFluid(){
+    // Iterate over each cell in the fluid grid
     for (int x = 0; x < cols; x++){
         for (int y = 0; y < rows; y++){
-//        if (wallMask[x][y]){continue;}
+        // Update the velocity of the current cell
+        // The velocity is adjusted based on friction and the difference between the sum of adjacent densities
+        // and the current cell's density. This simulates the fluid dynamics.
         velocity[x][y] = friction * velocity[x][y] + (getAdjacencyDensitySum(x, y) - density[x][y] * 4.0) * 0.1;
+        
+        // Update the density of the current cell
+        // The density is updated by adding the new velocity to the current density.
         density[x][y] = density[x][y] + velocity[x][y];
         }
     }
@@ -98,12 +119,16 @@ void WaveModeContours::update(float dt){
     solveFluid();
     updateHeights();
     updatePreviousWallMask();
-    timeControl++;
+
+    // Increment timeControl based on delta time
+    timeControl += dt;
     
 }
 
+// Processes incoming depth data, finds the contours of detected objects, and updates the matrix of detected obstacles (called walls here).
+// If a new wall is detected based on the last calculated matrix of wall positions, a ripple effect is applied to the fluid simulation at that location.
 void WaveModeContours::updateMask(){
-    
+    // Get the depth image from the Kinect manager and apply a Gaussian blur.
     ofShortPixels pix = m_kinectManager->getDepthPixels();
     m_kinectManager->crop(pix);
     
@@ -129,6 +154,9 @@ void WaveModeContours::updateMask(){
     
     float dist;
     int numBlobs = contourFinder.nBlobs;
+    
+    // For each detected blob, the centroid is calculated and stored.
+    // The mask pixels are updated based on the distance from the centroid.
     for (int i = 0; i < numBlobs; i++) {
         ofxCvBlob blob = contourFinder.blobs[i];
         ofPoint centroid = blob.centroid;
@@ -150,6 +178,7 @@ void WaveModeContours::updateMask(){
         }
     }
     
+    // Resizes the mask image to match the shape display size.
     ofImage img;
     img.setFromPixels(maskPixels);
     img.resize((m_CustomShapeDisplayManager)->shapeDisplaySizeX, (m_CustomShapeDisplayManager)->shapeDisplaySizeY);
@@ -178,10 +207,18 @@ void WaveModeContours::updateMask(){
         }
     }
     
-    // Apply a ripple effect to the center of the surface every 5 seconds.
-    if (timeControl % 100 <= 5) {
-        applyRippleEffect(cols / 2, rows / 2);
+    // Calculate the interval based on rainDropsPerSecond
+    float interval = 1.0 / rainDropsPerSecond;
+
+    // Apply a raindrop ripple effect at a random location on the grid at the specified interval.
+    if (timeControl - lastRippleTime >= interval) {
+        int randomX = rand() % cols; // Generate a random x-coordinate within the grid
+        int randomY = rand() % rows; // Generate a random y-coordinate within the grid
+        applyRippleEffect(randomX, randomY);
+        lastRippleTime = timeControl; // Reset the timer
     }
+
+    // Updates the previous wall mask and stores the current centroids.
     updatePreviousWallMask();
     lastContourCentroids = currentCentroids;
 }
@@ -365,6 +402,42 @@ void WaveModeContours::drawPreviewActuatedSections() {
     fbo.draw(m_kinectManager->mask);
 }
 
+// Control the raindrop ripple effect with the keyboard.
+// Uses 2 different scales for the rainDropsPerSecond value, depending on whether it is less than 1 or greater than 1.
+// The rainDropsPerSecond value is changed by 0.2 if it is less than 1, and by 1 if it is greater than 1; this is to give more options for light rain.
 void WaveModeContours::keyPressed(int Key) {
     
+    // Look for a ']', a forward arrow key press, or a an up arrow key press to increase the rainDropsPerSecond value.
+    if (Key == 93 || Key == 57358 || Key == 57357) {
+        // If rainDropsPerSecond is less than 1, increment it by .2
+        if (rainDropsPerSecond < 1) {
+            rainDropsPerSecond += 0.2;
+        } else {
+            // Otherwise, increment it by 1
+            rainDropsPerSecond += 1;
+        }
+    }
+    
+    // Look for a '[', backward arrow key press or a down arrow key to decrease the rainDropsPerSecond value.
+    if (Key == 91 || Key == 57356 || Key == 57359) {
+        // If rainDropsPerSecond is less than or equal to, decrement it by .2
+        if (rainDropsPerSecond > 0.01 && rainDropsPerSecond <= 1) { // Don't go below zero, but use 0.01 instead of 0 to account for minor floating point errors
+            rainDropsPerSecond -= 0.2;
+        } else if (rainDropsPerSecond > 1) {
+            // Otherwise, decrement it by 1
+            rainDropsPerSecond -= 1;
+        }
+    }
+    
+}
+
+string WaveModeContours::appInstructionsText() {
+    string instructions = (string) "Rainfall: \n";
+    instructions += "Use arrow or bracket keys to change rainfall.\n";
+
+    // Use stringstream to format rainDropsPerSecond to one decimal place
+    std::ostringstream stream;
+    stream << std::fixed << std::setprecision(1) << rainDropsPerSecond;
+    instructions += "Raindrops per second is " + stream.str() + "\n";
+    return instructions;
 }

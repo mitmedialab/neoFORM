@@ -250,7 +250,7 @@ void AppManager::draw() {
 	menuHeight += 30;
 	
 	// if there isn't already a debug gui, draw some more information
-	if (!showDebugGui || currentApplication == applications["water"] || currentApplication == applications["stretchy"]) {
+	if (!showDebugGui || currentApplication == applications["waveModeContours"] || currentApplication == applications["stretchy"]) {
 		ofDrawBitmapString(currentApplication->appInstructionsText(),menuLeftCoordinate, menuHeight);
 		menuHeight += 20;
 	}
