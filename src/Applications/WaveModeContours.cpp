@@ -421,7 +421,7 @@ void WaveModeContours::keyPressed(int Key) {
     // Look for a '[', backward arrow key press or a down arrow key to decrease the rainDropsPerSecond value.
     if (Key == 91 || Key == 57356 || Key == 57359) {
         // If rainDropsPerSecond is less than or equal to, decrement it by .2
-        if (rainDropsPerSecond > 0.01 && rainDropsPerSecond <= 1) { // 0.01 to account for minor floating point errors
+        if (rainDropsPerSecond > 0.01 && rainDropsPerSecond <= 1) { // Don't go below zero, but use 0.01 instead of 0 to account for minor floating point errors
             rainDropsPerSecond -= 0.2;
         } else if (rainDropsPerSecond > 1) {
             // Otherwise, decrement it by 1
