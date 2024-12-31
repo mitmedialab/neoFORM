@@ -36,9 +36,6 @@ public:
     float rainDropsPerSecond; // Variable to control the number of raindrops per second
     float lastRippleTime; // Timer to track the last ripple effect time
     
-    int highResCols;
-    int highResRows;
-    int highResFactor;
     
     // velocity and density are 2d arrays that represent the state of the fluid simulation.
     std::vector<std::vector<float>> velocity;
@@ -49,13 +46,9 @@ public:
     std::vector<std::vector<bool>> wallMask;
     std::vector<std::vector<bool>> previousWallMask;
     
-    float **highResDensity;
-    float **highResVelocity;
-    
     float getAdjacencyDensitySum(int x, int y);
     void solveFluid();
     
-    void solveHighResFluid();
     void updatePreviousWallMask();
     void applyRippleEffect(int x, int y);
     void handInteraction(int x, int y);
