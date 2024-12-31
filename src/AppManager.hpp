@@ -101,7 +101,9 @@ private:
     KinectManagerSimple *kinectManager;
     
     // applications
-    map<string, Application *> applications;
+    unordered_map<string, Application *> applications;
+    std::vector<std::string> applicationOrder; // Vector to maintain insertion order of applications
+
     Application *currentApplication;
     
     // debugging applications
