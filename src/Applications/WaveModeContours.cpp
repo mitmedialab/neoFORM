@@ -415,8 +415,7 @@ void WaveModeContours::keyPressed(int Key) {
         } else {
             // Otherwise, increment it by 1
             rainDropsPerSecond += 1;
-        } 
-        cout << "Rain Drops Per Second: " << rainDropsPerSecond << endl;  
+        }
     }
     
     // Look for a '[', backward arrow key press or a down arrow key to decrease the rainDropsPerSecond value.
@@ -428,7 +427,6 @@ void WaveModeContours::keyPressed(int Key) {
             // Otherwise, decrement it by 1
             rainDropsPerSecond -= 1;
         }
-        cout << "Rain Drops Per Second: " << rainDropsPerSecond << endl;
     }
     
 }
