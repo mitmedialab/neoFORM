@@ -76,6 +76,17 @@ void AppManager::setup() {
 	ambientWave = new AmbientWave(m_serialShapeIOManager);
 	applications["AmbientWave"] = ambientWave;
 
+	// Set up the order of the applications in the order vector
+	applicationOrder.push_back("videoPlayer");
+	applicationOrder.push_back("waveModeContours");
+	applicationOrder.push_back("equationMode");
+	applicationOrder.push_back("telepresence");
+	applicationOrder.push_back("kinectHandWavy");
+	applicationOrder.push_back("AmbientWave");
+	applicationOrder.push_back("singlePinDebug");
+	applicationOrder.push_back("axisChecker");
+	applicationOrder.push_back("mqttTransmission");
+
 	// innitialize GUI
 	gui.setup("modes:");
 	gui.setPosition(5, 35);
@@ -84,17 +95,23 @@ void AppManager::setup() {
 	// of modeButtons will invalidate all existing pointers stored in gui.
 	// DO NOT .push_back MORE THAN applications.size()!!!!
 	modeButtons.reserve(applications.size());
-	
-	for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
-		Application *app = iter->second;
-	
-		modeButtons.push_back(ofxButton());
-		modeNames.push_back(iter->first);
-		auto p_button = modeButtons.back().setup(app->getName());
-		gui.add(p_button);
-	
-		// shape display heights, if they are accessible
-	}
+
+	int appIndex = 1; // Initialize an index for iteration
+
+    // Iterate over the applicationOrder vector and add the corresponding app to the GUI
+    for (const auto& appName : applicationOrder) {
+        Application *app = applications[appName];
+        
+        modeButtons.push_back(ofxButton());
+        modeNames.push_back(appName);
+        
+        // Construct the new button name with the index prepended
+        std::string buttonName = std::to_string(appIndex) + ": " + app->getName();
+        auto p_button = modeButtons.back().setup(buttonName);
+        gui.add(p_button);
+        
+        appIndex++;
+    }
 	
 	// set default application
 	setCurrentApplication("mqttTransmission");
@@ -361,20 +378,12 @@ void AppManager::keyPressed(int key) {
 			showDebugGui = !showDebugGui;
 		} else if (key == ' ') {
 			paused = !paused;
-		} else if (key > '0' && key <= '9' && (key - '0') < applications.size()) {
-			int num = key - '0';
-			for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
-				// skip over empty entries created by checks
-				if (iter->second == nullptr)
-					continue;
-				num--;
-				// num == 0 when iter gets to the Nth app
-				if (num == 0) {
-					setCurrentApplication(iter->first);
-					break;
-				}
-			}
-		}
+        } else if (key > '0' && key <= '9') {
+            int num = key - '0';
+            if (num > 0 && num <= applicationOrder.size()) {
+                setCurrentApplication(applicationOrder[num - 1]);
+            }
+        }
 		/*else if (key == '1') {
 			setCurrentApplication("mqttTransmission");
 		} else if (key == '2') {
