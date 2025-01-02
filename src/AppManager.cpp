@@ -89,7 +89,7 @@ void AppManager::setup() {
 
 	// innitialize GUI
 	gui.setup("modes:");
-	gui.setPosition(5, 35);
+	gui.setPosition(5, 20);
 	
 	// IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
 	// of modeButtons will invalidate all existing pointers stored in gui.
@@ -112,6 +112,9 @@ void AppManager::setup() {
         
         appIndex++;
     }
+
+	// Collapse the GUI panel for now to make room for the new graphical buttons.
+	gui.minimize();
 	
 	// set default application
 	setCurrentApplication("mqttTransmission");
