@@ -127,7 +127,7 @@ void AppManager::setup() {
     // Set up the buttons by creating an ofRectangle for each application
     for (int i = 0; i < applicationOrder.size(); i++){
         ofRectangle button;
-        button.set(10, 180 + 65*i, 240, 50);
+        button.set(20, 60 + 65*i, 240, 50);
         applicationButtons.push_back(button);
     }
 
@@ -267,7 +267,7 @@ void AppManager::draw() {
 	
 	// draw text
 	int menuLeftCoordinate = 21;
-	int menuHeight = 350;
+	int menuHeight = 680;
 	string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
 	ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
 	menuHeight += 30;
