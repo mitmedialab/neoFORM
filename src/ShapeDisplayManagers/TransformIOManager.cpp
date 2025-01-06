@@ -26,6 +26,9 @@ TransformIOManager::TransformIOManager() {
     // Also size the array that receives height values from the shape display.
     heightsFromShapeDisplay.resize(shapeDisplaySizeX, std::vector<unsigned char>(shapeDisplaySizeY, 0));
     
+    // Resize the previous heights array, which is being compared to the current heights in order to implement power limiting.
+    previousHeightsForShapeDisplay.resize(shapeDisplaySizeX, std::vector<unsigned char>(shapeDisplaySizeY, 0));
+    
     pinHeightMin = 50;
     pinHeightMax = 210;
     pinHeightRange = pinHeightMax - pinHeightMin;

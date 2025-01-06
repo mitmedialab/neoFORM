@@ -89,6 +89,17 @@ public:
     // shape display height values (both intended and actual values)
     std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
     std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
+    
+    
+    // Keep track of the previous heights for power draw limiting
+    std::vector<std::vector<unsigned char>> previousHeightsForShapeDisplay;
+
+    // Max power load is a ratio in the [0, 1] range. The default of 1 means almost no power limiting.
+    // Individual shape display subclasses can override this function to set a different power limit.
+    virtual double getMaxPowerLoad() {return 1.0;}
+
+    // Function to apply the maximum power draw limit to the pin heights.
+    void limitPowerDraw();
 
 protected:
     // manage the connection to the shape display
