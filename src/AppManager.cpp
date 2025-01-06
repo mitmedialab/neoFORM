@@ -89,7 +89,7 @@ void AppManager::setup() {
 
 	// innitialize GUI
 	gui.setup("modes:");
-	gui.setPosition(5, 35);
+	gui.setPosition(5, 20);
 	
 	// IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
 	// of modeButtons will invalidate all existing pointers stored in gui.
@@ -112,9 +112,25 @@ void AppManager::setup() {
         
         appIndex++;
     }
+
+	// Collapse the GUI panel for now to make room for the new graphical buttons.
+	gui.minimize();
 	
 	// set default application
 	setCurrentApplication("mqttTransmission");
+
+	// *** Rectangular button setup ***
+    // Load a font for the button text.
+    ofTrueTypeFont::setGlobalDpi(72);
+    displayFont20.load("SourceSans3-Regular.ttf", 20);
+    
+    // Set up the buttons by creating an ofRectangle for each application
+    for (int i = 0; i < applicationOrder.size(); i++){
+        ofRectangle button;
+        button.set(20, 60 + 65*i, 240, 50);
+        applicationButtons.push_back(button);
+    }
+
 }
 
 // initialize the shape display and set up shape display helper objects
@@ -251,7 +267,7 @@ void AppManager::draw() {
 	
 	// draw text
 	int menuLeftCoordinate = 21;
-	int menuHeight = 350;
+	int menuHeight = 680;
 	string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
 	ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
 	menuHeight += 30;
@@ -273,6 +289,39 @@ void AppManager::draw() {
 	}
 	
 	gui.draw();
+
+    // Draw the rectangular buttons for each application.
+    for (int i = 0; i < applicationButtons.size(); i++){
+        if (applications[applicationOrder[i]] == currentApplication){
+            // Green for the current application
+            ofSetColor(ofColor::seaGreen);
+        } else if (applicationSwitchBlocked && applications[applicationOrder[i]] == applications[lastSelectedApplicationName]){
+            // Dark green for the target application during the transition, so that there is immediate button feedback.
+			ofSetColor(ofColor::darkGreen);
+        } else {
+            // Dark blue for the unselected applications.
+            ofSetColor(ofColor::midnightBlue);
+		}
+		// Draw a rounded rectangle for the application button with a 20 pixel radius.
+        ofDrawRectRounded(applicationButtons[i], 20);
+        
+        // Make a stroke around the current application button
+        if (applications[applicationOrder[i]] == currentApplication){
+            ofSetColor(ofColor::white);
+            ofNoFill();
+            ofSetLineWidth(2);
+            ofDrawRectRounded(applicationButtons[i], 20);
+            ofFill();
+        }
+
+        // Make a string with the name of the application with the loop index plus one prepended.
+        Application *app = applications[applicationOrder[i]];
+        string applicationOrderString = ofToString(i+1) + ": " + app->getName();
+        
+        // Add label for application button
+        ofSetColor(ofColor::white);
+        displayFont20.drawString(applicationOrderString, applicationButtons[i].x + 25, applicationButtons[i].y + 30);
+    }
 	
 	// draw shape and color I/O images
 	
@@ -382,6 +431,7 @@ void AppManager::keyPressed(int key) {
             int num = key - '0';
             if (num > 0 && num <= applicationOrder.size()) {
                 setCurrentApplication(applicationOrder[num - 1]);
+                lastSelectedApplicationName = applicationOrder[num - 1];
             }
         }
 		/*else if (key == '1') {
@@ -411,7 +461,17 @@ void AppManager::keyPressed(int key) {
 void AppManager::keyReleased(int key) {};
 void AppManager::mouseMoved(int x, int y) {};
 void AppManager::mouseDragged(int x, int y, int button) {};
-void AppManager::mousePressed(int x, int y, int button) {};
+void AppManager::mousePressed(int x, int y, int button) {
+    // Check if any of the application buttons were clicked
+    for (int i = 0; i < applicationButtons.size(); i++){
+        if (applicationButtons[i].inside(x, y)){
+			// Set the current application to the one that was clicked.
+            setCurrentApplication(applicationOrder[i]);
+			// Also set the last selected application, so that the button can be highlighted during the transition to the new application.
+            lastSelectedApplicationName = applicationOrder[i];
+        }
+    }
+};
 void AppManager::mouseReleased(int x, int y, int button) {};
 void AppManager::windowResized(int w, int h) {};
 void AppManager::gotMessage(ofMessage msg) {};

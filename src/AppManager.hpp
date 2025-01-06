@@ -104,6 +104,13 @@ private:
     unordered_map<string, Application *> applications;
     std::vector<std::string> applicationOrder; // Vector to maintain insertion order of applications
 
+    // Graphical buttons, made of rectangles
+    std::vector<ofRectangle> applicationButtons;
+    ofTrueTypeFont displayFont20;
+    // Track the last application that was selected, so we can give it a button status during the transition
+    // because it won't be the active application until the transition is complete.
+    std::string lastSelectedApplicationName;
+    
     Application *currentApplication;
     
     // debugging applications
