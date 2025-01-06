@@ -19,7 +19,7 @@ class TransformIOManager : public SerialShapeIOManager {
 public:
     TransformIOManager();
 
-    TransformIOManager(KinectManager* kinectRef);
+    TransformIOManager(KinectManagerSimple* kinectRef);
 
     // the name of this shape display
     string getShapeDisplayName() {
@@ -29,8 +29,6 @@ public:
     
     // should pins that appear stuck be turned off at regular intervals?
     bool enableStuckPinSafetyToggle = false;
-    
-    ofPixels getKinectStream();
 
     // ***********************
     // Transform Slicing Dimensions

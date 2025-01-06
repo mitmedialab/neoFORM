@@ -23,7 +23,7 @@
 #include "TransformIOManager.hpp"
 
 // External Device Managers
-#include "KinectManager.hpp"
+#include "KinectManagerSimple.hpp"
 
 // major classes
 #include "Application.hpp"
@@ -43,6 +43,7 @@
 #include "DepthDebugApp.hpp"
 
 #include "KinectHandWavy.hpp"
+#include "Telepresence.hpp"
 
 #include "EquationMode.hpp"
 
@@ -78,6 +79,9 @@ public:
     shared_ptr<ofAppBaseWindow> displayWindow;
     shared_ptr<ofAppBaseWindow> projectorWindow;
 
+    // pointer to camera, lives in DisplayApp
+    ofVideoGrabber *cam;
+
     // lets settings window access main window stuff
     friend class DisplayApp;
     friend class ProjectorApp;
@@ -94,10 +98,19 @@ private:
     SerialShapeIOManager *m_serialShapeIOManager;
     
     // external devices
-    KinectManager *kinectManager;
+    KinectManagerSimple *kinectManager;
     
     // applications
-    map<string, Application *> applications;
+    unordered_map<string, Application *> applications;
+    std::vector<std::string> applicationOrder; // Vector to maintain insertion order of applications
+
+    // Graphical buttons, made of rectangles
+    std::vector<ofRectangle> applicationButtons;
+    ofTrueTypeFont displayFont20;
+    // Track the last application that was selected, so we can give it a button status during the transition
+    // because it won't be the active application until the transition is complete.
+    std::string lastSelectedApplicationName;
+    
     Application *currentApplication;
     
     // debugging applications
@@ -114,6 +127,9 @@ private:
     
     // hand wavy application
     KinectHandWavy *kinectHandWavy;
+    
+    // Telepresence
+    Telepresence *telepresence;
     
     EquationMode *equationMode;
     

@@ -72,7 +72,7 @@ TransformIOManager::TransformIOManager() {
 }
 
 // Secondary Constructor delegates to the primary constructor and adds the kinect reference.
-TransformIOManager::TransformIOManager(KinectManager* kinectRef) : TransformIOManager() {
+TransformIOManager::TransformIOManager(KinectManagerSimple* kinectRef) : TransformIOManager() {
     m_kinectManagerRef = kinectRef;
 }
 
@@ -129,17 +129,6 @@ void TransformIOManager::configureBoards() {
     boardsAreConfigured = true;
 }
 
-ofPixels TransformIOManager::getKinectStream(){
-    m_kinectManagerRef->update();
-    
-    //basic test
-    // Uses the opencv cropped contour rectangle to crop the kinect depth pixels to only be in the size and shape of the transform
-    ofPixels m_videoPixels = m_kinectManagerRef->getCroppedPixels((m_kinectManagerRef->depthPixels));//video.getPixels();
-
-    
-    return m_videoPixels;
-}
-
 // This function takes the full surface image and removes all of the non-active zones, so only
 // the active zones are left. It does this by defining rectangles for each of the active zones,
 // isolating them, and then re-combining them into a single image.
@@ -154,8 +143,9 @@ ofPixels TransformIOManager::cropToActiveSurface( ofPixels fullSurface ) {
     // Crop the full surface to just the active zones
     ofPixels combinedActiveZones = combineActiveZones(fullSurface, sections);
     
-    // Scale and rotate the combined active zones
+    // Scale and rotate the combined active zones to match the display.
     combinedActiveZones.resize(shapeDisplaySizeX, shapeDisplaySizeY);
+    
     combinedActiveZones.rotate90(2);
     
     // Return the cropped and transformed image

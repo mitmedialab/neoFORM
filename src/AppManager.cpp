@@ -27,7 +27,7 @@ void AppManager::setup() {
 	// kinectManager = new KinectManager();
 	// Depth thresholds for the kinect are set here.
 	
-	kinectManager = new KinectManager(255, 90, 20);
+	kinectManager = new KinectManagerSimple();
 	
 	// zero timeOfLastUpdate tracker
 	timeOfLastUpdate = elapsedTimeInSeconds();
@@ -58,6 +58,11 @@ void AppManager::setup() {
 	
 	kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager, kinectManager);
 	applications["kinectHandWavy"] = kinectHandWavy;
+    
+    // Telepresence mode takes 16 bit thresholding values as parameters here.
+    telepresence = new Telepresence(m_serialShapeIOManager, kinectManager,
+                                 255 * 256, 140 * 256, cam);
+    applications["telepresence"] = telepresence;
 	
 	equationMode = new EquationMode(m_serialShapeIOManager);
 	applications["equationMode"] = equationMode;
@@ -71,28 +76,61 @@ void AppManager::setup() {
 	ambientWave = new AmbientWave(m_serialShapeIOManager);
 	applications["AmbientWave"] = ambientWave;
 
+	// Set up the order of the applications in the order vector
+	applicationOrder.push_back("videoPlayer");
+	applicationOrder.push_back("waveModeContours");
+	applicationOrder.push_back("equationMode");
+	applicationOrder.push_back("telepresence");
+	applicationOrder.push_back("kinectHandWavy");
+	applicationOrder.push_back("AmbientWave");
+	applicationOrder.push_back("singlePinDebug");
+	applicationOrder.push_back("axisChecker");
+	applicationOrder.push_back("mqttTransmission");
+
 	// innitialize GUI
 	gui.setup("modes:");
-	gui.setPosition(5, 35);
+	gui.setPosition(5, 20);
 	
 	// IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
 	// of modeButtons will invalidate all existing pointers stored in gui.
 	// DO NOT .push_back MORE THAN applications.size()!!!!
 	modeButtons.reserve(applications.size());
-	
-	for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
-		Application *app = iter->second;
-	
-		modeButtons.push_back(ofxButton());
-		modeNames.push_back(iter->first);
-		auto p_button = modeButtons.back().setup(app->getName());
-		gui.add(p_button);
-	
-		// shape display heights, if they are accessible
-	}
+
+	int appIndex = 1; // Initialize an index for iteration
+
+    // Iterate over the applicationOrder vector and add the corresponding app to the GUI
+    for (const auto& appName : applicationOrder) {
+        Application *app = applications[appName];
+        
+        modeButtons.push_back(ofxButton());
+        modeNames.push_back(appName);
+        
+        // Construct the new button name with the index prepended
+        std::string buttonName = std::to_string(appIndex) + ": " + app->getName();
+        auto p_button = modeButtons.back().setup(buttonName);
+        gui.add(p_button);
+        
+        appIndex++;
+    }
+
+	// Collapse the GUI panel for now to make room for the new graphical buttons.
+	gui.minimize();
 	
 	// set default application
 	setCurrentApplication("mqttTransmission");
+
+	// *** Rectangular button setup ***
+    // Load a font for the button text.
+    ofTrueTypeFont::setGlobalDpi(72);
+    displayFont20.load("SourceSans3-Regular.ttf", 20);
+    
+    // Set up the buttons by creating an ofRectangle for each application
+    for (int i = 0; i < applicationOrder.size(); i++){
+        ofRectangle button;
+        button.set(20, 60 + 65*i, 240, 50);
+        applicationButtons.push_back(button);
+    }
+
 }
 
 // initialize the shape display and set up shape display helper objects
@@ -229,7 +267,7 @@ void AppManager::draw() {
 	
 	// draw text
 	int menuLeftCoordinate = 21;
-	int menuHeight = 350;
+	int menuHeight = 680;
 	string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
 	ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
 	menuHeight += 30;
@@ -245,12 +283,45 @@ void AppManager::draw() {
 	menuHeight += 30;
 	
 	// if there isn't already a debug gui, draw some more information
-	if (!showDebugGui || currentApplication == applications["water"] || currentApplication == applications["stretchy"]) {
+	if (!showDebugGui || currentApplication == applications["waveModeContours"] || currentApplication == applications["stretchy"]) {
 		ofDrawBitmapString(currentApplication->appInstructionsText(),menuLeftCoordinate, menuHeight);
 		menuHeight += 20;
 	}
 	
 	gui.draw();
+
+    // Draw the rectangular buttons for each application.
+    for (int i = 0; i < applicationButtons.size(); i++){
+        if (applications[applicationOrder[i]] == currentApplication){
+            // Green for the current application
+            ofSetColor(ofColor::seaGreen);
+        } else if (applicationSwitchBlocked && applications[applicationOrder[i]] == applications[lastSelectedApplicationName]){
+            // Dark green for the target application during the transition, so that there is immediate button feedback.
+			ofSetColor(ofColor::darkGreen);
+        } else {
+            // Dark blue for the unselected applications.
+            ofSetColor(ofColor::midnightBlue);
+		}
+		// Draw a rounded rectangle for the application button with a 20 pixel radius.
+        ofDrawRectRounded(applicationButtons[i], 20);
+        
+        // Make a stroke around the current application button
+        if (applications[applicationOrder[i]] == currentApplication){
+            ofSetColor(ofColor::white);
+            ofNoFill();
+            ofSetLineWidth(2);
+            ofDrawRectRounded(applicationButtons[i], 20);
+            ofFill();
+        }
+
+        // Make a string with the name of the application with the loop index plus one prepended.
+        Application *app = applications[applicationOrder[i]];
+        string applicationOrderString = ofToString(i+1) + ": " + app->getName();
+        
+        // Add label for application button
+        ofSetColor(ofColor::white);
+        displayFont20.drawString(applicationOrderString, applicationButtons[i].x + 25, applicationButtons[i].y + 30);
+    }
 	
 	// draw shape and color I/O images
 	
@@ -356,20 +427,13 @@ void AppManager::keyPressed(int key) {
 			showDebugGui = !showDebugGui;
 		} else if (key == ' ') {
 			paused = !paused;
-		} else if (key > '0' && key <= '9' && (key - '0') < applications.size()) {
-			int num = key - '0';
-			for (map<string, Application *>::iterator iter = applications.begin(); iter != applications.end(); iter++) {
-				// skip over empty entries created by checks
-				if (iter->second == nullptr)
-					continue;
-				num--;
-				// num == 0 when iter gets to the Nth app
-				if (num == 0) {
-					setCurrentApplication(iter->first);
-					break;
-				}
-			}
-		}
+        } else if (key > '0' && key <= '9') {
+            int num = key - '0';
+            if (num > 0 && num <= applicationOrder.size()) {
+                setCurrentApplication(applicationOrder[num - 1]);
+                lastSelectedApplicationName = applicationOrder[num - 1];
+            }
+        }
 		/*else if (key == '1') {
 			setCurrentApplication("mqttTransmission");
 		} else if (key == '2') {
@@ -397,7 +461,17 @@ void AppManager::keyPressed(int key) {
 void AppManager::keyReleased(int key) {};
 void AppManager::mouseMoved(int x, int y) {};
 void AppManager::mouseDragged(int x, int y, int button) {};
-void AppManager::mousePressed(int x, int y, int button) {};
+void AppManager::mousePressed(int x, int y, int button) {
+    // Check if any of the application buttons were clicked
+    for (int i = 0; i < applicationButtons.size(); i++){
+        if (applicationButtons[i].inside(x, y)){
+			// Set the current application to the one that was clicked.
+            setCurrentApplication(applicationOrder[i]);
+			// Also set the last selected application, so that the button can be highlighted during the transition to the new application.
+            lastSelectedApplicationName = applicationOrder[i];
+        }
+    }
+};
 void AppManager::mouseReleased(int x, int y, int button) {};
 void AppManager::windowResized(int w, int h) {};
 void AppManager::gotMessage(ofMessage msg) {};

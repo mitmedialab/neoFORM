@@ -76,6 +76,8 @@
 		B006626C26FF99AB717C7CD4 /* utf8_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = D1822FF66A31138F103D3C2F /* utf8_mosq.c */; };
 		B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECF8674C7975F1063C5E30CA /* ofxGuiGroup.cpp */; };
 		B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 802251BAF1B35B1D67B32FD0 /* ofxSliderGroup.cpp */; };
+		B916F1112D1F503800BC378D /* kinectManagerSimple.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B916F10F2D1F503800BC378D /* kinectManagerSimple.cpp */; };
+		B916F1142D20C87A00BC378D /* Telepresence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B916F1132D20C87A00BC378D /* Telepresence.cpp */; };
 		B917C91A2D0F882700F26C4C /* AmbientWave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917C9182D0F882700F26C4C /* AmbientWave.cpp */; };
 		B917C91D2D0F8E3400F26C4C /* TransitionApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917C91B2D0F8E3300F26C4C /* TransitionApp.cpp */; };
 		B951ED692CEA6F6E00C74190 /* WaveModeContours.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B951ED652CEA6F6E00C74190 /* WaveModeContours.cpp */; };
@@ -572,6 +574,10 @@
 		B88A80AA34B79BD6DA9253DE /* sse_utils.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = sse_utils.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv4/opencv2/core/sse_utils.hpp; sourceTree = SOURCE_ROOT; };
 		B8A2CBF3E24E6E5026B13A90 /* ofxBase3DVideo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxBase3DVideo.h; path = ../../../addons/ofxKinect/src/ofxBase3DVideo.h; sourceTree = SOURCE_ROOT; };
 		B8F39F6EBA0607ECB7D18D89 /* handle_disconnect.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = handle_disconnect.c; path = "../../../addons/ofxMQTT-1.5.0/libs/mosquitto/src/handle_disconnect.c"; sourceTree = SOURCE_ROOT; };
+		B916F10F2D1F503800BC378D /* kinectManagerSimple.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kinectManagerSimple.cpp; path = KinectManager/kinectManagerSimple.cpp; sourceTree = "<group>"; };
+		B916F1102D1F503800BC378D /* KinectManagerSimple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = KinectManagerSimple.hpp; path = KinectManager/KinectManagerSimple.hpp; sourceTree = "<group>"; };
+		B916F1122D20C87A00BC378D /* Telepresence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Telepresence.hpp; path = Applications/Telepresence.hpp; sourceTree = "<group>"; };
+		B916F1132D20C87A00BC378D /* Telepresence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Telepresence.cpp; path = Applications/Telepresence.cpp; sourceTree = "<group>"; };
 		B917C9182D0F882700F26C4C /* AmbientWave.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AmbientWave.cpp; path = Applications/AmbientWave.cpp; sourceTree = "<group>"; };
 		B917C9192D0F882700F26C4C /* AmbientWave.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AmbientWave.hpp; path = Applications/AmbientWave.hpp; sourceTree = "<group>"; };
 		B917C91B2D0F8E3300F26C4C /* TransitionApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransitionApp.cpp; path = Applications/TransitionApp.cpp; sourceTree = "<group>"; };
@@ -1711,6 +1717,8 @@
 				371A3F038DAEE97357696076 /* MqttTransmissionApp.cpp */,
 				9173510537C7D6FE1E419118 /* SinglePinDebug.hpp */,
 				1EBB8A7F45CEE5C6E85F5CCA /* SinglePinDebug.cpp */,
+				B916F1122D20C87A00BC378D /* Telepresence.hpp */,
+				B916F1132D20C87A00BC378D /* Telepresence.cpp */,
 				AE527AF4F7B13F64D57C5A79 /* VideoPlayerApp.hpp */,
 				F4FC5A5BDD199FB703850D0B /* VideoPlayerApp.cpp */,
 				B951ED662CEA6F6E00C74190 /* WaveModeContours.hpp */,
@@ -1855,6 +1863,8 @@
 		908777B64CF600EA529CC7B2 /* KinectManager */ = {
 			isa = PBXGroup;
 			children = (
+				B916F10F2D1F503800BC378D /* kinectManagerSimple.cpp */,
+				B916F1102D1F503800BC378D /* KinectManagerSimple.hpp */,
 				9539AAE52CF78FE5E2AF134B /* KinectManager.cpp */,
 				5193EDEA22E0D8246414432A /* KinectTracker.cpp */,
 				4A4E9C4F8DC15EE848455F2E /* KinectManager.hpp */,
@@ -2903,6 +2913,7 @@
 				1985F508DABADFBFD7EE6A21 /* thread_mosq.c in Sources */,
 				1F0F9FBF69381509F6969127 /* time_mosq.c in Sources */,
 				F527E399D8A82479A7082187 /* tls_mosq.c in Sources */,
+				B916F1142D20C87A00BC378D /* Telepresence.cpp in Sources */,
 				B006626C26FF99AB717C7CD4 /* utf8_mosq.c in Sources */,
 				549DA215810C4915DA94ED9F /* util_mosq.c in Sources */,
 				BCC0588F6EE7A6B94548C546 /* util_topic.c in Sources */,
@@ -2919,6 +2930,7 @@
 				169D3C72FDE6C5590A1616F5 /* ofxCvFloatImage.cpp in Sources */,
 				FB09C6B2A1DA0EA217240CB8 /* ofxCvGrayscaleImage.cpp in Sources */,
 				E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */,
+				B916F1112D1F503800BC378D /* kinectManagerSimple.cpp in Sources */,
 				63020F16C7E8DED980111241 /* ofxCvImage.cpp in Sources */,
 				D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */,
 				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,

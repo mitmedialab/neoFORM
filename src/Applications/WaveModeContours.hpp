@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include "Application.hpp"
-#include "KinectManager.hpp"
+#include "KinectManagerSimple.hpp"
 #include "ofxKinect.h"
 #include "ofxOpenCv.h"
 #include "ofxXmlSettings.h"
@@ -19,8 +19,8 @@
 class WaveModeContours : public Application{
 public:
     
-    WaveModeContours(KinectManager* kinectManager);
-    WaveModeContours(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager);
+    WaveModeContours(KinectManagerSimple* kinectManager);
+    WaveModeContours(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManagerSimple *theKinectManager);
     
     string getName() {return "Interactive Wave";};
     
@@ -31,24 +31,24 @@ public:
     int rows;
     float friction;
     
-    int timeControl;
+    // Raindrop ripple effect parameters
+    float timeControl;
+    float rainDropsPerSecond; // Variable to control the number of raindrops per second
+    float lastRippleTime; // Timer to track the last ripple effect time
     
-    int highResCols;
-    int highResRows;
-    int highResFactor;
     
-    float **velocity;
-    float **density;
-    bool **wallMask;
-    bool **previousWallMask;
+    // velocity and density are 2d arrays that represent the state of the fluid simulation.
+    std::vector<std::vector<float>> velocity;
+    std::vector<std::vector<float>> density;
     
-    float **highResDensity;
-    float **highResVelocity;
+    // The wall masks are 2d arrays that mark the position of walls (detected obstacles) in the fluid simulation.
+    // A new wall mask at a given position can trigger a ripple effect in the fluid simulation.
+    std::vector<std::vector<bool>> wallMask;
+    std::vector<std::vector<bool>> previousWallMask;
     
     float getAdjacencyDensitySum(int x, int y);
     void solveFluid();
     
-    void solveHighResFluid();
     void updatePreviousWallMask();
     void applyRippleEffect(int x, int y);
     void handInteraction(int x, int y);
@@ -67,9 +67,10 @@ public:
     std::tuple<int, int, int> heightPixelToMapColor(int Height);
     std::vector<ofPoint> lastContourCentroids;
     
+    string appInstructionsText();
     
 private:
-    KinectManager* m_kinectManager;
+    KinectManagerSimple* m_kinectManager;
     
     void updateHeights();
     

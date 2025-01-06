@@ -1,0 +1,39 @@
+//
+//  Telepresence.cpp
+//  emptyExample
+//
+//  Created by Charles Reischer on 11/22/24.
+//
+
+#include "Telepresence.hpp"
+#include "ofVideoGrabber.h"
+
+Telepresence::Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManagerSimple *theKinectManager, 
+						   int maxOutDist, int bottomOutDist, ofVideoGrabber *cam) : 
+		Application(theCustomShapeDisplayManager), kinectManager(theKinectManager), 
+		maxOutDist(maxOutDist), bottomOutDist(bottomOutDist), cam(cam) {}
+
+void Telepresence::update(float dt) {
+	kinectManager->update();
+
+	ofShortPixels depth = kinectManager->getDepthPixels();
+	kinectManager->crop(depth);
+	kinectManager->thresholdInterp(depth, bottomOutDist, maxOutDist, 0, 255 * 256);
+
+	refinedImage = ofPixels(depth);
+
+	ofImage out = refinedImage;
+	out.resize(m_CustomShapeDisplayManager->shapeDisplaySizeX, m_CustomShapeDisplayManager->shapeDisplaySizeY);
+	heightsForShapeDisplay = out.getPixels();
+}
+
+void Telepresence::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
+	refinedImage.draw(x, y, width, height);
+}
+
+void Telepresence::drawGraphicsForPublicDisplay(int x, int y, int width, int height) {
+	float aspectRatio = cam->getWidth() / cam->getHeight();
+	float displayWidth = height * aspectRatio;
+
+	cam->draw(x + (width - displayWidth)/2, y, displayWidth, height);
+}

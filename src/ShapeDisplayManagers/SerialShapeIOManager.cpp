@@ -29,7 +29,7 @@ SerialShapeIOManager::SerialShapeIOManager() {
 }
 
 // This constructor may not be necessary, it doesn't get called.
-SerialShapeIOManager::SerialShapeIOManager(KinectManager* kinectRef) {
+SerialShapeIOManager::SerialShapeIOManager(KinectManagerSimple* kinectRef) {
     timeOfLastConfigsUpdate = elapsedTimeInSeconds();
     timeOfLastConfigsRefresh = elapsedTimeInSeconds();
 

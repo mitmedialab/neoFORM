@@ -10,15 +10,15 @@
 
 #include <stdio.h>
 #include "Application.hpp"
-#include "KinectManager.hpp"
+#include "KinectManagerSimple.hpp"
 
 #include "ofxXmlSettings.h"
 
 class KinectHandWavy : public Application{
 public:
     
-    KinectHandWavy(KinectManager* kinectManager);
-    KinectHandWavy(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManager *theKinectManager);
+    KinectHandWavy(KinectManagerSimple* kinectManager);
+    KinectHandWavy(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManagerSimple *theKinectManager);
 
     string getName() {return "Kinect Hand-Wavy";}
     
@@ -30,7 +30,7 @@ public:
     void keyPressed(int key);
 
 private:
-    KinectManager* m_kinectManager;
+    KinectManagerSimple* m_kinectManager;
     
     int m_transformStartHeight;
     
@@ -38,7 +38,7 @@ private:
     
     ofPixels rawSurfaceDepth;
     
-    ofxCvGrayscaleImage getBlurredDepthImg();
+    //ofxCvGrayscaleImage getBlurredDepthImg();
     
     // Preview utility functions
     void drawPreviewMaskRectangle();
