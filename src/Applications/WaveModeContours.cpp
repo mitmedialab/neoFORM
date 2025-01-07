@@ -207,15 +207,18 @@ void WaveModeContours::updateMask(){
         }
     }
     
-    // Calculate the interval based on rainDropsPerSecond
-    float interval = 1.0 / rainDropsPerSecond;
-
     // Apply a raindrop ripple effect at a random location on the grid at the specified interval.
-    if (timeControl - lastRippleTime >= interval) {
+    while (timeControl - lastRippleTime >= currentRainDropInterval) {
         int randomX = rand() % cols; // Generate a random x-coordinate within the grid
         int randomY = rand() % rows; // Generate a random y-coordinate within the grid
         applyRippleEffect(randomX, randomY);
-        lastRippleTime = timeControl; // Reset the timer
+        lastRippleTime += currentRainDropInterval; // Not a pure reset, allows very small intervals
+
+		double randZeroToOne = double(rand()) / RAND_MAX;
+		// A number between 0 and 1, the higher the more random the intervals will be.
+		const double randomFactor = 0.8;
+		// Random interval, with expected value 1.0 / rainDropsPerSecond
+		currentRainDropInterval = (2.0 * randomFactor * randZeroToOne + 1.0 - randomFactor) / rainDropsPerSecond;
     }
 
     // Updates the previous wall mask and stores the current centroids.
