@@ -7,6 +7,7 @@
 
 #include "AppManager.hpp"
 #include "AmbientWave.hpp"
+#include "Application.hpp"
 #include "SinglePinDebug.hpp"
 #include "TransitionApp.hpp"
 #include "ofEvents.h"
@@ -34,19 +35,15 @@ void AppManager::setup() {
 	
 	// set up applications
 	mqttApp = new MqttTransmissionApp(m_serialShapeIOManager);
-	applications["mqttTransmission"] = mqttApp;
 	
 	singlePinDebug = new SinglePinDebug(m_serialShapeIOManager, 401, 356, 605, 605);
-	applications["singlePinDebug"] = singlePinDebug;
 	
 	videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
-	applications["videoPlayer"] = videoPlayerApp;
 	videoPlayerApp->setup();
 	
 	// set up debugging application
 	// and the debugging apps, too
 	axisCheckerApp = new AxisCheckerApp(m_serialShapeIOManager);
-	applications["axisChecker"] = axisCheckerApp;
 	
 	// breaks on newer openframeworks (and is no longer needed)
 	// kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
@@ -57,35 +54,30 @@ void AppManager::setup() {
 	//applications["depthDebug"] = depthDebugApp;
 	
 	kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager, kinectManager);
-	applications["kinectHandWavy"] = kinectHandWavy;
     
     // Telepresence mode takes 16 bit thresholding values as parameters here.
     telepresence = new Telepresence(m_serialShapeIOManager, kinectManager,
                                  255 * 256, 140 * 256, cam);
-    applications["telepresence"] = telepresence;
 	
 	equationMode = new EquationMode(m_serialShapeIOManager);
-	applications["equationMode"] = equationMode;
 	
 	waveModeContours = new WaveModeContours(m_serialShapeIOManager, kinectManager);
-	applications["waveModeContours"] = waveModeContours;
 
 	// not in applications list
 	transitionApp = new TransitionApp(m_serialShapeIOManager);
 	
 	ambientWave = new AmbientWave(m_serialShapeIOManager);
-	applications["AmbientWave"] = ambientWave;
 
 	// Set up the order of the applications in the order vector
-	applicationOrder.push_back("videoPlayer");
-	applicationOrder.push_back("waveModeContours");
-	applicationOrder.push_back("equationMode");
-	applicationOrder.push_back("telepresence");
-	applicationOrder.push_back("kinectHandWavy");
-	applicationOrder.push_back("AmbientWave");
-	applicationOrder.push_back("singlePinDebug");
-	applicationOrder.push_back("axisChecker");
-	applicationOrder.push_back("mqttTransmission");
+	applications.push_back(videoPlayerApp);
+	applications.push_back(waveModeContours);
+	applications.push_back(equationMode);
+	applications.push_back(telepresence);
+	applications.push_back(kinectHandWavy);
+	applications.push_back(ambientWave);
+	applications.push_back(singlePinDebug);
+	applications.push_back(axisCheckerApp);
+	applications.push_back(mqttApp);
 
 	// innitialize GUI
 	gui.setup("modes:");
@@ -99,11 +91,8 @@ void AppManager::setup() {
 	int appIndex = 1; // Initialize an index for iteration
 
     // Iterate over the applicationOrder vector and add the corresponding app to the GUI
-    for (const auto& appName : applicationOrder) {
-        Application *app = applications[appName];
-        
+    for (Application* app : applications) {
         modeButtons.push_back(ofxButton());
-        modeNames.push_back(appName);
         
         // Construct the new button name with the index prepended
         std::string buttonName = std::to_string(appIndex) + ": " + app->getName();
@@ -117,7 +106,7 @@ void AppManager::setup() {
 	gui.minimize();
 	
 	// set default application
-	setCurrentApplication("mqttTransmission");
+	setCurrentApplication(mqttApp);
 
 	// *** Rectangular button setup ***
     // Load a font for the button text.
@@ -125,7 +114,7 @@ void AppManager::setup() {
     displayFont20.load("SourceSans3-Regular.ttf", 20);
     
     // Set up the buttons by creating an ofRectangle for each application
-    for (int i = 0; i < applicationOrder.size(); i++){
+    for (int i = 0; i < applications.size(); i++){
         ofRectangle button;
         button.set(20, 60 + 65*i, 240, 50);
         applicationButtons.push_back(button);
@@ -228,9 +217,9 @@ void AppManager::update() {
 	
 	// set the application based on the GUI mode buttons
 	int i = 0;
-	for (string name : modeNames) {
-		if (modeButtons[i] && applications[name] != currentApplication)
-			setCurrentApplication(name);
+	for (Application* app : applications) {
+		if (modeButtons[i] && app != currentApplication)
+			setCurrentApplication(app);
 		i++;
 	}
 }
@@ -283,7 +272,7 @@ void AppManager::draw() {
 	menuHeight += 30;
 	
 	// if there isn't already a debug gui, draw some more information
-	if (!showDebugGui || currentApplication == applications["waveModeContours"] || currentApplication == applications["stretchy"]) {
+	if (!showDebugGui || currentApplication == waveModeContours) {
 		ofDrawBitmapString(currentApplication->appInstructionsText(),menuLeftCoordinate, menuHeight);
 		menuHeight += 20;
 	}
@@ -292,10 +281,10 @@ void AppManager::draw() {
 
     // Draw the rectangular buttons for each application.
     for (int i = 0; i < applicationButtons.size(); i++){
-        if (applications[applicationOrder[i]] == currentApplication){
+        if (applications[i] == currentApplication){
             // Green for the current application
             ofSetColor(ofColor::seaGreen);
-        } else if (applicationSwitchBlocked && applications[applicationOrder[i]] == applications[lastSelectedApplicationName]){
+        } else if (applicationSwitchBlocked && applications[i] == lastSelectedApplication){
             // Dark green for the target application during the transition, so that there is immediate button feedback.
 			ofSetColor(ofColor::darkGreen);
         } else {
@@ -306,7 +295,7 @@ void AppManager::draw() {
         ofDrawRectRounded(applicationButtons[i], 20);
         
         // Make a stroke around the current application button
-        if (applications[applicationOrder[i]] == currentApplication){
+        if (applications[i] == currentApplication){
             ofSetColor(ofColor::white);
             ofNoFill();
             ofSetLineWidth(2);
@@ -315,7 +304,7 @@ void AppManager::draw() {
         }
 
         // Make a string with the name of the application with the loop index plus one prepended.
-        Application *app = applications[applicationOrder[i]];
+        Application *app = applications[i];
         string applicationOrderString = ofToString(i+1) + ": " + app->getName();
         
         // Add label for application button
@@ -371,22 +360,18 @@ void AppManager::draw() {
 	}
 }
 
-void AppManager::setCurrentApplication(string appName) {
+void AppManager::setCurrentApplication(Application* application) {
 	if (applicationSwitchBlocked) return;
 
-	if (applications.find(appName) == applications.end()) {
-		throw "no application exists with name " + appName;
-	}
-
-	if (currentApplication == applications[appName]) {
+	if (currentApplication == application) {
 		return;
 	}
 
 	if (currentApplication == nullptr) {
-		currentApplication = applications[appName];
+		currentApplication = application;
 	} else {
 		applicationSwitchBlocked = true;
-		transitionApp->startTransition(currentApplication, applications[appName], 0.6f, &currentApplication, &applicationSwitchBlocked);
+		transitionApp->startTransition(currentApplication, application, 0.6f, &currentApplication, &applicationSwitchBlocked);
 		currentApplication = transitionApp;
 	}
 	
@@ -433,9 +418,9 @@ void AppManager::keyPressed(int key) {
 			paused = !paused;
         } else if (key > '0' && key <= '9') {
             int num = key - '0';
-            if (num > 0 && num <= applicationOrder.size()) {
-                setCurrentApplication(applicationOrder[num - 1]);
-                lastSelectedApplicationName = applicationOrder[num - 1];
+            if (num > 0 && num <= applications.size()) {
+                setCurrentApplication(applications[num - 1]);
+                lastSelectedApplication = applications[num - 1];
             }
         }
 		/*else if (key == '1') {
@@ -470,9 +455,9 @@ void AppManager::mousePressed(int x, int y, int button) {
     for (int i = 0; i < applicationButtons.size(); i++){
         if (applicationButtons[i].inside(x, y)){
 			// Set the current application to the one that was clicked.
-            setCurrentApplication(applicationOrder[i]);
+            setCurrentApplication(applications[i]);
 			// Also set the last selected application, so that the button can be highlighted during the transition to the new application.
-            lastSelectedApplicationName = applicationOrder[i];
+            lastSelectedApplication = applications[i];
         }
     }
 };

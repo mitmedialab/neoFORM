@@ -89,27 +89,25 @@ private:
     // new gui
     ofxGuiGroup gui;
     vector<ofxButton> modeButtons;
-    vector<string> modeNames;
 
     void setupShapeDisplayManagement();
     void updateDepthInputBoundaries();
-    void setCurrentApplication(string appName);
+    void setCurrentApplication(Application* application);
     // interfaces to the peripherals
     SerialShapeIOManager *m_serialShapeIOManager;
     
     // external devices
     KinectManagerSimple *kinectManager;
     
-    // applications
-    unordered_map<string, Application *> applications;
-    std::vector<std::string> applicationOrder; // Vector to maintain insertion order of applications
+    // applications (in order)
+    vector<Application*> applications;
 
     // Graphical buttons, made of rectangles
     std::vector<ofRectangle> applicationButtons;
     ofTrueTypeFont displayFont20;
     // Track the last application that was selected, so we can give it a button status during the transition
     // because it won't be the active application until the transition is complete.
-    std::string lastSelectedApplicationName;
+    Application *lastSelectedApplication;
     
     Application *currentApplication;
     
