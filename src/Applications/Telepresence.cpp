@@ -8,20 +8,26 @@
 #include "Telepresence.hpp"
 #include "ofVideoGrabber.h"
 
+// Just a big member innitialization list, not doing anything interesting.
+// closeCutoff should be larger than farCutoff. Both are between 0 and 65535.
 Telepresence::Telepresence(SerialShapeIOManager *theCustomShapeDisplayManager, KinectManagerSimple *theKinectManager, 
 						   int maxOutDist, int bottomOutDist, ofVideoGrabber *cam) : 
 		Application(theCustomShapeDisplayManager), kinectManager(theKinectManager), 
-		maxOutDist(maxOutDist), bottomOutDist(bottomOutDist), cam(cam) {}
+		closeCutoff(maxOutDist), farCutoff(bottomOutDist), cam(cam) {}
 
 void Telepresence::update(float dt) {
 	kinectManager->update();
 
 	ofShortPixels depth = kinectManager->getDepthPixels();
-	kinectManager->crop(depth);
-	kinectManager->thresholdInterp(depth, bottomOutDist, maxOutDist, 0, 255 * 256);
+	kinectManager->cropUsingMask(depth);
 
+	// Singles out the range between farCutoff and closeCutoff for the shape display
+	kinectManager->thresholdInterp(depth, farCutoff, closeCutoff, 0, 65535);
+
+	// Cast to standard 8-bit representation
 	refinedImage = ofPixels(depth);
 
+	// Uses ofImage for antialiased resizing
 	ofImage out = refinedImage;
 	out.resize(m_CustomShapeDisplayManager->shapeDisplaySizeX, m_CustomShapeDisplayManager->shapeDisplaySizeY);
 	heightsForShapeDisplay = out.getPixels();

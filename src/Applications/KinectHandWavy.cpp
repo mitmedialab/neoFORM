@@ -53,7 +53,7 @@ void KinectHandWavy::drawGraphicsForShapeDisplay(int x, int y, int width, int he
     drawPreviewMaskRectangle();
 
     //*** Preview shape display pixels
-    m_kinectManager->crop(depthImg.getPixels());
+    m_kinectManager->cropUsingMask(depthImg.getPixels());
     depthImg.draw(2, 400, depthImg.getWidth(), depthImg.getHeight());
 
     //*** Contours are disabled, but maybe they will be useful in the future.
@@ -118,24 +118,22 @@ void KinectHandWavy::updateHeights() {
     // Add blur to the depth image.
     //ofxCvGrayscaleImage blurredDepthImg = getBlurredDepthImg();
     
-    ofShortPixels pix = m_kinectManager->getDepthPixels();
-    m_kinectManager->crop(pix);
+    ofShortPixels pixels = m_kinectManager->getDepthPixels();
+    m_kinectManager->cropUsingMask(pixels);
 
-    // Apply thresholding and interpolation directly to the 16-bit depth pixel values.
-    // This effectively isolates a portion of the depth image that is within a certain range of values in z-space.
-    // Pixels with depth values below 51200 (200*256) are set to 0.
-    // Pixels with depth values above 56320 (220*256) are set to 65280 (255*256).
-    // Pixels with depth values between 51200 and 56320 are linearly interpolated between 0 and 65280.
-    // The function acts on a reference to the original object, so the original object is modified.
-    m_kinectManager->thresholdInterp(pix, 200*256, 220*256, 0, 255*256);
-    
+    // Apply clamping and interpolation directly to the 16-bit depth pixel values.
+	// Any pixel less than the first value is mapped to 0 (min), any greater than the second is mapped to 65535 (max).
+	// All pixel values in between are linearly interpolated.
+    // This effectively isolates a portion of the depth image that is within a certain depth range.
+	// Values include a "*256" factor for ease of relation to 8-bit numbers.
+    m_kinectManager->thresholdInterp(pixels, 200*256, 220*256, 0, 65535);
     
     // Apply a blur to smooth out the kinect depth image.
     // Convert the higher precision depth image to a lower precision OpenCV grayscale image in order to add a blur.
     // This is the last stage of processing, so hopefully the downsampling won't impact the quality of the actuated pixels.
     ofxCvGrayscaleImage grayImage;
-    grayImage.allocate(pix.getWidth(), pix.getHeight()); // Allocate with the correct dimensions
-    grayImage.setFromPixels(pix);
+    grayImage.allocate(pixels.getWidth(), pixels.getHeight()); // Allocate with the correct dimensions
+    grayImage.setFromPixels(pixels);
  
     // Apply a Gaussian blur
     grayImage.blurGaussian(41);

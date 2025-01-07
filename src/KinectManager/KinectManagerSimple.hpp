@@ -22,10 +22,10 @@ public:
 	ofShortPixels getDepthPixels();
 	ofShortPixels getContourPixels();
 	ofPixels getColorPixels();
-	void crop(ofPixels &pix);
-	void crop(ofShortPixels &pix);
+	void crop(ofPixels &pixels);
+	void cropUsingMask(ofShortPixels &pixels);
 	void setDepthClipping(short nearClip, short farClip);
-	void thresholdInterp(ofShortPixels &pix, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue);
+	void thresholdInterp(ofShortPixels &pixels, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue);
 
 public:
 	ofRectangle mask;
@@ -33,7 +33,7 @@ public:
 protected:
 	ofxKinect kinect;
 
-	bool isConnected;
+	bool kinectInitialized;
 	ofShortPixels depthPixels;
 	ofShortPixels contourPixels;
 	ofPixels colorPixels;

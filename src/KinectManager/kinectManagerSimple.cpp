@@ -16,9 +16,9 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
         kinect.setRegistration(true); // enable depth->video image calibration
         kinect.init();
         kinect.open();
-		isConnected = true;
+		kinectInitialized = true;
     } else {
-		isConnected = false;
+		kinectInitialized = false;
 		// dummy values to prevent errors/crash when kinect is not connected
     	colorPixels.allocate(2, 2, OF_IMAGE_COLOR);
     	depthPixels.allocate(2, 2, OF_IMAGE_GRAYSCALE);
@@ -38,31 +38,21 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
 
 	setDepthClipping(nearClip, farClip);
     
-    int imageWidth = kinect.width;
-    int imageHeight = kinect.height;
-
-    colorPixels.allocate(imageWidth, imageHeight, OF_IMAGE_COLOR);
-    depthPixels.allocate(imageWidth, imageHeight, OF_IMAGE_GRAYSCALE);
+    colorPixels.allocate(kinect.width, kinect.height, OF_IMAGE_COLOR);
+    depthPixels.allocate(kinect.width, kinect.height, OF_IMAGE_GRAYSCALE);
 
     // determine if we use mask
 	ofxXmlSettings settings;
     bool settingsExist = settings.load("settings.xml");
     cout << "Awaiting Configuration of Mask \n";
-    if (settingsExist){
-        int width  = settings.getValue("width", 0);
-
-        if (width > 2){
-            // If the settings exist and are viable, use them to set the mask.
-            mask.set(
-               (float) settings.getValue("x_pos", 0),
-               (float) settings.getValue("y_pos", 0),
-               (float) settings.getValue("width", 0),
-               (float) settings.getValue("height", 0)
-           );
-        } else {
-            // Otherwise set the mask to the native kinect image dimensions (effectively no mask).
-            mask.set(0, 0, kinect.width, kinect.height);
-        }
+    if (settingsExist && settings.getValue("width", 0) > 2){
+        // If the settings exist and are viable, use them to set the mask.
+        mask.set(
+           (float) settings.getValue("x_pos", 0),
+           (float) settings.getValue("y_pos", 0),
+           (float) settings.getValue("width", 0),
+           (float) settings.getValue("height", 0)
+        );
     } else {
         // Otherwise set the mask to the native kinect image dimensions (effectively no mask).
         mask.set(0, 0, kinect.width, kinect.height);
@@ -70,7 +60,7 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
 }
 
 void KinectManagerSimple::update() {
-	if (!isConnected || !kinect.isConnected()) {
+	if (!kinectInitialized || !kinect.isConnected()) {
 		return;
 	}
     kinect.update();
@@ -83,10 +73,13 @@ void KinectManagerSimple::update() {
     }
 }
 
+// uses 16 bits for more precision
+// max (65535) is close (at nearclip), min (0) is far (at farclip)
 ofShortPixels KinectManagerSimple::getDepthPixels() {
 	return depthPixels;
 }
 
+// uses regular color camera on kinect, standard 8-bit color pixels
 ofPixels KinectManagerSimple::getColorPixels() {
 	return colorPixels;
 }
@@ -95,8 +88,8 @@ ofPixels KinectManagerSimple::getColorPixels() {
 // Because it is a reference, the original object is modified and nothing is returned.
 // The effect is to set all pixels below lowThresh to lowValue, all pixels above highThresh to highValue,
 // and to linearly interpolate the values in between.  The threshold values are expressed as unsigned short, the same as the pixel values.
-void KinectManagerSimple::thresholdInterp(ofShortPixels &pix, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue) {
-	for (unsigned short &pixel : pix) {
+void KinectManagerSimple::thresholdInterp(ofShortPixels &pixels, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue) {
+	for (unsigned short &pixel : pixels) {
 		if (pixel < lowThresh) {
             // If the pixel value is below the low threshold, set it to the low value
 			pixel = lowValue;
@@ -111,6 +104,9 @@ void KinectManagerSimple::thresholdInterp(ofShortPixels &pix, unsigned short low
 	}
 }
 
+// uses the build-in clipping done by ofKinect.
+// these values are NOT scaled to full 16-bit range, while getPixels IS.
+// therefor values used by thresholdInterp will not line up with these values.
 void KinectManagerSimple::setDepthClipping(short near, short far) {
     if (near < 500 || far > 4000) {
         cout << "[notice ] KinectManagerSimple: depth clipping values outside the " <<
@@ -120,12 +116,12 @@ void KinectManagerSimple::setDepthClipping(short near, short far) {
     kinect.setDepthClipping(near, far);
 }
 
-void KinectManagerSimple::crop(ofPixels &pix) {
-	pix.crop(mask.x, mask.y, mask.width, mask.height);
+void KinectManagerSimple::crop(ofPixels &pixels) {
+	pixels.crop(mask.x, mask.y, mask.width, mask.height);
 }
 
-void KinectManagerSimple::crop(ofShortPixels &pix) {
-	pix.crop(mask.x, mask.y, mask.width, mask.height);
+void KinectManagerSimple::cropUsingMask(ofShortPixels &pixels) {
+	pixels.crop(mask.x, mask.y, mask.width, mask.height);
 }
 
 KinectManagerSimple::~KinectManagerSimple() {

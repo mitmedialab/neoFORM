@@ -129,18 +129,18 @@ void WaveModeContours::update(float dt){
 // If a new wall is detected based on the last calculated matrix of wall positions, a ripple effect is applied to the fluid simulation at that location.
 void WaveModeContours::updateMask(){
     // Get the depth image from the Kinect manager and apply a Gaussian blur.
-    ofShortPixels pix = m_kinectManager->getDepthPixels();
-    m_kinectManager->crop(pix);
+    ofShortPixels pixels = m_kinectManager->getDepthPixels();
+    m_kinectManager->cropUsingMask(pixels);
     
     // Apply thresholding and interpolation directly to the 16-bit depth pixel values
-    m_kinectManager->thresholdInterp(pix, 200*256, 220*256, 0, 255*256);
+    m_kinectManager->thresholdInterp(pixels, 200*256, 220*256, 0, 65535);
     
     // Cast the incoming ofShortPixels data to ofCvGrayscaleImage for the contour finder.
     ofxCvGrayscaleImage grayImage;
-    grayImage.allocate(pix.getWidth(), pix.getHeight()); // Allocate with the correct dimensions
-    grayImage.setFromPixels(pix);
+    grayImage.allocate(pixels.getWidth(), pixels.getHeight()); // Allocate with the correct dimensions
+    grayImage.setFromPixels(pixels);
     
-    // Blur the image to reduce noise
+    // Blur the image to reduce aliasing 
     grayImage.blurGaussian(1);
 
     // Calculate the maxArea for the contour finder based on the cropped image size.
@@ -339,7 +339,7 @@ void WaveModeContours::drawGraphicsForShapeDisplay(int x, int y, int width, int 
     drawPreviewMaskRectangle();
 
     //*** Preview shape display pixels
-    m_kinectManager->crop(depthImg.getPixels());
+    m_kinectManager->cropUsingMask(depthImg.getPixels());
     depthImg.draw(2, 400, depthImg.getWidth(), depthImg.getHeight());
 
     //*** Contours are disabled, but maybe they will be useful in the future.
