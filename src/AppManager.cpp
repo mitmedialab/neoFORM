@@ -79,32 +79,6 @@ void AppManager::setup() {
 	applications.push_back(axisCheckerApp);
 	applications.push_back(mqttApp);
 
-	// innitialize GUI
-	gui.setup("modes:");
-	gui.setPosition(5, 20);
-	
-	// IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
-	// of modeButtons will invalidate all existing pointers stored in gui.
-	// DO NOT .push_back MORE THAN applications.size()!!!!
-	modeButtons.reserve(applications.size());
-
-	int appIndex = 1; // Initialize an index for iteration
-
-    // Iterate over the applicationOrder vector and add the corresponding app to the GUI
-    for (Application* app : applications) {
-        modeButtons.push_back(ofxButton());
-        
-        // Construct the new button name with the index prepended
-        std::string buttonName = std::to_string(appIndex) + ": " + app->getName();
-        auto p_button = modeButtons.back().setup(buttonName);
-        gui.add(p_button);
-        
-        appIndex++;
-    }
-
-	// Collapse the GUI panel for now to make room for the new graphical buttons.
-	gui.minimize();
-	
 	// set default application
 	setCurrentApplication(mqttApp);
 
@@ -214,14 +188,6 @@ void AppManager::update() {
 		m_serialShapeIOManager->setPinConfigs(pinConfigsForShapeDisplay);
 		timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
 	}
-	
-	// set the application based on the GUI mode buttons
-	int i = 0;
-	for (Application* app : applications) {
-		if (modeButtons[i] && app != currentApplication)
-			setCurrentApplication(app);
-		i++;
-	}
 }
 
 // Takes a 2D vector of heights and converts it to an ofPixels object
@@ -277,8 +243,6 @@ void AppManager::draw() {
 		menuHeight += 20;
 	}
 	
-	gui.draw();
-
     // Draw the rectangular buttons for each application.
     for (int i = 0; i < applicationButtons.size(); i++){
         if (applications[i] == currentApplication){
