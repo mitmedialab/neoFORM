@@ -378,6 +378,10 @@ void AppManager::setCurrentApplication(string appName) {
 		throw "no application exists with name " + appName;
 	}
 
+	if (currentApplication == applications[appName]) {
+		return;
+	}
+
 	if (currentApplication == nullptr) {
 		currentApplication = applications[appName];
 	} else {
