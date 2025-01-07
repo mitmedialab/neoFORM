@@ -86,11 +86,6 @@ public:
     friend class DisplayApp;
     friend class ProjectorApp;
 private:
-    // new gui
-    ofxGuiGroup gui;
-    vector<ofxButton> modeButtons;
-    vector<string> modeNames;
-
     void setupShapeDisplayManagement();
     void updateDepthInputBoundaries();
     void setCurrentApplication(string appName);
