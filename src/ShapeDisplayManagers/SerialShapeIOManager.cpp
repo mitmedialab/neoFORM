@@ -200,8 +200,8 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
     float thresholdScalar = 1.0 * pinHeightRange / 255;
     for (int i = 0; i < shapeDisplaySizeX; i++) {
         for (int j = 0; j < shapeDisplaySizeY; j++) {
-            // to rescale the values instead of clipping them, use this line:
-            //heightsForShapeDisplay[i][j] = heightsForShapeDisplay[i][j] * thresholdScalar + pinHeightMin;
+            // rescales the values instead of clipping them
+            heightsForShapeDisplay[i][j] = heightsForShapeDisplay[i][j] * thresholdScalar + pinHeightMin;
 
             if (heightsForShapeDisplay[i][j] <= pinHeightMin) {
                 heightsForShapeDisplay[i][j] = (unsigned char) pinHeightMin;
