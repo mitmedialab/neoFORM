@@ -88,18 +88,18 @@ ofPixels KinectManagerSimple::getColorPixels() {
 // Because it is a reference, the original object is modified and nothing is returned.
 // The effect is to set all pixels below lowThresh to lowValue, all pixels above highThresh to highValue,
 // and to linearly interpolate the values in between.  The threshold values are expressed as unsigned short, the same as the pixel values.
-void KinectManagerSimple::thresholdInterp(ofShortPixels &pixels, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue) {
+void KinectManagerSimple::thresholdInterp(ofShortPixels &pixels, unsigned short lesserThresh, unsigned short greaterThresh, unsigned short lesserValue, unsigned short greaterValue) {
 	for (unsigned short &pixel : pixels) {
-		if (pixel < lowThresh) {
+		if (pixel < lesserThresh) {
             // If the pixel value is below the low threshold, set it to the low value
-			pixel = lowValue;
-		} else if (pixel > highThresh) {
+			pixel = lesserValue;
+		} else if (pixel > greaterThresh) {
             // If the pixel value is above the high threshold, set it to the high value
-			pixel = highValue;
+			pixel = greaterValue;
 		} else {
 			// If the pixel value is within the threshold range, apply linear interpolation
-			float l = (pixel - lowThresh) / float(highThresh - lowThresh);
-			pixel = l * highValue + (1.0f - l) * lowValue;
+			float l = (pixel - lesserThresh) / float(greaterThresh - lesserThresh);
+			pixel = l * greaterValue + (1.0f - l) * lesserValue;
 		}
 	}
 }

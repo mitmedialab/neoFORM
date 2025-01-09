@@ -203,12 +203,12 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
             // rescales the values instead of clipping them
             heightsForShapeDisplay[i][j] = heightsForShapeDisplay[i][j] * thresholdScalar + pinHeightMin;
 
-            if (heightsForShapeDisplay[i][j] <= pinHeightMin) {
-                heightsForShapeDisplay[i][j] = (unsigned char) pinHeightMin;
-            }
-            else if (heightsForShapeDisplay[i][j] >= pinHeightMax) {
-                heightsForShapeDisplay[i][j] = (unsigned char) pinHeightMax;
-            }
+            //if (heightsForShapeDisplay[i][j] <= pinHeightMin) {
+            //    heightsForShapeDisplay[i][j] = (unsigned char) pinHeightMin;
+            //}
+            //else if (heightsForShapeDisplay[i][j] >= pinHeightMax) {
+            //    heightsForShapeDisplay[i][j] = (unsigned char) pinHeightMax;
+            //}
         }
     }
 }
