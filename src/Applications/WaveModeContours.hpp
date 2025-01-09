@@ -88,6 +88,8 @@ private:
     ofxCvGrayscaleImage depthImg;
     ofPixels maskPixels;
     
+	void recalculateRainInterval();
+
     int m_contoursRecordedFlag = 0;
     std::vector<ofRectangle> m_capturedContours;
 };

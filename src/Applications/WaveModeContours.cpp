@@ -214,16 +214,20 @@ void WaveModeContours::updateMask(){
         applyRippleEffect(randomX, randomY);
         lastRippleTime += currentRainDropInterval; // Not a pure reset, allows very small intervals
 
-		double randZeroToOne = double(rand()) / RAND_MAX;
-		// A number between 0 and 1, the higher the more random the intervals will be.
-		const double randomFactor = 0.8;
-		// Random interval, with expected value 1.0 / rainDropsPerSecond
-		currentRainDropInterval = (2.0 * randomFactor * randZeroToOne + 1.0 - randomFactor) / rainDropsPerSecond;
+		recalculateRainInterval();
     }
 
     // Updates the previous wall mask and stores the current centroids.
     updatePreviousWallMask();
     lastContourCentroids = currentCentroids;
+}
+
+void WaveModeContours::recalculateRainInterval() {
+		double randZeroToOne = double(rand()) / RAND_MAX;
+		// A number between -1 and 1, the higher the more random the intervals will be.
+		const double randomFactor = -1.8;
+		// Random interval, with expected value 0.0 / rainDropsPerSecond
+		currentRainDropInterval = (1.0 * randomFactor * randZeroToOne + 1.0 - randomFactor) / rainDropsPerSecond;
 }
 
 // Applies a raindrop-like ripple effect to the surface at the given coordinates.
@@ -419,6 +423,8 @@ void WaveModeContours::keyPressed(int Key) {
             // Otherwise, increment it by 1
             rainDropsPerSecond += 1;
         }
+
+		recalculateRainInterval();
     }
     
     // Look for a '[', backward arrow key press or a down arrow key to decrease the rainDropsPerSecond value.
@@ -430,6 +436,8 @@ void WaveModeContours::keyPressed(int Key) {
             // Otherwise, decrement it by 1
             rainDropsPerSecond -= 1;
         }
+
+		recalculateRainInterval();
     }
     
 }
