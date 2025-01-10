@@ -12,6 +12,9 @@
 #include "ofxXmlSettings.h"
 
 KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
+	// Start at "no movement"
+	totalMovement = 0.0;
+
     if (kinect.numAvailableDevices()>0){
         kinect.setRegistration(true); // enable depth->video image calibration
         kinect.init();
@@ -24,22 +27,38 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
     	depthPixels.allocate(2, 2, OF_IMAGE_GRAYSCALE);
 		colorPixels.setColor({0, 0, 0, 1});
 		depthPixels.setColor({0});
+
+		for (int i = 0; i < totalStoredFrames; i++) {
+    		previousDepthPixelsFrames[i].allocate(2, 2, OF_IMAGE_GRAYSCALE);
+			previousDepthPixelsFrames[i].setColor({0});
+		}
+		storedFrameWidth = 2;
+		storedFrameHeight = 2;
+
         mask.set(0, 0, 2, 2);
 		return;
 	}
 	
     // print the intrinsic IR sensor values
-    if (kinect.isConnected()) {
-        ofLogNotice() << "sensor-emitter dist: " << kinect.getSensorEmitterDistance() << "cm";
-        ofLogNotice() << "sensor-camera dist:  " << kinect.getSensorCameraDistance() << "cm";
-        ofLogNotice() << "zero plane pixel size: " << kinect.getZeroPlanePixelSize() << "mm";
-        ofLogNotice() << "zero plane dist: " << kinect.getZeroPlaneDistance() << "mm";
-    }
+    ofLogNotice() << "sensor-emitter dist: " << kinect.getSensorEmitterDistance() << "cm";
+    ofLogNotice() << "sensor-camera dist:  " << kinect.getSensorCameraDistance() << "cm";
+    ofLogNotice() << "zero plane pixel size: " << kinect.getZeroPlanePixelSize() << "mm";
+    ofLogNotice() << "zero plane dist: " << kinect.getZeroPlaneDistance() << "mm";
 
 	setDepthClipping(nearClip, farClip);
     
-    colorPixels.allocate(kinect.width, kinect.height, OF_IMAGE_COLOR);
-    depthPixels.allocate(kinect.width, kinect.height, OF_IMAGE_GRAYSCALE);
+    //colorPixels.allocate(kinect.width, kinect.height, OF_IMAGE_COLOR);
+    //depthPixels.allocate(kinect.width, kinect.height, OF_IMAGE_GRAYSCALE);
+
+	storedFrameWidth = kinect.width / storedFrameScaleFactor;
+	storedFrameHeight = kinect.height / storedFrameScaleFactor;
+
+    //previousDepthPixelsFrames[0].allocate(storedFrameWidth, storedFrameHeight, OF_IMAGE_GRAYSCALE);
+    previousDepthPixelsFrames[0] = kinect.getDepthPixels();
+	previousDepthPixelsFrames[0].resize(storedFrameWidth, storedFrameHeight);
+	for (int i = 1; i < totalStoredFrames; i++) {
+		previousDepthPixelsFrames[i] = previousDepthPixelsFrames[0];
+	}
 
     // determine if we use mask
 	ofxXmlSettings settings;
@@ -57,6 +76,8 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
         // Otherwise set the mask to the native kinect image dimensions (effectively no mask).
         mask.set(0, 0, kinect.width, kinect.height);
     }
+
+	update();
 }
 
 void KinectManagerSimple::update() {
@@ -66,11 +87,45 @@ void KinectManagerSimple::update() {
     kinect.update();
 
     if (kinect.isFrameNew()) {
+		// Each frame takes the spot of the one after it
+		previousDepthPixelsFrames.shiftBack(1);
+		ofPixels temp = depthPixels;
+		temp.resize(storedFrameWidth, storedFrameHeight);
+		previousDepthPixelsFrames[0] = temp;
         
         //NORMAL UPDATE CODE FOR GENERAL KINECT STUFFS
         colorPixels = kinect.getPixels();
         depthPixels = kinect.getDepthPixels();
+
+		updateTotalMovement();
     }
+}
+
+void KinectManagerSimple::updateTotalMovement() {
+	// To deal with flickering, only detect sustained low values (far) transitioning to sustained high values (close)
+	// This means that someone just leaving frame won't be detected, but it's probably fine
+	
+	unsigned long totalChange = 0;
+	unsigned long maxChange = 65535 * (unsigned long)storedFrameHeight * storedFrameWidth;
+
+	for (int i = 0; i < storedFrameHeight * storedFrameWidth; i++) {
+		int recentVal = 65535;
+		int referenceVal = 0;
+
+		// recentVal is only large when all recent frames are large at this pixel
+		for (int k = 0; k < numRecentFrames; k++) {
+			recentVal = MIN(recentVal, previousDepthPixelsFrames[k][i]);
+		}
+		// referenceVal is only small when all reference frames are small at this pixel
+		for (int k = numRecentFrames; k < totalStoredFrames; k++) {
+			referenceVal = MAX(referenceVal, previousDepthPixelsFrames[k][i]);
+		}
+
+		totalChange += MAX(0, recentVal - referenceVal);
+	}
+
+	// Effectively makes totalMovement a rolling average, with exponentially less contribution from older frames
+	totalMovement = movementTimeFactor * totalMovement + (1.0 - movementTimeFactor) * double(totalChange) / maxChange;
 }
 
 // uses 16 bits for more precision
