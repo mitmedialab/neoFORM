@@ -222,6 +222,8 @@ void AppManager::update() {
 			setCurrentApplication(app);
 		i++;
 	}
+
+	checkAutoTransition();
 }
 
 // Takes a 2D vector of heights and converts it to an ofPixels object
@@ -376,6 +378,47 @@ void AppManager::setCurrentApplication(Application* application) {
 	}
 	
 	updateDepthInputBoundaries();
+}
+
+enum autoTransitionCondition {
+	kinectMovementAboveThreshold,
+	kinectMovementBelowThreshold,
+};
+
+struct autoTransitionRule{
+	// These are double pointers so transitionRules can be constant (not updated when applications are initialized)
+	Application **from;
+	Application **to;
+	double threshold;
+	autoTransitionCondition condition;	
+};
+
+void AppManager::checkAutoTransition() {
+	const std::array<autoTransitionRule, 2> rules = {
+		autoTransitionRule{(Application**)&waveModeContours, (Application**)&ambientWave, 1.0e-8, kinectMovementBelowThreshold},
+		autoTransitionRule{(Application**)&ambientWave, (Application**)&waveModeContours, 1.0e-6, kinectMovementAboveThreshold},
+	};
+
+	for (auto rule : rules) {
+		// skips rule if current application doesn't match
+		if (currentApplication != *rule.from) continue;
+
+		// some modes don't use the kinect manager, so this ensures it is listening
+		kinectManager->update();
+
+		// skips rule if it's condition isn't met
+		switch (rule.condition) {
+		case kinectMovementAboveThreshold:
+			if (kinectManager->getMovement() <= rule.threshold) continue;
+			break;
+		case kinectMovementBelowThreshold:
+			if (kinectManager->getMovement() >= rule.threshold) continue;
+			break;
+		}
+
+		// transitions if all conditions met
+		setCurrentApplication(*rule.to);
+	}
 }
 
 void AppManager::updateDepthInputBoundaries() {
