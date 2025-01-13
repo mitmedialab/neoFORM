@@ -31,6 +31,8 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
 		for (int i = 0; i < totalStoredFrames; i++) {
     		previousDepthPixelsFrames[i].allocate(2, 2, OF_IMAGE_GRAYSCALE);
 			previousDepthPixelsFrames[i].setColor({0});
+    		previousDepthPixelsFramesInMasked[i].allocate(2, 2, OF_IMAGE_GRAYSCALE);
+			previousDepthPixelsFramesInMasked[i].setColor({0});
 		}
 		storedFrameWidth = 2;
 		storedFrameHeight = 2;
@@ -53,13 +55,6 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
 	storedFrameWidth = kinect.width / storedFrameScaleFactor;
 	storedFrameHeight = kinect.height / storedFrameScaleFactor;
 
-    //previousDepthPixelsFrames[0].allocate(storedFrameWidth, storedFrameHeight, OF_IMAGE_GRAYSCALE);
-    previousDepthPixelsFrames[0] = kinect.getDepthPixels();
-	previousDepthPixelsFrames[0].resize(storedFrameWidth, storedFrameHeight);
-	for (int i = 1; i < totalStoredFrames; i++) {
-		previousDepthPixelsFrames[i] = previousDepthPixelsFrames[0];
-	}
-
     // determine if we use mask
 	ofxXmlSettings settings;
     bool settingsExist = settings.load("settings.xml");
@@ -77,6 +72,19 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
         mask.set(0, 0, kinect.width, kinect.height);
     }
 
+	// initiallize with starting image
+    previousDepthPixelsFrames[0] = kinect.getDepthPixels();
+	previousDepthPixelsFramesInMasked[0] = previousDepthPixelsFrames[0];
+
+	previousDepthPixelsFrames[0].resize(storedFrameWidth, storedFrameHeight);
+	previousDepthPixelsFramesInMasked[0].crop(mask.x, mask.y, mask.width, mask.height);
+	previousDepthPixelsFramesInMasked[0].resize(storedFrameWidth, storedFrameHeight);
+
+	for (int i = 1; i < totalStoredFrames; i++) {
+		previousDepthPixelsFrames[i] = previousDepthPixelsFrames[0];
+		previousDepthPixelsFramesInMasked[i] = previousDepthPixelsFramesInMasked[0];
+	}
+
 	update();
 }
 
@@ -89,9 +97,17 @@ void KinectManagerSimple::update() {
     if (kinect.isFrameNew()) {
 		// Each frame takes the spot of the one after it
 		previousDepthPixelsFrames.shiftBack(1);
+		previousDepthPixelsFramesInMasked.shiftBack(1);
+
+		// uses temp variables because "resize" applies to the current object
 		ofPixels temp = depthPixels;
+		ofPixels masked = temp;
 		temp.resize(storedFrameWidth, storedFrameHeight);
+		masked.crop(mask.x, mask.y, mask.width, mask.height);
+		masked.resize(storedFrameWidth, storedFrameHeight);
+
 		previousDepthPixelsFrames[0] = temp;
+		previousDepthPixelsFramesInMasked[0] = masked;
         
         //NORMAL UPDATE CODE FOR GENERAL KINECT STUFFS
         colorPixels = kinect.getPixels();
@@ -106,26 +122,33 @@ void KinectManagerSimple::updateTotalMovement() {
 	// This means that someone just leaving frame won't be detected, but it's probably fine
 	
 	unsigned long totalChange = 0;
+	unsigned long totalChangeMasked = 0;
 	unsigned long maxChange = 65535 * (unsigned long)storedFrameHeight * storedFrameWidth;
 
 	for (int i = 0; i < storedFrameHeight * storedFrameWidth; i++) {
 		int recentVal = 65535;
+		int recentValMasked = 65535;
 		int referenceVal = 0;
+		int referenceValMasked = 0;
 
 		// recentVal is only large when all recent frames are large at this pixel
 		for (int k = 0; k < numRecentFrames; k++) {
 			recentVal = MIN(recentVal, previousDepthPixelsFrames[k][i]);
+			recentValMasked = MIN(recentValMasked, previousDepthPixelsFramesInMasked[k][i]);
 		}
 		// referenceVal is only small when all reference frames are small at this pixel
 		for (int k = numRecentFrames; k < totalStoredFrames; k++) {
 			referenceVal = MAX(referenceVal, previousDepthPixelsFrames[k][i]);
+			referenceValMasked = MAX(referenceValMasked, previousDepthPixelsFramesInMasked[k][i]);
 		}
 
 		totalChange += MAX(0, recentVal - referenceVal);
+		totalChangeMasked += MAX(0, recentValMasked - referenceValMasked);
 	}
 
 	// Effectively makes totalMovement a rolling average, with exponentially less contribution from older frames
 	totalMovement = movementTimeFactor * totalMovement + (1.0 - movementTimeFactor) * double(totalChange) / maxChange;
+	totalMovementInMasked = movementTimeFactor * totalMovementInMasked + (1.0 - movementTimeFactor) * double(totalChangeMasked) / maxChange;
 }
 
 // uses 16 bits for more precision
