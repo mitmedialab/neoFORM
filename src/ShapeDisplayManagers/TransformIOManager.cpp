@@ -270,3 +270,24 @@ ofPixels TransformIOManager::gridCropToActiveSurface(const ofPixels& fullSurface
 
 	return temp;
 }
+
+std::pair<int, int> TransformIOManager::gridFullCoordinateFromActive(std::pair<int ,int> activeCoordinate) {
+	int trueX;
+	if (activeCoordinate.first < m_Transform_block_w_pins) {
+		trueX = activeCoordinate.first + gridActiveZoneXStarts[0];
+	} else if (activeCoordinate.first < 2 * m_Transform_block_w_pins) {
+		trueX = activeCoordinate.first + gridActiveZoneXStarts[1] - m_Transform_block_w_pins;
+	} else {
+		trueX = activeCoordinate.first + gridActiveZoneXStarts[2] - 2 * m_Transform_block_w_pins;
+	}
+
+	return {trueX, activeCoordinate.second};
+}
+
+bool TransformIOManager::gridFullCoordinateIsActive(std::pair<int, int> fullCoordinate) {
+	int x = fullCoordinate.first;
+	if (x >= gridActiveZoneXStarts[0] && x < gridActiveZoneXStarts[0] + m_Transform_block_w_pins) return true;
+	if (x >= gridActiveZoneXStarts[1] && x < gridActiveZoneXStarts[1] + m_Transform_block_w_pins) return true;
+	if (x >= gridActiveZoneXStarts[2] && x < gridActiveZoneXStarts[2] + m_Transform_block_w_pins) return true;
+	return false;
+}

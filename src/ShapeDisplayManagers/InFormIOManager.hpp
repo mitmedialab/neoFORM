@@ -43,6 +43,8 @@ public:
 	void gridApplyToFullSurface(ofPixels& fullSurface, const ofPixels& activeSurface) {fullSurface = activeSurface;}
 	int getGridFullWidth() {return 24;}
 	int getGridFullHeight() {return 24;}
+	std::pair<int, int> gridFullCoordinateFromActive(std::pair<int, int> activeCoordinate) {return activeCoordinate;}
+	bool gridFullCoordinateIsActive(std::pair<int, int> fullCoordinate) {return true;}
 
 protected:
     // setup hardware-specific board configuration

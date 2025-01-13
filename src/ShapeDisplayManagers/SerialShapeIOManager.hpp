@@ -77,6 +77,9 @@ public:
 	virtual void gridApplyToFullSurface(ofPixels& fullSurface, const ofPixels& activeSurface) = 0;
 	virtual int getGridFullWidth() = 0;
 	virtual int getGridFullHeight() = 0;
+	// these functions assume input is a valid coordinate in it's respective system
+	virtual std::pair<int, int> gridFullCoordinateFromActive(std::pair<int, int> activeCoordinate) = 0;
+	virtual bool gridFullCoordinateIsActive(std::pair<int, int> fullCoordinate) = 0;
 
 
     // Public getters for protected hardware constants, these are specific to the pin configs so might be abstracted into a single array of values.
