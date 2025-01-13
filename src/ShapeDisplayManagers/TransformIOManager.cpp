@@ -227,3 +227,46 @@ std::vector<ofRectangle> TransformIOManager::createSections(float pixelsPerInch)
     
     return sections;
 }
+
+void TransformIOManager::gridApplyToFullSurface(ofPixels& fullSurface, const ofPixels& activeSurface) {
+	for (int y = 0; y < m_Transform_block_h_pins; y++) {
+		// first block
+		for (int x = 0; x < m_Transform_block_w_pins; x++) {
+			fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[0], y)] = activeSurface[activeSurface.getPixelIndex(x, y)];
+		}
+
+		// second block
+		for (int x = m_Transform_block_w_pins; x < 2 * m_Transform_block_w_pins; x++) {
+			fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[1], y)] = activeSurface[activeSurface.getPixelIndex(x, y)];
+		}
+
+		// third block
+		for (int x = 2 * m_Transform_block_w_pins; x < 3 * m_Transform_block_w_pins; x++) {
+			fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[2], y)] = activeSurface[activeSurface.getPixelIndex(x, y)];
+		}
+	}
+}
+
+ofPixels TransformIOManager::gridCropToActiveSurface(const ofPixels& fullSurface) {
+	ofPixels temp;
+	temp.allocate(m_Transform_block_w_pins, m_Transform_block_h_pins, OF_IMAGE_GRAYSCALE);
+
+	for (int y = 0; y < m_Transform_block_h_pins; y++) {
+		// first block
+		for (int x = 0; x < m_Transform_block_w_pins; x++) {
+			temp[temp.getPixelIndex(x, y)] = fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[0], y)];
+		}
+
+		// second block
+		for (int x = m_Transform_block_w_pins; x < 2 * m_Transform_block_w_pins; x++) {
+			temp[temp.getPixelIndex(x, y)] = fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[1], y)];
+		}
+
+		// third block
+		for (int x = 2 * m_Transform_block_w_pins; x < 3 * m_Transform_block_w_pins; x++) {
+			temp[temp.getPixelIndex(x, y)] = fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[2], y)];
+		}
+	}
+
+	return temp;
+}

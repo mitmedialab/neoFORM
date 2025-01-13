@@ -51,6 +51,8 @@ public:
     
     // These numbers represent the start points (in inches) of the 3 active zones of the TRANSFORM surface.
     std::vector<float> m_activeZoneXstarts = {10, 43.75, 77};
+	// Same, in # of "pins," directly taken from TRANSFORM_app-ACTUAL codebase
+	std::vector<int> gridActiveZoneXStarts = {13, 43, 73};
 
     std::vector<ofRectangle> createSections( float pixelsPerInch );
     ofPixels cropToActiveSurface(ofPixels fullSurface);
@@ -58,6 +60,15 @@ public:
     float m_Transform_block = 15.75; //inches
     int m_Transform_block_h_pins = 24; // # of pins
     int m_Transform_block_w_pins = 16; // # of pins
+	
+	// Completely grid-based (physical distance independent) switching between 
+	// fullSurface (physical) and activeSurface (the pin heights).
+	ofPixels gridCropToActiveSurface(const ofPixels& fullSurface);
+	// modifies fullSurface, leaving portions not in activeSurface untouched
+	void gridApplyToFullSurface(ofPixels& fullSurface, const ofPixels& activeSurface);
+	int getGridFullWidth() {return 102;}
+	int getGridFullHeight() {return 24;}
+
 
 protected:
     // setup hardware-specific board configuration

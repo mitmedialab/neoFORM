@@ -69,6 +69,16 @@ public:
     // Virtual class for hardware specific pin layouts.
     virtual std::vector<ofRectangle> createSections(float pixelsPerInch) {return std::vector<ofRectangle>();}
 
+
+	// Completely grid-based (physical distance independent) switching between 
+	// fullSurface (physical) and activeSurface (the pin heights).
+	virtual ofPixels gridCropToActiveSurface(const ofPixels& fullSurface) = 0;
+	// modifies fullSurface, leaving portions not in activeSurface untouched
+	virtual void gridApplyToFullSurface(ofPixels& fullSurface, const ofPixels& activeSurface) = 0;
+	virtual int getGridFullWidth() = 0;
+	virtual int getGridFullHeight() = 0;
+
+
     // Public getters for protected hardware constants, these are specific to the pin configs so might be abstracted into a single array of values.
     float getGainP()    const { return gainP; }
     float getGainI()    const { return gainI; }
