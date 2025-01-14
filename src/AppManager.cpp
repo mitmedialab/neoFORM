@@ -7,6 +7,7 @@
 
 #include "AppManager.hpp"
 #include "AmbientWave.hpp"
+#include "PropagationWave.hpp"
 #include "SinglePinDebug.hpp"
 #include "TransitionApp.hpp"
 #include "ofEvents.h"
@@ -70,6 +71,9 @@ void AppManager::setup() {
 	waveModeContours = new WaveModeContours(m_serialShapeIOManager, kinectManager);
 	applications["waveModeContours"] = waveModeContours;
 
+	propagationWave = new PropagationWave(m_serialShapeIOManager);
+	applications["propagationWave"] = propagationWave;
+
 	// not in applications list
 	transitionApp = new TransitionApp(m_serialShapeIOManager);
 	
@@ -79,6 +83,7 @@ void AppManager::setup() {
 	// Set up the order of the applications in the order vector
 	applicationOrder.push_back("videoPlayer");
 	applicationOrder.push_back("waveModeContours");
+	applicationOrder.push_back("propagationWave");
 	applicationOrder.push_back("equationMode");
 	applicationOrder.push_back("telepresence");
 	applicationOrder.push_back("kinectHandWavy");

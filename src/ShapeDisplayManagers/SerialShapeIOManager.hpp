@@ -98,6 +98,7 @@ public:
     
     int numberOfArduinos;
     
+	bool getIsConnected() {return isConnected;}
     
     // shape display height values (both intended and actual values)
     std::vector<std::vector<unsigned char>> heightsForShapeDisplay;

@@ -48,6 +48,7 @@
 #include "EquationMode.hpp"
 
 #include "WaveModeContours.hpp"
+#include "PropagationWave.hpp"
 
 #include "TransitionApp.hpp"
 
@@ -134,6 +135,7 @@ private:
     EquationMode *equationMode;
     
     WaveModeContours *waveModeContours;
+	PropagationWave *propagationWave;
 
 	  TransitionApp *transitionApp;
 	  bool applicationSwitchBlocked = false;

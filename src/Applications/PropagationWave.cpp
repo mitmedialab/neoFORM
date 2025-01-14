@@ -7,6 +7,7 @@
 //
 
 #include "PropagationWave.hpp"
+#include "ofEvents.h"
 #include "ofGraphicsConstants.h"
 
 PropagationWave::PropagationWave(SerialShapeIOManager *theCustomShapeDisplayManager) 
@@ -27,6 +28,10 @@ void PropagationWave::setup() {
 
 	// initiallize to all 0
 	differenceHeight = std::vector<std::vector<int>>(activeWidth, std::vector<int>(activeHeight, 0));
+	// don't set values, just vector sizes
+	isTouched = std::vector<std::vector<bool>>(activeWidth, std::vector<bool>(activeHeight));
+
+	touchMode = TouchMode::waveSurface;
 
 	for (int k = 0; k < numWaveFrames; k++) {
 		storedInputPixels[k].allocate(activeWidth, activeHeight, OF_IMAGE_GRAYSCALE);
@@ -35,6 +40,9 @@ void PropagationWave::setup() {
 
 	inputPixels.allocate(activeWidth, activeHeight, OF_IMAGE_GRAYSCALE);
 	outputPixels.allocate(simWidth, simHeight, OF_IMAGE_GRAYSCALE);
+
+	inputPixels.set(defaultHeight);
+	outputPixels.set(defaultHeight);
 }
 
 void PropagationWave::update(float dt) {
@@ -106,7 +114,27 @@ void PropagationWave::waveSurface() {
 		}
 	}
 
-	heightsForShapeDisplay.set(defaultHeight);
+	outputPixels.set(defaultHeight);
+
+	// ------------ added code for debuging purposes -------------
+	
+	if (m_CustomShapeDisplayManager->getIsConnected()) {
+		storedInputPixels[0].set(defaultHeight);
+	}
+	
+	if (ofGetMousePressed(OF_MOUSE_BUTTON_LEFT)) {
+		int x = ofGetMouseX();
+		int y = ofGetMouseY();
+
+		if (x >= 401 && x < 1006 && y >= 356 && y < 961) {
+			int gridX = (x - 401) / 605.0 * activeWidth;
+			int gridY = (y - 356) / 605.0 * activeHeight;
+
+			storedInputPixels[0][storedInputPixels[0].getPixelIndex(gridX, gridY)] = 0;
+		}
+	}
+
+	// -------------------- end added code -----------------------
 
 	// check for any pins below default, and make a spreading circle (larger for older frames)
 	for (int k = 0; k < numWaveFrames; k++) {
@@ -152,6 +180,9 @@ void PropagationWave::addCircleToOutput(int centerX, int centerY, int radius, in
 	}
 }
 
+// not ported yet
+void PropagationWave::singleElasticSurface() {}
+void PropagationWave::triSurface() {}
 
 void PropagationWave::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
 

@@ -53,7 +53,6 @@ protected:
 
 	TouchMode touchMode;
 
-	int lineSize;
 	int defaultHeight = 40;
 
 	circularBuffer<ofPixels, numFilterFrames> storedOutputPixels;
