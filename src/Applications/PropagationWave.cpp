@@ -34,6 +34,7 @@ void PropagationWave::setup() {
 	}
 
 	inputPixels.allocate(activeWidth, activeHeight, OF_IMAGE_GRAYSCALE);
+	outputPixels.allocate(simWidth, simHeight, OF_IMAGE_GRAYSCALE);
 }
 
 void PropagationWave::update(float dt) {
@@ -81,14 +82,75 @@ void PropagationWave::update(float dt) {
 
 	switch (touchMode) {
 		case TouchMode::waveSurface:
+			waveSurface();
 			break;
 		case TouchMode::singleElasticSurface:
+			singleElasticSurface();
 			break;
 		case TouchMode::triSurface:
+			triSurface();
 			break;
+	}
+
+	heightsForShapeDisplay = m_CustomShapeDisplayManager->gridCropToActiveSurface(outputPixels);
+}
+
+void PropagationWave::waveSurface() {
+	storedInputPixels.shiftBack(1);
+	auto input = m_CustomShapeDisplayManager->getHeightsFromShapeDisplay();
+	
+	// transfers the vector-style input image into ofPixels
+	for (int x = 0; x < activeWidth; x++) {
+		for (int y = 0; y < activeHeight; y++) {
+			storedInputPixels[0][storedInputPixels[0].getPixelIndex(x, y)] = input[x][y];	
+		}
+	}
+
+	heightsForShapeDisplay.set(defaultHeight);
+
+	// check for any pins below default, and make a spreading circle (larger for older frames)
+	for (int k = 0; k < numWaveFrames; k++) {
+		for (int x = 0; x < activeWidth; x++) {
+			for (int y = 0; y < activeHeight; y++) {
+				auto storedVal = storedInputPixels[k][storedInputPixels[k].getPixelIndex(x, y)];
+				if (storedVal < defaultHeight) {
+					addCircleToOutput(x, y, k, (defaultHeight - storedVal)/2);
+				}
+			}
+		}
+	}
+
+
+	for (int x = 0; x < activeWidth; x++) {
+		for (int y = 0; y < activeHeight; y++) {
+			if (isTouched[x][y]) {
+
+				int fullX, fullY;
+				std::tie(fullX, fullY) = m_CustomShapeDisplayManager->gridFullCoordinateFromActive({x, y});
+
+				outputPixels[outputPixels.getPixelIndex(fullX, fullY)] = defaultHeight;
+				for (int k = 0; k < numFilterFrames; k++) {
+					storedOutputPixels[k][storedOutputPixels[k].getPixelIndex(fullX, fullY)] = defaultHeight;
+				}
+			}
+		}
 	}
 }
 
+void PropagationWave::addCircleToOutput(int centerX, int centerY, int radius, int amount) {
+	for (int x = std::max(0, centerX - radius); x < std::min(activeWidth, centerX + radius + 1); x++) {
+		for (int y = std::max(0, centerY - radius); y < std::min(activeHeight, centerY + radius + 1); y++) {
+			int dist = ofDist(centerX, centerY, x, y);
+
+			if (dist == radius) {
+				int fullX, fullY;
+				std::tie(fullX, fullY) = m_CustomShapeDisplayManager->gridFullCoordinateFromActive({x, y});
+				auto &pixel = outputPixels[outputPixels.getPixelIndex(fullX, fullY)];
+				pixel = std::min(210, pixel + amount);
+			}
+		}
+	}
+}
 
 
 void PropagationWave::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {

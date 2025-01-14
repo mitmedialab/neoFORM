@@ -13,9 +13,9 @@
 #include "utils.hpp"
 
 enum TouchMode {
-	waveSurface = 0,
-	singleElasticSurface = 1,
-	triSurface = 2,
+	waveSurface,
+	singleElasticSurface,
+	triSurface,
 };
 
 class PropagationWave : public Application {
@@ -27,10 +27,14 @@ public:
     
     string getName() {return "Propagation Mode";}
 
+	void changeMode(TouchMode newMode) {touchMode = newMode;}
+
 protected:
 	void waveSurface();
 	void singleElasticSurface();
 	void triSurface();
+
+	void addCircleToOutput(int x, int y, int radius, int amount);
 
 protected:
 	constexpr static int numFilterFrames = 5;
