@@ -23,7 +23,7 @@ public:
 	ofShortPixels getDepthPixels();
 	ofShortPixels getContourPixels();
 	ofPixels getColorPixels();
-	void crop(ofPixels &pixels);
+	void cropUsingMask(ofPixels &pixels);
 	void cropUsingMask(ofShortPixels &pixels);
 	void setDepthClipping(short nearClip, short farClip);
 	void thresholdInterp(ofShortPixels &pixels, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue);

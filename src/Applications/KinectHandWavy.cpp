@@ -138,9 +138,10 @@ void KinectHandWavy::updateHeights() {
     // Apply a Gaussian blur
     grayImage.blurGaussian(41);
     
-    // Pass the blurred depth image pixels to the shape display manager to get the actuated pixels.
-    // We can use the ofxGrayscaleImages getPixels, it appears to be compatible with passing the pix object.
-    ofPixels livePixels = m_CustomShapeDisplayManager->cropToActiveSurface( grayImage.getPixels() );
+	// gridCropToActiveSurface requires an input of the right dimension, so a resize is in order
+	ofPixels fullPixels = grayImage.getPixels();
+	fullPixels.resize(m_CustomShapeDisplayManager->getGridFullWidth(), m_CustomShapeDisplayManager->getGridFullHeight());
+	ofPixels livePixels = m_CustomShapeDisplayManager->gridCropToActiveSurface(fullPixels);
     
     // Directly copy all pixels from livePixels to heightsForShapeDisplay.
     heightsForShapeDisplay = livePixels;
