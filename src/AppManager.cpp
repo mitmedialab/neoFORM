@@ -8,7 +8,7 @@
 #include "AppManager.hpp"
 #include "AmbientWave.hpp"
 #include "Application.hpp"
-#include "SinglePinDebug.hpp"
+#include "PropagationWave.hpp"
 #include "TransitionApp.hpp"
 #include "ofEvents.h"
 #include "ofGraphics.h"
@@ -62,6 +62,8 @@ void AppManager::setup() {
 	
 	waveModeContours = new WaveModeContours(m_serialShapeIOManager, kinectManager);
 
+	propagationWave = new PropagationWave(m_serialShapeIOManager);
+
 	// not in applications list
 	transitionApp = new TransitionApp(m_serialShapeIOManager);
 	
@@ -75,6 +77,7 @@ void AppManager::setup() {
 	applications.push_back(equationMode);
 	applications.push_back(telepresence);
 	applications.push_back(kinectHandWavy);
+	applications.push_back(propagationWave);
 	applications.push_back(ambientWave);
 	applications.push_back(pinDisabler);
 	applications.push_back(axisCheckerApp);
@@ -128,7 +131,7 @@ void AppManager::setupShapeDisplayManagement() {
 	// initialize communication with the shape display
 	// This is where the particulars of the shape display are set (i.e. TRANSFORM,
 	// inFORM, or any other physical layout).
-	string shapeDisplayToUse = "inFORM";
+	string shapeDisplayToUse = "TRANSFORM";
 	
 	if (shapeDisplayToUse == "TRANSFORM") {
 		m_serialShapeIOManager = new TransformIOManager(kinectManager);

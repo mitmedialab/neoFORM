@@ -24,12 +24,15 @@ double elapsedTimeInSeconds();
 void setImageNotBlurry(ofImage& image);
 
 // simple circular buffer to prevent unnecessary moving of data.
-// uses base contstructor/destructor as std::array.
-// might break if size is extremely large (greater than half of size_t's full range)
+// uses base contstructor/destructor as std::array
 template<typename Type, size_t size>
 class circularBuffer {
 public:
+	// Gets element at index, as if shiftBack actually moved data
 	Type& operator[](size_t index);
+
+	// Acts like copying each element to the spot shiftAmount after it, with wrapping.
+	// e.g., in a 5-element buffer, shifting by 2 brings buf[1] -> buf[3] and buf[4] -> buf[1] 
 	void shiftBack(size_t shiftAmount);
 protected:
 	std::array<Type, size> baseArray;
