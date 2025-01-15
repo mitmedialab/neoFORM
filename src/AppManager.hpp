@@ -91,6 +91,7 @@ private:
     ofxGuiGroup gui;
     vector<ofxButton> modeButtons;
 
+	void checkAutoTransition();
     void setupShapeDisplayManagement();
     void updateDepthInputBoundaries();
     void setCurrentApplication(Application* application);
