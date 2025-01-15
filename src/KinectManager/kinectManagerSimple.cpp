@@ -129,7 +129,16 @@ void KinectManagerSimple::crop(ofShortPixels &pix) {
 }
 
 KinectManagerSimple::~KinectManagerSimple() {
-    kinect.setCameraTiltAngle(0); // zero the tilt on exit
+	// write the mask settings to file, in case anything modified it
+	ofxXmlSettings settings;
+    settings.load("settings.xml");
+
+    settings.setValue("x_pos", mask.x);
+    settings.setValue("y_pos", mask.y);
+    settings.setValue("width", mask.width);
+    settings.setValue("height", mask.height);
+
+	settings.save("settings.xml");
     kinect.close();
 }
 

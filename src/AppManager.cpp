@@ -7,6 +7,7 @@
 
 #include "AppManager.hpp"
 #include "AmbientWave.hpp"
+#include "KinectMaskMaker.hpp"
 #include "SinglePinDebug.hpp"
 #include "TransitionApp.hpp"
 #include "ofEvents.h"
@@ -38,6 +39,9 @@ void AppManager::setup() {
 	
 	singlePinDebug = new SinglePinDebug(m_serialShapeIOManager, 401, 356, 605, 605);
 	applications["singlePinDebug"] = singlePinDebug;
+
+	kinectMaskMaker = new KinectMaskMaker(m_serialShapeIOManager, kinectManager);
+	applications["kinectMaskMaker"] = kinectMaskMaker;
 	
 	videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
 	applications["videoPlayer"] = videoPlayerApp;
@@ -85,6 +89,7 @@ void AppManager::setup() {
 	applicationOrder.push_back("AmbientWave");
 	applicationOrder.push_back("singlePinDebug");
 	applicationOrder.push_back("axisChecker");
+	applicationOrder.push_back("kinectMaskMaker");
 	applicationOrder.push_back("mqttTransmission");
 
 	// innitialize GUI
@@ -406,6 +411,9 @@ void AppManager::exit() {
 	if (projectorWindow != nullptr) {
 		projectorWindow->setWindowShouldClose();
 	}
+
+	// delete kinectManager to let it write to settings file
+	delete kinectManager;
 
 	// delete m_serialShapeIOManager to shut down the shape display
 	delete m_serialShapeIOManager;
