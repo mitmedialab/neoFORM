@@ -9,3 +9,5 @@ bin/emptyExampleDebug.app
 bin/neoFormDebug.app
 bin/libfmod.so
 bin/neoFORM*
+# hardware specific config files
+bin/settings.xml

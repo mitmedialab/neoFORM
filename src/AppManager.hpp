@@ -40,6 +40,7 @@
 
 // Debugging app for the frame buffer and image slicing
 #include "DepthDebugApp.hpp"
+#include "KinectMaskMaker.hpp"
 
 #include "KinectHandWavy.hpp"
 #include "Telepresence.hpp"
@@ -119,6 +120,8 @@ private:
     //KinectDebugApp *kinectDebugApp;
     DepthDebugApp *depthDebugApp;
     PinDisabler *pinDisabler;
+
+	KinectMaskMaker *kinectMaskMaker;
     
     // mqtt application
     MqttTransmissionApp *mqttApp;
