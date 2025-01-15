@@ -7,6 +7,7 @@
 
 #include "SerialShapeIOManager.hpp"
 #include "constants.h"
+#include "ofxXmlSettings.h"
 
 //--------------------------------------------------------------
 //
@@ -217,8 +218,8 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
 // structures. Flip height values where needed to match the board's orientation.
 void SerialShapeIOManager::readyDataForArduinos() {
     // set any disabled pins to 0
-    for (PinLocation pinLoc : getDisabledPins()) {
-        heightsForShapeDisplay[pinLoc.x][pinLoc.y] = pinHeightMin;
+    for (pair<int, int> pinLoc : getDisabledPins()) {
+        heightsForShapeDisplay[pinLoc.first][pinLoc.second] = pinHeightMin;
     }
 
     for (int i = 0; i < numberOfArduinos; i++) {
@@ -313,6 +314,31 @@ void SerialShapeIOManager::sendValueToAllBoards(unsigned char termId, unsigned c
     for (auto& connection : serialConnections) {
         connection->writeMessage(messageContents);
     }
+}
+
+
+// Get disabled pins from settings
+vector<pair<int, int>> SerialShapeIOManager::getDisabledPins() {
+    ofxXmlSettings settings;
+    std::string name = getShapeDisplayName() + "_pinsDisabled.xml";
+    settings.load(name);
+
+    int numDisabledPins = settings.getValue("num", 0);
+    
+    vector<pair<int, int>> disabledPins = {};
+    
+    for (int i = 0; i < numDisabledPins; i++) {
+        int x = settings.getValue("pin:X", -1, i);
+        int y = settings.getValue("pin:Y", -1, i);
+
+        // doesn't add invalid (out of range) pins
+        if (x >= 0 && x < shapeDisplaySizeX && y >= 0 && y < shapeDisplaySizeY) {
+            disabledPins.push_back({x, y});
+        }
+        //settings.popTag();
+    }
+
+    return disabledPins;
 }
 
 // Send values for some parameter (given by termId) to a board

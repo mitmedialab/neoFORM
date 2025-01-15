@@ -85,10 +85,11 @@ public:
     
     int numberOfArduinos;
     
-    
     // shape display height values (both intended and actual values)
     std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
     std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
+    // specific to device pin-disabling, return pin location to disable
+    vector<pair<int, int>> getDisabledPins();
 
 protected:
     // manage the connection to the shape display
@@ -99,13 +100,6 @@ protected:
     // setup hardware-specific board configuration
     virtual void configureBoards() = 0;
     void printBoardConfiguration();
-
-    struct PinLocation {
-        int x;
-        int y;
-    };
-    // specific to device pin-disabling, return pin location to disable
-    virtual vector<PinLocation> getDisabledPins() {return {};}
 
     // pin height data processors
     void toggleStuckPins();

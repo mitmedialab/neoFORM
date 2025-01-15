@@ -30,7 +30,6 @@
 
 // debugging applications
 #include "AxisCheckerApp.hpp"
-#include "SinglePinDebug.hpp"
 #include "KinectDebugApp.hpp"
 
 // mqtt application
@@ -54,6 +53,8 @@
 #include "AmbientWave.hpp"
 
 
+
+#include "PinDisabler.hpp"
 
 class AppManager : public ofBaseApp {
     
@@ -113,9 +114,9 @@ private:
     
     // debugging applications
     AxisCheckerApp *axisCheckerApp;
-    SinglePinDebug *singlePinDebug;
     //KinectDebugApp *kinectDebugApp;
     DepthDebugApp *depthDebugApp;
+    PinDisabler *pinDisabler;
     
     // mqtt application
     MqttTransmissionApp *mqttApp;

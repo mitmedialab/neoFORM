@@ -14,6 +14,7 @@
 #include "ofGraphics.h"
 #include "utils.hpp"
 #include <iterator>
+#include "PinDisabler.hpp"
 
 void AppManager::setup() {
 	
@@ -35,8 +36,6 @@ void AppManager::setup() {
 	
 	// set up applications
 	mqttApp = new MqttTransmissionApp(m_serialShapeIOManager);
-	
-	singlePinDebug = new SinglePinDebug(m_serialShapeIOManager, 401, 356, 605, 605);
 	
 	videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
 	videoPlayerApp->setup();
@@ -68,6 +67,8 @@ void AppManager::setup() {
 	
 	ambientWave = new AmbientWave(m_serialShapeIOManager);
 
+	pinDisabler = new PinDisabler(m_serialShapeIOManager, 400, 356, 600, 600);
+
 	// Set up the order of the applications in the order vector
 	applications.push_back(videoPlayerApp);
 	applications.push_back(waveModeContours);
@@ -75,7 +76,7 @@ void AppManager::setup() {
 	applications.push_back(telepresence);
 	applications.push_back(kinectHandWavy);
 	applications.push_back(ambientWave);
-	applications.push_back(singlePinDebug);
+	applications.push_back(pinDisabler);
 	applications.push_back(axisCheckerApp);
 	applications.push_back(mqttApp);
 
@@ -460,6 +461,8 @@ void AppManager::mousePressed(int x, int y, int button) {
             lastSelectedApplication = applications[i];
         }
     }
+
+    currentApplication->mousePressed(x, y, button);
 };
 void AppManager::mouseReleased(int x, int y, int button) {};
 void AppManager::windowResized(int w, int h) {};

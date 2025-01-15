@@ -83,6 +83,22 @@
 		B951ED692CEA6F6E00C74190 /* WaveModeContours.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B951ED652CEA6F6E00C74190 /* WaveModeContours.cpp */; };
 		B951ED6E2CEA703B00C74190 /* EquationMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B951ED6C2CEA703B00C74190 /* EquationMode.cpp */; };
 		BBC747EFA455E446D3C6C588 /* AppManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB71C7D49B032CA4888457E3 /* AppManager.cpp */; };
+		B94766EA2C3105CC00877064 /* InFormIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B94766E82C3105CC00877064 /* InFormIOManager.cpp */; };
+		B9A93ECE2D062AC6005B9CF4 /* PinDisabler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A93ECC2D062AC6005B9CF4 /* PinDisabler.cpp */; };
+		B9A9F318297DF82000ACC2F8 /* KinectManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F2F5297DF82000ACC2F8 /* KinectManager.cpp */; };
+		B9A9F319297DF82000ACC2F8 /* SerialIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F2FA297DF82000ACC2F8 /* SerialIOManager.cpp */; };
+		B9A9F31A297DF82000ACC2F8 /* ShapeIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F2FD297DF82000ACC2F8 /* ShapeIOManager.cpp */; };
+		B9A9F31B297DF82000ACC2F8 /* SerialShapeIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F2FF297DF82000ACC2F8 /* SerialShapeIO.cpp */; };
+		B9A9F31C297DF82000ACC2F8 /* SerialShapeIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F300297DF82000ACC2F8 /* SerialShapeIOManager.cpp */; };
+		B9A9F31D297DF82000ACC2F8 /* TransformIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F302297DF82000ACC2F8 /* TransformIOManager.cpp */; };
+		B9A9F31E297DF82000ACC2F8 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F304297DF82000ACC2F8 /* utils.cpp */; };
+		B9A9F31F297DF82000ACC2F8 /* AxisChecker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F309297DF82000ACC2F8 /* AxisChecker.cpp */; };
+		B9A9F320297DF82000ACC2F8 /* MqttTransmissionApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F30A297DF82000ACC2F8 /* MqttTransmissionApp.cpp */; };
+		B9A9F321297DF82000ACC2F8 /* VideoPlayerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F30B297DF82000ACC2F8 /* VideoPlayerApp.cpp */; };
+		B9A9F322297DF82000ACC2F8 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F30E297DF82000ACC2F8 /* Application.cpp */; };
+		B9A9F323297DF82000ACC2F8 /* KinectDebugApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F311297DF82000ACC2F8 /* KinectDebugApp.cpp */; };
+		B9A9F324297DF82000ACC2F8 /* AxisCheckerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F314297DF82000ACC2F8 /* AxisCheckerApp.cpp */; };
+		B9A9F325297DF82000ACC2F8 /* AppManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9A9F317297DF82000ACC2F8 /* AppManager.cpp */; };
 		BCC0588F6EE7A6B94548C546 /* util_topic.c in Sources */ = {isa = PBXBuildFile; fileRef = B36124F60F9F7F5A5CFE1A92 /* util_topic.c */; };
 		BD7BF2E62E7C7BB38F4A0C3C /* InFormIOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 995D35F4BBC61416251A63A4 /* InFormIOManager.cpp */; };
 		C1F96F941B78EDED16EC543A /* handle_pubrel.c in Sources */ = {isa = PBXBuildFile; fileRef = 537A3FD1D8856DF90189736F /* handle_pubrel.c */; };
@@ -587,6 +603,8 @@
 		B951ED662CEA6F6E00C74190 /* WaveModeContours.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = WaveModeContours.hpp; path = Applications/WaveModeContours.hpp; sourceTree = "<group>"; };
 		B951ED6C2CEA703B00C74190 /* EquationMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EquationMode.cpp; path = Applications/EquationMode.cpp; sourceTree = "<group>"; };
 		B951ED6D2CEA703B00C74190 /* EquationMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = EquationMode.hpp; path = Applications/EquationMode.hpp; sourceTree = "<group>"; };
+		B9A93ECC2D062AC6005B9CF4 /* PinDisabler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PinDisabler.cpp; sourceTree = "<group>"; };
+		B9A93ECD2D062AC6005B9CF4 /* PinDisabler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PinDisabler.hpp; sourceTree = "<group>"; };
 		B9BC635ECF14C68AC4DA8A0C /* config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = config.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv4/opencv2/flann/config.h; sourceTree = SOURCE_ROOT; };
 		B9BF5C2FC50AC14C25D9D520 /* dynamic_bitset.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = dynamic_bitset.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv4/opencv2/flann/dynamic_bitset.h; sourceTree = SOURCE_ROOT; };
 		BA274EC7A169D538BD43A5D8 /* ofxGuiUtils.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxGuiUtils.h; path = ../../../addons/ofxGui/src/ofxGuiUtils.h; sourceTree = SOURCE_ROOT; };
@@ -2135,6 +2153,57 @@
 				994116FAE9B72955C57E4FFB /* KinectDebugApp.hpp */,
 			);
 			name = DebuggingApps;
+			path = ShapeDisplayManagers;
+			sourceTree = "<group>";
+		};
+		B9A9F303297DF82000ACC2F8 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				B9A9F304297DF82000ACC2F8 /* utils.cpp */,
+				B9A9F305297DF82000ACC2F8 /* utils.hpp */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		B9A9F307297DF82000ACC2F8 /* Applications */ = {
+			isa = PBXGroup;
+			children = (
+				B9A9F308297DF82000ACC2F8 /* Application.hpp */,
+				B9A9F30E297DF82000ACC2F8 /* Application.cpp */,
+				B9A9F30F297DF82000ACC2F8 /* AxisChecker.hpp */,
+				B9A9F309297DF82000ACC2F8 /* AxisChecker.cpp */,
+				B9A9F30C297DF82000ACC2F8 /* MqttTransmissionApp.hpp */,
+				B9A9F30A297DF82000ACC2F8 /* MqttTransmissionApp.cpp */,
+				B9A93ECD2D062AC6005B9CF4 /* PinDisabler.hpp */,
+				B9A93ECC2D062AC6005B9CF4 /* PinDisabler.cpp */,
+				B9A9F30D297DF82000ACC2F8 /* VideoPlayerApp.hpp */,
+				B9A9F30B297DF82000ACC2F8 /* VideoPlayerApp.cpp */,
+				84B1DCFF2B792D8500DE7B7B /* KinectHandWavy.hpp */,
+				84B1DCFE2B792D8500DE7B7B /* KinectHandWavy.cpp */,
+				B9A9F310297DF82000ACC2F8 /* DebuggingApps */,
+			);
+			path = Applications;
+			sourceTree = "<group>";
+		};
+		B9A9F310297DF82000ACC2F8 /* DebuggingApps */ = {
+			isa = PBXGroup;
+			children = (
+				B9A9F312297DF82000ACC2F8 /* AxisCheckerApp.hpp */,
+				B9A9F314297DF82000ACC2F8 /* AxisCheckerApp.cpp */,
+				84AEEE282A926C7700D26E7C /* DepthDebugApp.hpp */,
+				84AEEE272A926C7700D26E7C /* DepthDebugApp.cpp */,
+				B9A9F311297DF82000ACC2F8 /* KinectDebugApp.cpp */,
+				B9A9F313297DF82000ACC2F8 /* KinectDebugApp.hpp */,
+			);
+			path = DebuggingApps;
+			sourceTree = "<group>";
+		};
+		B9A9F315297DF82000ACC2F8 /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+				B9A9F316297DF82000ACC2F8 /* constants.h */,
+			);
+			path = Constants;
 			sourceTree = "<group>";
 		};
 		BB4B014C10F69532006C3DED /* addons */ = {
@@ -2885,6 +2954,9 @@
 				01991C2C7D73E179354ACC7D /* handle_pubrec.c in Sources */,
 				C1F96F941B78EDED16EC543A /* handle_pubrel.c in Sources */,
 				7373FA1D6BAC0EBE8E566798 /* handle_suback.c in Sources */,
+				B9A9F321297DF82000ACC2F8 /* VideoPlayerApp.cpp in Sources */,
+				B9A9F320297DF82000ACC2F8 /* MqttTransmissionApp.cpp in Sources */,
+				B9A93ECE2D062AC6005B9CF4 /* PinDisabler.cpp in Sources */,
 				2204C4DF724114D119D079CF /* handle_unsuback.c in Sources */,
 				3FAB4AA959CCEACE3846AA95 /* helpers.c in Sources */,
 				E83929F2342F0975F4CCF9B1 /* logging_mosq.c in Sources */,
