@@ -21,6 +21,9 @@ public:
     
     InFormIOManager(KinectManagerSimple* kinectRef);
     
+    // Destructor to handle power supply deactivation
+    ~InFormIOManager();
+
     // Name to identify the shape display.
     string getShapeDisplayName() {
         // This is a method instead of a property only to simplify the inheritance by making the superclass declaration virtual.
@@ -40,6 +43,14 @@ public:
 protected:
     // setup hardware-specific board configuration
     void configureBoards();
+    
+private:
+    // Serial connection for power supply control
+    ofSerial powerSupplySerial;
+
+    // Power supply control functions
+    void activatePowerSupply();
+    void deactivatePowerSupply();
 };
 
 #endif /* InFormIOManager_hpp */
