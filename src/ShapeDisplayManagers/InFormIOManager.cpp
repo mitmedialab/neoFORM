@@ -56,6 +56,8 @@ InFormIOManager::InFormIOManager() {
     pinEnabled.resize(shapeDisplaySizeX, std::vector<bool>(shapeDisplaySizeY, true));
     pinStuckSinceTime.resize( shapeDisplaySizeX, std::vector<double>(shapeDisplaySizeY, elapsedTimeInSeconds() ));
     
+    // Activate the power supply, this contains a short sleep to allow the power supply to activate before continuing.
+    activatePowerSupply();
     
     // Add serial connection strings to the vector of serial connections.
     serialPorts.push_back("/dev/tty.usbserial-A30010PW");
@@ -71,6 +73,11 @@ InFormIOManager::InFormIOManager() {
 // Secondary Constructor delegates to the primary constructor and adds the kinect reference.
 InFormIOManager::InFormIOManager(KinectManagerSimple* kinectRef) : InFormIOManager() {
     m_kinectManagerRef = kinectRef;
+}
+
+// Destructor to handle power supply deactivation
+InFormIOManager::~InFormIOManager() {
+    deactivatePowerSupply();
 }
 
 void InFormIOManager::configureBoards() {
@@ -126,6 +133,31 @@ void InFormIOManager::configureBoards() {
       printBoardConfiguration();
       // Flag configuration as complete.
       boardsAreConfigured = true;
+}
+
+void InFormIOManager::activatePowerSupply() {
+    // Open the serial connection to the power supply
+    powerSupplySerial.setup("/dev/tty.usbserial-240", 4800); // Adjust the port and baud rate as needed, could also be dev/tty.usbserial-2120
+
+    // Send command to activate the power supply
+    powerSupplySerial.writeBytes("SYSTem:REMote\r\n", 15);
+    powerSupplySerial.writeBytes("SOURce:CURRent:LEVel:IMMediate:AMPLitude 50.0\r\n", 47);
+    powerSupplySerial.writeBytes("SOURce:VOLTage:LEVel:IMMediate:AMPLitude 24.0\r\n", 47);
+    powerSupplySerial.writeBytes("SOURce:OUTPut:STATe 1\r\n", 23);
+    
+    // Sleep for a bit to allow the power supply to activate
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+}
+
+void InFormIOManager::deactivatePowerSupply() {
+    // Send command to deactivate the power supply
+    powerSupplySerial.writeBytes("SOURce:OUTPut:STATe 0\r\n", 23);
+
+    // Close the serial connection
+    powerSupplySerial.close();
+    
+    // Not sure this is necessary, but in a testbed we found it was helpful to sleep for a bit to make sure the serial command completes.
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 ofPixels InFormIOManager::cropToActiveSurface(ofPixels fullSurface) {
