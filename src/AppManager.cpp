@@ -90,9 +90,12 @@ void AppManager::setup() {
 	debugApplications.push_back(pinDisabler);
 	debugApplications.push_back(kinectMaskMaker);
 
+	options.push_back(&autoTransition);
+	optionNames.push_back("auto transition");
+
 	// innitialize GUI
 	debugGui.setup("debug modes:");
-	debugGui.setPosition(5, 60 + 65 * applications.size());
+	debugGui.setPosition(5, 60 + 65 * (applications.size() + options.size()));
 	
 	// IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
 	// of modeButtons will invalidate all existing pointers stored in gui.
@@ -127,6 +130,14 @@ void AppManager::setup() {
         button.set(20, 60 + 65*i, 240, 50);
         applicationButtons.push_back(button);
     }
+
+	// Set up the buttons based on options
+	for (int i = 0; i < options.size(); i++) {
+		ofRectangle button;
+		int yOffset = 60 + 65 * (i + applications.size());
+		button.set(20, yOffset, 240, 50);
+		optionButtons.push_back(button);
+	}
 
 }
 
@@ -231,7 +242,7 @@ void AppManager::update() {
 		i++;
 	}
 
-	checkAutoTransition();
+	if (autoTransition) checkAutoTransition();
 }
 
 // Takes a 2D vector of heights and converts it to an ofPixels object
@@ -321,8 +332,28 @@ void AppManager::draw() {
         ofSetColor(ofColor::white);
         displayFont20.drawString(applicationOrderString, applicationButtons[i].x + 25, applicationButtons[i].y + 30);
     }
-	
-	// draw shape and color I/O images
+
+	// draw the buttons for options
+	for (int i = 0; i < options.size(); i++) {
+		if (*options[i]) {
+            ofSetColor(ofColor::lightGoldenRodYellow);
+		} else {
+			// dark purple
+            ofSetColor(ofColor::fromHex(0x300040));
+		}
+
+		// Draw a rounded rectangle for the application button with a 20 pixel radius.
+        ofDrawRectRounded(optionButtons[i], 20);
+
+        // Add label for application button
+        if (*options[i]) {
+			ofSetColor(ofColor::black);
+		} else {
+			ofSetColor(ofColor::white);
+		}
+        displayFont20.drawString(optionNames[i], optionButtons[i].x + 25, optionButtons[i].y + 30);
+	}
+	ofSetColor(ofColor::white);
 	
 	/* Draw the height data being returned for the pin heights by the arduinos */
 	ofDrawRectangle(400, 50, 302, 302);
@@ -514,6 +545,12 @@ void AppManager::mousePressed(int x, int y, int button) {
             lastSelectedApplication = applications[i];
         }
     }
+
+	for (int i = 0; i < optionButtons.size(); i++) {
+		if (optionButtons[i].inside(x, y)) {
+			*options[i] = !*options[i];
+		}
+	}
 
     currentApplication->mousePressed(x, y, button);
 };

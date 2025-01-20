@@ -109,6 +109,9 @@ private:
 
     // Graphical buttons, made of rectangles
     std::vector<ofRectangle> applicationButtons;
+	std::vector<ofRectangle> optionButtons;
+	std::vector<bool*> options;
+	std::vector<std::string> optionNames;
     ofTrueTypeFont displayFont20;
     // Track the last application that was selected, so we can give it a button status during the transition
     // because it won't be the active application until the transition is complete.
@@ -150,6 +153,7 @@ private:
     
     // program state
     bool paused = false;
+	bool autoTransition = false;
     double timeOfLastUpdate = -1;
     double timeOfLastPinConfigsUpdate = -1;
 
