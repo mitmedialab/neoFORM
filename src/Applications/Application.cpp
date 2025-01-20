@@ -25,7 +25,7 @@ void Application::setRefForShapeIOManager(SerialShapeIOManager* customIOManager)
     m_CustomShapeDisplayManager = customIOManager;
 }
 
-// This is a setter not a getter. Yuck.
+// gets by reference, but still (probably) copies data. Yuck.
 void Application::getHeightsForShapeDisplay(ofPixels &heights) {
     heights = heightsForShapeDisplay;
 };
