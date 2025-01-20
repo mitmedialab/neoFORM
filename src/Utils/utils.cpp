@@ -25,11 +25,11 @@ PossibleCoordinate getMouseCoordinateInGrid(int gridX, int gridY, int gridWidth,
 }
 
 double elapsedTimeInSeconds() {
-	std::chrono::steady_clock clock;
-	std::chrono::duration<double, std::ratio<1, 1>> time = clock.now().time_since_epoch(); 
-	return time.count();
+	//std::chrono::steady_clock clock;
+	//std::chrono::duration<double, std::ratio<1, 1>> time = clock.now().time_since_epoch();
+	//return time.count();
 
-    //return clock() / (double) CLOCKS_PER_SEC;
+    return clock() / (double) CLOCKS_PER_SEC;
 }
 
 //used to easily disable upscale blurring of ofImages
