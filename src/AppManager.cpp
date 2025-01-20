@@ -74,48 +74,48 @@ void AppManager::setup() {
 
 	pinDisabler = new PinDisabler(m_serialShapeIOManager, 400, 356, 600, 600);
 
-	// Set up the order of the applications in the order vector
-	applications.push_back(videoPlayerApp);
-	applications.push_back(waveModeContours);
-	applications.push_back(equationMode);
-	applications.push_back(telepresence);
-	applications.push_back(kinectHandWavy);
-	applications.push_back(propagationWave);
-	applications.push_back(ambientWave);
-	applications.push_back(pinDisabler);
-	applications.push_back(kinectMaskMaker);
-	applications.push_back(axisCheckerApp);
-	applications.push_back(mqttApp);
+	if (m_serialShapeIOManager->getShapeDisplayName() == "inFORM") {
+		applications.push_back(equationMode);
+		applications.push_back(telepresence);
+		
+		setCurrentApplication(equationMode);
+	} else if (m_serialShapeIOManager->getShapeDisplayName() == "TRANSFORM") {
+		applications.push_back(videoPlayerApp);
+		applications.push_back(waveModeContours);
+		applications.push_back(ambientWave);
+
+		setCurrentApplication(ambientWave);
+	}
+
+	debugApplications.push_back(pinDisabler);
+	debugApplications.push_back(kinectMaskMaker);
 
 	// innitialize GUI
-	gui.setup("modes:");
-	gui.setPosition(5, 20);
+	debugGui.setup("debug modes:");
+	debugGui.setPosition(5, 60 + 65 * applications.size());
 	
 	// IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
 	// of modeButtons will invalidate all existing pointers stored in gui.
 	// DO NOT .push_back MORE THAN applications.size()!!!!
-	modeButtons.reserve(applications.size());
+	debugModeButtons.reserve(debugApplications.size());
 
 	int appIndex = 1; // Initialize an index for iteration
 
     // Iterate over the applicationOrder vector and add the corresponding app to the GUI
-    for (Application* app : applications) {
-        modeButtons.push_back(ofxButton());
+    for (Application* app : debugApplications) {
+        debugModeButtons.push_back(ofxButton());
         
         // Construct the new button name with the index prepended
         std::string buttonName = std::to_string(appIndex) + ": " + app->getName();
-        auto p_button = modeButtons.back().setup(buttonName);
-        gui.add(p_button);
+        auto p_button = debugModeButtons.back().setup(buttonName);
+        debugGui.add(p_button);
         
         appIndex++;
     }
 
 	// Collapse the GUI panel for now to make room for the new graphical buttons.
-	gui.minimize();
+	debugGui.minimize();
 	
-	// set default application
-	setCurrentApplication(mqttApp);
-
 	// *** Rectangular button setup ***
     // Load a font for the button text.
     ofTrueTypeFont::setGlobalDpi(72);
@@ -225,8 +225,8 @@ void AppManager::update() {
 	
 	// set the application based on the GUI mode buttons
 	int i = 0;
-	for (Application* app : applications) {
-		if (modeButtons[i] && app != currentApplication)
+	for (Application* app : debugApplications) {
+		if (debugModeButtons[i] && app != currentApplication)
 			setCurrentApplication(app);
 		i++;
 	}
@@ -287,7 +287,7 @@ void AppManager::draw() {
 		menuHeight += 20;
 	}
 	
-	gui.draw();
+	debugGui.draw();
 
     // Draw the rectangular buttons for each application.
     for (int i = 0; i < applicationButtons.size(); i++){

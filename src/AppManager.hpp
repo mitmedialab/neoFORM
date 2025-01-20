@@ -90,8 +90,8 @@ public:
     friend class ProjectorApp;
 private:
     // new gui
-    ofxGuiGroup gui;
-    vector<ofxButton> modeButtons;
+    ofxGuiGroup debugGui;
+    vector<ofxButton> debugModeButtons;
 
 	void checkAutoTransition();
     void setupShapeDisplayManagement();
@@ -105,6 +105,7 @@ private:
     
     // applications (in order)
     vector<Application*> applications;
+	vector<Application*> debugApplications;
 
     // Graphical buttons, made of rectangles
     std::vector<ofRectangle> applicationButtons;
