@@ -58,6 +58,21 @@
 
 #include "PinDisabler.hpp"
 
+enum autoTransitionCondition {
+	kinectMovementAboveThreshold,
+	kinectMovementBelowThreshold,
+};
+
+struct autoTransitionRule{
+	// These are double pointers so transitionRules can be constant (not updated when applications are initialized)
+	Application **from;
+	Application **to;
+	double threshold;
+	autoTransitionCondition condition;	
+	double timeRuleSatisfiedNeeded;
+};
+
+
 class AppManager : public ofBaseApp {
     
 public:
@@ -93,7 +108,7 @@ private:
     ofxGuiGroup debugGui;
     vector<ofxButton> debugModeButtons;
 
-	void checkAutoTransition();
+	void checkAutoTransition(double dt);
     void setupShapeDisplayManagement();
     void updateDepthInputBoundaries();
     void setCurrentApplication(Application* application);
@@ -173,6 +188,16 @@ private:
     ofFbo graphicsFromShapeDisplay;
     ofPixels colorPixels;
     //ofPixels depthPixels;
+	
+	// rules for autoTransition
+	const std::array<autoTransitionRule, 4> rules = {
+		autoTransitionRule{(Application**)&waveModeContours, (Application**)&ambientWave, 1.0e-8, kinectMovementBelowThreshold, 20.0},
+		autoTransitionRule{(Application**)&ambientWave, (Application**)&waveModeContours, 1.0e-6, kinectMovementAboveThreshold, 3.0},
+		autoTransitionRule{(Application**)&equationMode, (Application**)&telepresence, 1.0e-6, kinectMovementAboveThreshold, 3.0},
+		autoTransitionRule{(Application**)&telepresence, (Application**)&equationMode, 1.0e-8, kinectMovementBelowThreshold, 3.0},
+	};
+	std::array<double, 4> timeRulesSatisfied = {0.0, 0.0, 0.0, 0.0};
+
     
     ofPixels convertHeightsToPixels(const std::vector<std::vector<unsigned char>>& heights);
 };

@@ -193,7 +193,9 @@ void AppManager::update() {
 	// cout << "Update in App Manager\n";
 	
 	// time elapsed since last update
-	float currentTime = elapsedTimeInSeconds();
+	std::chrono::steady_clock clock;
+	std::chrono::duration<double, std::ratio<1, 1>> time = clock.now().time_since_epoch();
+	double currentTime = time.count();
 	double dt = currentTime - timeOfLastUpdate;
 	timeOfLastUpdate = currentTime;
 	
@@ -242,7 +244,7 @@ void AppManager::update() {
 		i++;
 	}
 
-	if (autoTransition) checkAutoTransition();
+	if (autoTransition) checkAutoTransition(dt);
 }
 
 // Takes a 2D vector of heights and converts it to an ofPixels object
@@ -419,44 +421,37 @@ void AppManager::setCurrentApplication(Application* application) {
 	updateDepthInputBoundaries();
 }
 
-enum autoTransitionCondition {
-	kinectMovementAboveThreshold,
-	kinectMovementBelowThreshold,
-};
-
-struct autoTransitionRule{
-	// These are double pointers so transitionRules can be constant (not updated when applications are initialized)
-	Application **from;
-	Application **to;
-	double threshold;
-	autoTransitionCondition condition;	
-};
-
-void AppManager::checkAutoTransition() {
-	const std::array<autoTransitionRule, 2> rules = {
-		autoTransitionRule{(Application**)&waveModeContours, (Application**)&ambientWave, 1.0e-8, kinectMovementBelowThreshold},
-		autoTransitionRule{(Application**)&ambientWave, (Application**)&waveModeContours, 1.0e-6, kinectMovementAboveThreshold},
-	};
-
+void AppManager::checkAutoTransition(double dt) {
+	// some modes don't use the kinect manager, so this ensures it is listening
+	kinectManager->update();
+	int i = 0;
 	for (auto rule : rules) {
-		// skips rule if current application doesn't match
-		if (currentApplication != *rule.from) continue;
+		// only check rule if currentApplication matches
+		if (*rule.from != currentApplication) continue;
 
-		// some modes don't use the kinect manager, so this ensures it is listening
-		kinectManager->update();
-
-		// skips rule if it's condition isn't met
 		switch (rule.condition) {
 		case kinectMovementAboveThreshold:
-			if (kinectManager->getMovement() <= rule.threshold) continue;
+			if (kinectManager->getMovement() <= rule.threshold) {
+				timeRulesSatisfied[i] = 0.0;
+				continue;
+			}
 			break;
 		case kinectMovementBelowThreshold:
-			if (kinectManager->getMovement() >= rule.threshold) continue;
+			if (kinectManager->getMovement() >= rule.threshold) {
+				timeRulesSatisfied[i] = 0.0;
+				continue;
+			}
 			break;
 		}
 
+		timeRulesSatisfied[i] += dt;
+
 		// transitions if all conditions met
-		setCurrentApplication(*rule.to);
+		if (timeRulesSatisfied[i] >= rule.timeRuleSatisfiedNeeded) {
+			setCurrentApplication(*rule.to);
+			timeRulesSatisfied[i] = 0;
+		}
+		i++;
 	}
 }
 
