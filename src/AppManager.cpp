@@ -78,15 +78,13 @@ void AppManager::setup() {
 	if (m_serialShapeIOManager->getShapeDisplayName() == "inFORM") {
 		applications.push_back(equationMode);
 		applications.push_back(telepresence);
-		
-		setCurrentApplication(equationMode);
 	} else if (m_serialShapeIOManager->getShapeDisplayName() == "TRANSFORM") {
 		applications.push_back(videoPlayerApp);
 		applications.push_back(waveModeContours);
 		applications.push_back(ambientWave);
-
-		setCurrentApplication(ambientWave);
 	}
+
+	setCurrentApplication(mqttApp);
 
 	debugApplications.push_back(pinDisabler);
 	debugApplications.push_back(kinectMaskMaker);
