@@ -13,6 +13,7 @@
 #include "TransitionApp.hpp"
 #include "ofEvents.h"
 #include "ofGraphics.h"
+#include "ofxXmlSettings.h"
 #include "utils.hpp"
 #include <iterator>
 #include "PinDisabler.hpp"
@@ -144,9 +145,10 @@ void AppManager::setup() {
 // initialize the shape display and set up shape display helper objects
 void AppManager::setupShapeDisplayManagement() {
 	// initialize communication with the shape display
-	// This is where the particulars of the shape display are set (i.e. TRANSFORM,
-	// inFORM, or any other physical layout).
-	string shapeDisplayToUse = "TRANSFORM";
+	
+	ofxXmlSettings settings;
+	settings.load("settings.xml");
+	string shapeDisplayToUse = settings.getValue("name", "inFORM");
 	
 	if (shapeDisplayToUse == "TRANSFORM") {
 		m_serialShapeIOManager = new TransformIOManager(kinectManager);
