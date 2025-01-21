@@ -57,9 +57,9 @@ protected:
 	int storedFrameWidth;
 	int storedFrameHeight;
 
-	circularBuffer<ofPixels, totalStoredFrames> previousDepthPixelsFrames;
+	circularBuffer<ofPixels> previousDepthPixelsFrames;
 	// Masked buffer resizes to the same dimensions as non-masked, potentially upscaling
-	circularBuffer<ofPixels, totalStoredFrames> previousDepthPixelsFramesInMasked;
+	circularBuffer<ofPixels> previousDepthPixelsFramesInMasked;
 	// Larger factor will average movement over a longer time. 
 	// It isn't used linearly so there isn't a direct "seconds" comparison.
 	const double movementTimeFactor = 0.95;

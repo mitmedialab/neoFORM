@@ -28,6 +28,8 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
 		colorPixels.setColor({0, 0, 0, 1});
 		depthPixels.setColor({0});
 
+		previousDepthPixelsFrames.resize(totalStoredFrames);
+		previousDepthPixelsFramesInMasked.resize(totalStoredFrames);
 		for (int i = 0; i < totalStoredFrames; i++) {
     		previousDepthPixelsFrames[i].allocate(2, 2, OF_IMAGE_GRAYSCALE);
 			previousDepthPixelsFrames[i].setColor({0});

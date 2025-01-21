@@ -55,8 +55,8 @@ protected:
 
 	int defaultHeight = 40;
 
-	circularBuffer<ofPixels, numFilterFrames> storedOutputPixels;
-	circularBuffer<ofPixels, numWaveFrames> storedInputPixels;
+	circularBuffer<ofPixels> storedOutputPixels;
+	circularBuffer<ofPixels> storedInputPixels;
 };
 
 

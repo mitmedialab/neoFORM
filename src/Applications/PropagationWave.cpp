@@ -21,6 +21,7 @@ void PropagationWave::setup() {
 	activeWidth = m_CustomShapeDisplayManager->shapeDisplaySizeX;
 	activeHeight = m_CustomShapeDisplayManager->shapeDisplaySizeY;
 
+	storedOutputPixels.resize(numFilterFrames);
 	for (int k = 0; k < numFilterFrames; k++) {
 		storedOutputPixels[k].allocate(simWidth, simHeight, OF_IMAGE_GRAYSCALE);
 		storedOutputPixels[k].set(210);
@@ -33,6 +34,7 @@ void PropagationWave::setup() {
 
 	touchMode = TouchMode::waveSurface;
 
+	storedInputPixels.resize(numWaveFrames);
 	for (int k = 0; k < numWaveFrames; k++) {
 		storedInputPixels[k].allocate(activeWidth, activeHeight, OF_IMAGE_GRAYSCALE);
 		storedInputPixels[k].set(defaultHeight);
