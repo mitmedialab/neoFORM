@@ -54,6 +54,8 @@
 
 #include "AmbientWave.hpp"
 
+#include "DrawingApp.hpp"
+
 
 
 #include "PinDisabler.hpp"
@@ -155,6 +157,8 @@ private:
     Telepresence *telepresence;
     
     EquationMode *equationMode;
+
+	DrawingApp *drawingApp;
     
     WaveModeContours *waveModeContours;
 	PropagationWave *propagationWave;

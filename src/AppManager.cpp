@@ -8,6 +8,7 @@
 #include "AppManager.hpp"
 #include "AmbientWave.hpp"
 #include "Application.hpp"
+#include "DrawingApp.hpp"
 #include "PropagationWave.hpp"
 #include "KinectMaskMaker.hpp"
 #include "TransitionApp.hpp"
@@ -75,6 +76,8 @@ void AppManager::setup() {
 
 	pinDisabler = new PinDisabler(m_serialShapeIOManager, 400, 356, 600, 600);
 
+	drawingApp = new DrawingApp(m_serialShapeIOManager);
+
 	if (m_serialShapeIOManager->getShapeDisplayName() == "inFORM") {
 		applications.push_back(equationMode);
 		applications.push_back(telepresence);
@@ -88,6 +91,7 @@ void AppManager::setup() {
 
 	debugApplications.push_back(pinDisabler);
 	debugApplications.push_back(kinectMaskMaker);
+	debugApplications.push_back(drawingApp);
 
 	options.push_back(&autoTransition);
 	optionNames.push_back("auto transition");
