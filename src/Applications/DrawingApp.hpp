@@ -29,12 +29,13 @@ public:
 	void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
 protected:
 	void leftMousePressed();
+	void drawLineOnHeights(int x1, int y1, int x2, int y2, int height);
 protected:
 	circularBuffer<DrawingPoint> drawnPoints;
 	int framesSinceLastMousePress = 2;
 
-	const float totalPointLifespan = 10.0; // time for a drawn point to disapear completely
-	const float fullIntensityLifespan = 6.0; // time before a drawn point starts to fade
+	const float totalPointLifespan = 6.0; // time for a drawn point to disapear completely
+	const float fullIntensityLifespan = 3.0; // time before a drawn point starts to fade
 
 	const int mainDisplayX = 400;
 	const int mainDisplayY = 356;
