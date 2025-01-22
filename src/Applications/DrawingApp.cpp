@@ -8,6 +8,7 @@
 #include "DrawingApp.hpp"
 #include "Application.hpp"
 #include "ofEvents.h"
+#include "ofGraphics.h"
 #include "utils.hpp"
 
 DrawingApp::DrawingApp(SerialShapeIOManager *theCustomShapeDisplayManager) 
@@ -46,6 +47,21 @@ void DrawingApp::updateHeights() {
 			int height = 255 * (1.0 - fadeRatio);
 			heightsForShapeDisplay[index] = height;
 		}
+	}
+}
+
+void DrawingApp::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
+	ofImage(heightsForShapeDisplay).draw(x, y, width, height);
+	
+	PossibleCoordinate coord = getMouseCoordinateInGrid(mainDisplayX, mainDisplayY, mainDisplayWidth, mainDisplayHeight,
+													 	m_CustomShapeDisplayManager->shapeDisplaySizeX, m_CustomShapeDisplayManager->shapeDisplaySizeY);
+	if (coord.exists) {
+		ofSetColor(ofColor::red);
+		
+		int pinWidth = m_CustomShapeDisplayManager->shapeDisplaySizeX;
+		int pinHeight = m_CustomShapeDisplayManager->shapeDisplaySizeY;
+		ofDrawRectangle(x + coord.coordinate.first * width / double(pinWidth), y + coord.coordinate.second * height / double(pinHeight), width / double(pinWidth), height / double(pinHeight));
+		ofSetColor(255);
 	}
 }
 

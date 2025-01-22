@@ -26,8 +26,7 @@ public:
 	
 	void update(float dt);
 	void updateHeights();
-	//void drawGraphicsForPublicDisplay(int x, int y, int width, int height);
-	//void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
+	void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
 protected:
 	void leftMousePressed();
 protected:
