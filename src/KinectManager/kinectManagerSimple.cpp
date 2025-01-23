@@ -202,7 +202,7 @@ void KinectManagerSimple::cropUsingMask(ofShortPixels &pixels) {
 	pixels.crop(mask.x, mask.y, mask.width, mask.height);
 }
 
-KinectManagerSimple::~KinectManagerSimple() {
+void KinectManagerSimple::saveMask() {
 	// write the mask settings to file, in case anything modified it
 	ofxXmlSettings settings;
     settings.load("settings.xml");
@@ -213,6 +213,9 @@ KinectManagerSimple::~KinectManagerSimple() {
     settings.setValue("height", mask.height);
 
 	settings.save("settings.xml");
+}
+
+KinectManagerSimple::~KinectManagerSimple() {
     kinect.close();
 }
 

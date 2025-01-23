@@ -24,6 +24,9 @@ public:
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     
     string getName() {return "KinectMaskMaker";}
+    string appInstructionsText() {return "Press \"s\" to save mask";};
+
+    void keyPressed(int key);
 private:
     KinectManagerSimple* kinectManager;
 

@@ -27,6 +27,7 @@ public:
 	void cropUsingMask(ofShortPixels &pixels);
 	void setDepthClipping(short nearClip, short farClip);
 	void thresholdInterp(ofShortPixels &pixels, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue);
+	void saveMask();
 
 	double getMovement() {return totalMovement;}
 	double getMovementInMasked() {return totalMovementInMasked;}
