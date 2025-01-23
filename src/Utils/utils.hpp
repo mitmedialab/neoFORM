@@ -8,6 +8,7 @@
 #ifndef utils_hpp
 #define utils_hpp
 
+#include <atomic>
 #include <cstring>
 #include <stdio.h>
 #include <ctime>
@@ -66,21 +67,18 @@ protected:
 
 template<typename Type>
 circularBuffer<Type>::circularBuffer() {
-	//cout << "constructed!" << endl;
 	baseArray = new Type[1];
 	capacity = 1;
 }
 
 template<typename Type>
 circularBuffer<Type>::~circularBuffer() {
-	//cout << "deconstructed!" << endl;
 	if (baseArray != nullptr) delete [] baseArray;
 }
 
 // simple move constructor
 template<typename Type>
 circularBuffer<Type>::circularBuffer(circularBuffer&& other) {
-	//cout << "move constructed!" << endl;
 	baseArray = other.baseArray;
 	capacity = other.capacity;
 	m_size = other.m_size;
@@ -91,7 +89,6 @@ circularBuffer<Type>::circularBuffer(circularBuffer&& other) {
 // simple move assignment
 template<typename Type>
 circularBuffer<Type>& circularBuffer<Type>::operator=(circularBuffer&& other) {
-	//cout << "move assigned!" << endl;
 	baseArray = other.baseArray;
 	capacity = other.capacity;
 	m_size = other.m_size;
@@ -103,21 +100,18 @@ circularBuffer<Type>& circularBuffer<Type>::operator=(circularBuffer&& other) {
 // ----- just like std::vector -----
 template<typename Type>
 void circularBuffer<Type>::push_back(Type element) {
-	//cout << "push_backed!" << endl;
 	// resize if needed
 	if (m_size == capacity) {
-		//cout << "and resized!" << endl;
+		size_t typeSize = sizeof(Type);
 		Type* newArray = new Type[2 * capacity];
 
 		// front section of represented buffer
-		for (size_t i = front_pos; i < std::min(front_pos + m_size, capacity); i++) {
-			newArray[i + capacity] = baseArray[i];
-		}
+		std::memcpy(newArray + (front_pos + capacity),
+					baseArray + front_pos,
+					typeSize * std::min(m_size, capacity - front_pos));
 		// back section of represented buffer
-		if (front_pos + m_size >= capacity) {
-			for (size_t i = 0; i < front_pos + m_size - capacity; i++) {
-				newArray[i] = baseArray[i];
-			}
+		if (front_pos + m_size > capacity) {
+			std::memcpy(newArray, baseArray, typeSize * (front_pos + m_size - capacity));
 		}
 
 		front_pos += capacity;
@@ -134,25 +128,22 @@ size_t circularBuffer<Type>::size() {return m_size;}
 
 template<typename Type>
 void circularBuffer<Type>::resize(size_t newSize) {
-	//cout << "resized!" << endl;
 	if (newSize > capacity) {
 		size_t newCapacity = capacity * 2;
+		size_t typeSize = sizeof(Type);
 		while (newSize > newCapacity) {
 			newCapacity *= 2;
 		}
 
 		Type* newArray = new Type[newCapacity];
 		// front section of represented buffer
-		for (size_t i = front_pos; i < std::min(front_pos + m_size, capacity); i++) {
-			newArray[i + newCapacity - capacity] = baseArray[i];
-		}
+		std::memcpy(newArray + (newCapacity - capacity + front_pos), 
+			  baseArray + front_pos, 
+			  typeSize * std::min(m_size, capacity - front_pos));
 		// back section of represented buffer
-		if (front_pos + m_size >= capacity) {
-			for (size_t i = 0; i < front_pos + m_size - capacity; i++) {
-				newArray[i] = baseArray[i];
-			}
+		if (front_pos + m_size > capacity) {
+			std::memcpy(newArray, baseArray, typeSize * (front_pos + m_size - capacity));
 		}
-
 
 		front_pos += newCapacity - capacity;
 		capacity = newCapacity;
@@ -167,7 +158,6 @@ void circularBuffer<Type>::resize(size_t newSize) {
 // will break if m_size = 0
 template<typename Type>
 Type circularBuffer<Type>::pop_front() {
-	//cout << "pop_fronted!" << endl;
 	size_t pos = front_pos;
 	front_pos = (front_pos + 1) % capacity;
 	m_size -= 1;
@@ -176,13 +166,11 @@ Type circularBuffer<Type>::pop_front() {
 
 template<typename Type>
 Type& circularBuffer<Type>::operator[](size_t index) {
-	//cout << "operator [" << index << "] -> [" << (index + front_pos) % capacity << "]ed!" << endl;
 	return baseArray[(index + front_pos) % capacity];
 }
 
 template<typename Type>
 void circularBuffer<Type>::shiftBack(size_t shiftAmount) {
-	//cout << "shifted back by " << shiftAmount << "!" << endl;
 	front_pos = (front_pos + capacity - shiftAmount) % capacity;
 }
 
