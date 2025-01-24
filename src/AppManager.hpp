@@ -174,7 +174,7 @@ private:
 
     // gui state
     bool showGlobalGuiInstructions = false;
-    bool showDebugGui = true;
+    bool showDebugGui = false;
     
     // I/O data buffers
 
