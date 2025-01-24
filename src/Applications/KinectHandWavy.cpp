@@ -126,7 +126,8 @@ void KinectHandWavy::updateHeights() {
 	// All pixel values in between are linearly interpolated.
     // This effectively isolates a portion of the depth image that is within a certain depth range.
 	// Values include a "*256" factor for ease of relation to 8-bit numbers.
-    m_kinectManager->thresholdInterp(pixels, 200*256, 220*256, 0, 65535);
+	// Shouldn't be needed if nearThreshold and farThreshold are correct
+    //m_kinectManager->thresholdInterp(pixels, 200*256, 220*256, 0, 65535);
     
     // Apply a blur to smooth out the kinect depth image.
     // Convert the higher precision depth image to a lower precision OpenCV grayscale image in order to add a blur.

@@ -109,6 +109,6 @@ void KinectMaskMaker::update(float dt) {
 
 void KinectMaskMaker::keyPressed(int key) {
 	if (key == 's') {
-		kinectManager->saveMask();
+		kinectManager->saveMaskAndClip();
 	}
 }

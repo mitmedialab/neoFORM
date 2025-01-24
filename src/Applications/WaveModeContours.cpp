@@ -133,7 +133,8 @@ void WaveModeContours::updateMask(){
     m_kinectManager->cropUsingMask(pixels);
     
     // Apply thresholding and interpolation directly to the 16-bit depth pixel values
-    m_kinectManager->thresholdInterp(pixels, 200*256, 220*256, 0, 65535);
+	// Shouldn't be needed if nearThreshold and farThreshold are correct
+    //m_kinectManager->thresholdInterp(pixels, 200*256, 220*256, 0, 65535);
     
     // Cast the incoming ofShortPixels data to ofCvGrayscaleImage for the contour finder.
     ofxCvGrayscaleImage grayImage;

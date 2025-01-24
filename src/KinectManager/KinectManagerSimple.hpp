@@ -17,7 +17,7 @@
 
 class KinectManagerSimple {
 public:
-	KinectManagerSimple(short nearClip = 400, short farClip = 3800);
+	KinectManagerSimple();
     ~KinectManagerSimple();
     void update();
 	ofShortPixels getDepthPixels();
@@ -25,9 +25,12 @@ public:
 	ofPixels getColorPixels();
 	void cropUsingMask(ofPixels &pixels);
 	void cropUsingMask(ofShortPixels &pixels);
-	void setDepthClipping(short nearClip, short farClip);
-	void thresholdInterp(ofShortPixels &pixels, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue);
-	void saveMask();
+
+	// pixels closer than nearClip are set to 0 (far), other pixels closer than nearThreshold are set to 65535 (near)
+	// nearClip & farClip in millimeters.
+	// nearThreshold between 0 (equivilent to farClip) and 65535 (equivilent to nearClip)
+	void setDepthClipping(unsigned short nearClip, unsigned short farClip, unsigned short nearThreshold);
+	void saveMaskAndClip();
 
 	double getMovement() {return totalMovement;}
 	double getMovementInMasked() {return totalMovementInMasked;}
@@ -37,6 +40,7 @@ public:
 
 protected:
 	void updateTotalMovement();
+	void thresholdInterp(ofShortPixels &pixels, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue);
 
 protected:
 	ofxKinect kinect;
@@ -45,6 +49,11 @@ protected:
 	ofShortPixels depthPixels;
 	ofShortPixels contourPixels;
 	ofShortPixels colorPixels;
+
+	// internally only used to cache setDepthClipping() params until saveMaskAndClip().
+	unsigned short nearClip;
+	unsigned short farClip;
+	unsigned short nearThreshold;
 
 	// To counteract the effect of flickering, multiple frames are checked at once.
 	// "constexpr static" is used to ensure the compiler can optimize to these values. (and circularBuffer needs it)

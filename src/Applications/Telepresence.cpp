@@ -22,7 +22,8 @@ void Telepresence::update(float dt) {
 	kinectManager->cropUsingMask(depth);
 
 	// Singles out the range between farCutoff and closeCutoff for the shape display
-	kinectManager->thresholdInterp(depth, farCutoff, closeCutoff, 0, 65535);
+	// Shouldn't be needed if nearThreshold and farThreshold are correct
+	// kinectManager->thresholdInterp(depth, farCutoff, closeCutoff, 0, 65535);
 
 	// Cast to standard 8-bit representation
 	refinedImage = ofPixels(depth);

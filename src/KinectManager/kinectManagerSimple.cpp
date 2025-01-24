@@ -11,7 +11,7 @@
 #include "KinectManagerSimple.hpp"
 #include "ofxXmlSettings.h"
 
-KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
+KinectManagerSimple::KinectManagerSimple() {
 	// Start at "no movement"
 	totalMovement = 0.0;
 
@@ -47,8 +47,6 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
     ofLogNotice() << "zero plane pixel size: " << kinect.getZeroPlanePixelSize() << "mm";
     ofLogNotice() << "zero plane dist: " << kinect.getZeroPlaneDistance() << "mm";
 
-	setDepthClipping(nearClip, farClip);
-    
     //colorPixels.allocate(kinect.width, kinect.height, OF_IMAGE_COLOR);
     //depthPixels.allocate(kinect.width, kinect.height, OF_IMAGE_GRAYSCALE);
 
@@ -72,6 +70,13 @@ KinectManagerSimple::KinectManagerSimple(short nearClip, short farClip) {
         mask.set(0, 0, kinect.width, kinect.height);
     }
 
+	// always try loading clip values from settings
+	nearClip = settings.getValue("near_clip", 800);
+	farClip = settings.getValue("far_clip", 3600);
+	nearThreshold = settings.getValue("near_threshold", 65535);
+
+	setDepthClipping(nearClip, farClip, nearThreshold);
+    
 	// initiallize with starting image
     previousDepthPixelsFrames[0] = kinect.getDepthPixels();
 	previousDepthPixelsFramesInMasked[0] = previousDepthPixelsFrames[0];
@@ -112,6 +117,7 @@ void KinectManagerSimple::update() {
         //NORMAL UPDATE CODE FOR GENERAL KINECT STUFFS
         colorPixels = kinect.getPixels();
         depthPixels = kinect.getDepthPixels();
+		thresholdInterp(depthPixels, 0, nearThreshold, 0, 65535);
 
 		updateTotalMovement();
     }
@@ -183,15 +189,18 @@ void KinectManagerSimple::thresholdInterp(ofShortPixels &pixels, unsigned short 
 }
 
 // uses the build-in clipping done by ofKinect.
-// these values are NOT scaled to full 16-bit range, while getPixels IS.
+// nearClp and farClp are NOT scaled to full 16-bit range (instead in physical mm), while getPixels & nearThresh ARE.
 // therefor values used by thresholdInterp will not line up with these values.
-void KinectManagerSimple::setDepthClipping(short near, short far) {
-    if (near < 500 || far > 4000) {
+void KinectManagerSimple::setDepthClipping(unsigned short nearClp, unsigned short farClp, unsigned short nearThresh) {
+    if (nearClp < 500 || farClp > 4000) {
         cout << "[notice ] KinectManagerSimple: depth clipping values outside the " <<
                 "range 500 - 4000 are likely to produce noisy data" << endl;
     }
 
-    kinect.setDepthClipping(near, far);
+	nearClip = nearClp;
+	farClip = farClp;
+	nearThreshold = nearThresh;
+    kinect.setDepthClipping(nearClp, farClp);
 }
 
 void KinectManagerSimple::cropUsingMask(ofPixels &pixels) {
@@ -202,7 +211,7 @@ void KinectManagerSimple::cropUsingMask(ofShortPixels &pixels) {
 	pixels.crop(mask.x, mask.y, mask.width, mask.height);
 }
 
-void KinectManagerSimple::saveMask() {
+void KinectManagerSimple::saveMaskAndClip() {
 	// write the mask settings to file, in case anything modified it
 	ofxXmlSettings settings;
     settings.load("settings.xml");
@@ -211,6 +220,9 @@ void KinectManagerSimple::saveMask() {
     settings.setValue("y_pos", mask.y);
     settings.setValue("width", mask.width);
     settings.setValue("height", mask.height);
+	settings.setValue("near_clip", nearClip);
+	settings.setValue("far_clip", farClip);
+	settings.setValue("near_threshold", nearThreshold);
 
 	settings.save("settings.xml");
 }
