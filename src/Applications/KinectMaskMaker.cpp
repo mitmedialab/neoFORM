@@ -105,6 +105,16 @@ void KinectMaskMaker::update(float dt) {
 		kinectManager->mask.height = int((mouseY / yScale) - mask.y);
 		break;
 	}
+
+	// limit mask dimensions in case they are slightly out-of-bounds
+	kinectManager->mask.x = std::max(0, int(kinectManager->mask.x));
+	kinectManager->mask.x = std::min(int(depth.getWidth() - 1), int(kinectManager->mask.x));
+	kinectManager->mask.y = std::max(0, int(kinectManager->mask.y));
+	kinectManager->mask.y = std::min(int(depth.getHeight() - 1), int(kinectManager->mask.y));
+	kinectManager->mask.width = std::max(0, int(kinectManager->mask.width));
+	kinectManager->mask.width = std::min(int(depth.getWidth() - 1 - kinectManager->mask.x), int(kinectManager->mask.width));
+	kinectManager->mask.height = std::max(0, int(kinectManager->mask.height));
+	kinectManager->mask.height = std::min(int(depth.getHeight() - 1 - kinectManager->mask.y), int(kinectManager->mask.height));
 }
 
 void KinectMaskMaker::keyPressed(int key) {
