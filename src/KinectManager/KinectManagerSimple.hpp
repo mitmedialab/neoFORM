@@ -22,6 +22,7 @@ public:
     void update();
 	ofShortPixels getDepthPixels();
 	ofShortPixels getContourPixels();
+	ofShortPixels getUnfilteredDepthPixels();
 	ofPixels getColorPixels();
 	void cropUsingMask(ofPixels &pixels);
 	void cropUsingMask(ofShortPixels &pixels);
@@ -48,6 +49,7 @@ protected:
 
 	bool kinectInitialized;
 	ofShortPixels depthPixels;
+	ofShortPixels unfilteredDepthPixels;
 	ofShortPixels contourPixels;
 	ofShortPixels colorPixels;
 

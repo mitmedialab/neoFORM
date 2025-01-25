@@ -118,6 +118,7 @@ void KinectManagerSimple::update() {
         //NORMAL UPDATE CODE FOR GENERAL KINECT STUFFS
         colorPixels = kinect.getPixels();
         depthPixels = kinect.getDepthPixels();
+		unfilteredDepthPixels = kinect.getDepthPixels();
 		thresholdInterp(depthPixels, 0, nearThreshold, 0, 65535);
 
 		updateTotalMovement();
@@ -251,6 +252,10 @@ std::pair<int, int> calculateUnparallaxedPixelCoord(const int x, const int y, co
 
 bool coordinateInBox(int x, int y, int width, int height) {
 	return (x >= 0 && x < width && y >= 0 && y < height);
+}
+
+ofShortPixels KinectManagerSimple::getUnfilteredDepthPixels() {
+	return unfilteredDepthPixels;
 }
 
 void KinectManagerSimple::reverseParallax(float targetPlaneDepth) {

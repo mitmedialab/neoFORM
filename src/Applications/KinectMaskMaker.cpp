@@ -19,7 +19,7 @@ KinectMaskMaker::KinectMaskMaker(SerialShapeIOManager *theCustomShapeDisplayMana
 }
 
 void KinectMaskMaker::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
-	ofShortPixels depth = kinectManager->getDepthPixels();
+	ofShortPixels depth = kinectManager->getUnfilteredDepthPixels();
 	auto mask = kinectManager->mask;
 	double xScale = width / (double)depth.getWidth();
 	double yScale = height / (double)depth.getHeight();
