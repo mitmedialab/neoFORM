@@ -41,6 +41,7 @@ public:
 protected:
 	void updateTotalMovement();
 	void thresholdInterp(ofShortPixels &pixels, unsigned short lowThresh, unsigned short highThresh, unsigned short lowValue, unsigned short highValue);
+	void reverseParallax(float targetPlaneDepthInMillimeters);
 
 protected:
 	ofxKinect kinect;

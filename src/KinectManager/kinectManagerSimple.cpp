@@ -9,6 +9,7 @@
 #define KinectManagerSimple_cpp
 
 #include "KinectManagerSimple.hpp"
+#include "ofGLUtils.h"
 #include "ofxXmlSettings.h"
 
 KinectManagerSimple::KinectManagerSimple() {
@@ -120,6 +121,8 @@ void KinectManagerSimple::update() {
 		thresholdInterp(depthPixels, 0, nearThreshold, 0, 65535);
 
 		updateTotalMovement();
+
+		reverseParallax(farClip);
     }
 }
 
@@ -229,6 +232,81 @@ void KinectManagerSimple::saveMaskAndClip() {
 
 KinectManagerSimple::~KinectManagerSimple() {
     kinect.close();
+}
+
+std::pair<int, int> calculateUnparallaxedPixelCoord(const int x, const int y, const int imageWidth, const int imageHeight, const float dist, const float slopeParallaxPerPixel, const float targetPlaneWidth, const float targetPlaneHeight) {
+	// units are:   pixels  *  [unitless slope]/pixels  *  millimeters
+	// resulting unit is millimeters
+	// (0.0, 0.0) is center of image, NOT top left
+	double trueXPos = (x - imageWidth / 2) * slopeParallaxPerPixel * dist;
+	double trueYPos = (y - imageHeight / 2) * slopeParallaxPerPixel * dist;
+
+	// back to pixels, still has (0, 0) as center 
+	int unparallaxedX = trueXPos * imageWidth / targetPlaneWidth;
+	int unparallaxedY = trueYPos * imageHeight / targetPlaneHeight;
+
+	// back to having (0, 0) as top left
+	return {unparallaxedX + imageWidth / 2, unparallaxedY + imageHeight / 2};
+}
+
+bool coordinateInBox(int x, int y, int width, int height) {
+	return (x >= 0 && x < width && y >= 0 && y < height);
+}
+
+void KinectManagerSimple::reverseParallax(float targetPlaneDepth) {
+	// targetPlaneDepth is in millimeters
+	//
+	// pixels at targetPlaneDepth will not be moved
+	// pixels farther than targetPlaneDepth will be moved outwards from the center to compinsate
+	// pixels closer than targetPlaneDepth will be moved inwards.
+	// pixels not moved to (i.e. blocked by something else) are left at 0 (far away)
+	// overlapping pixels (i.e. one over the other, but angle prevents obscuring) take the max (close) value
+	//
+	// view plane is 21.5 inches wide at 17.5 inches from sensor
+	// total field of view (horizontal) is therefor about 63 degrees or 1.1 radians
+	// the kinect already corrects in terms of depth, only the position within the image needs to be changed
+	
+	// represents the slope (distance from center) at a given depth, PER PIXEL
+	// (i.e. 2 pixels away from the center the slope will be 2 * slopeParallaxPerPixel) 
+	double slopeParallaxPerPixel = (21.5/17.5) / depthPixels.getWidth();
+
+	int imageWidth = depthPixels.getWidth();
+	int imageHeight = depthPixels.getHeight();
+
+	// target plane dimensions in millimeters
+	double targetPlaneWidth = imageWidth * slopeParallaxPerPixel * targetPlaneDepth;
+	double targetPlaneHeight = imageHeight * slopeParallaxPerPixel * targetPlaneDepth;
+
+	// store intermediate values for each pixel, to be referenced later
+	//std::vector<int> previousColumnTrueXPositions = std::vector<int>(imageHeight);
+	//std::vector<int> previousColumnTrueYPositions = std::vector<int>(imageHeight);
+	//std::vector<unsigned short> previousColumnDepth = std::vector<unsigned short>(imageHeight);
+
+	ofShortPixels unparallaxed;
+	ofFloatPixels distances = kinect.getDistancePixels(); // physical distances in millimeters
+	// allocate and set to all 0 (far away)
+	unparallaxed.allocate(imageWidth, imageHeight, ofImageType::OF_IMAGE_GRAYSCALE);
+	unparallaxed.set(0);
+
+	for (int y = 0; y < imageHeight; y++) {
+		for (int x = 0; x < imageWidth; x++) {
+			int trueX, trueY;
+			int index = unparallaxed.getPixelIndex(x, y);
+
+			float dist = distances[index];
+			std::tie(trueX, trueY) = calculateUnparallaxedPixelCoord(x, y, imageWidth, imageHeight, dist, slopeParallaxPerPixel, 
+																				targetPlaneWidth, targetPlaneHeight);
+			unsigned short depth = depthPixels[depthPixels.getPixelIndex(x, y)];
+
+			// skip if pixel would be outside image (farther than torgetPlane and towards edge)
+			if (!coordinateInBox(trueX, trueY, imageWidth, imageHeight)) continue;
+
+			int trueIndex = unparallaxed.getPixelIndex(trueX, trueY);
+			unparallaxed[trueIndex] = std::max(unparallaxed[trueIndex], depth);
+		}
+	}
+
+	depthPixels = unparallaxed;
 }
 
 #endif //KinectManagerSimpleSimple_cpp
