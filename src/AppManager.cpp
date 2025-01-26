@@ -353,7 +353,7 @@ void AppManager::draw() {
 		} else {
 			ofSetColor(ofColor::white);
 		}
-        displayFont20.drawString(optionNames[i], optionButtons[i].x + 25, optionButtons[i].y + 30);
+        displayFont20.drawString(optionNames[i] + (*options[i] ? " (ON)" : " (OFF)"), optionButtons[i].x + 25, optionButtons[i].y + 30);
 	}
 	ofSetColor(ofColor::white);
 	
