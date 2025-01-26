@@ -192,9 +192,9 @@ private:
 	// rules for autoTransition
 	const std::array<autoTransitionRule, 4> rules = {
 		autoTransitionRule{(Application**)&waveModeContours, (Application**)&ambientWave, 1.0e-8, kinectMovementBelowThreshold, 20.0},
-		autoTransitionRule{(Application**)&ambientWave, (Application**)&waveModeContours, 1.0e-6, kinectMovementAboveThreshold, 3.0},
-		autoTransitionRule{(Application**)&equationMode, (Application**)&telepresence, 1.0e-6, kinectMovementAboveThreshold, 3.0},
-		autoTransitionRule{(Application**)&telepresence, (Application**)&equationMode, 1.0e-8, kinectMovementBelowThreshold, 3.0},
+		autoTransitionRule{(Application**)&ambientWave, (Application**)&waveModeContours, 1.0e-6, kinectMovementAboveThreshold, 0.5},
+		autoTransitionRule{(Application**)&equationMode, (Application**)&telepresence, 1.0e-6, kinectMovementAboveThreshold, 0.5},
+		autoTransitionRule{(Application**)&telepresence, (Application**)&equationMode, 1.0e-8, kinectMovementBelowThreshold, 10.0},
 	};
 	std::array<double, 4> timeRulesSatisfied = {0.0, 0.0, 0.0, 0.0};
 
