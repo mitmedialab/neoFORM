@@ -38,7 +38,7 @@ void VideoPlayerApp::updateHeights() {
     m_videoPixels.setImageType(OF_IMAGE_GRAYSCALE);
 
     // Pass the current video frame to the shape display manager to get the actuated pixels.
-    ofPixels livePixels = m_CustomShapeDisplayManager->cropToActiveSurface(m_videoPixels);
+    ofPixels livePixels = m_CustomShapeDisplayManager->gridCropToActiveSurface(m_videoPixels);
     
     // Directly copy all pixels from livePixels to heightsForShapeDisplay.
     heightsForShapeDisplay = livePixels;
