@@ -82,6 +82,7 @@ void AppManager::setup() {
 		applications.push_back(videoPlayerApp);
 		applications.push_back(waveModeContours);
 		applications.push_back(ambientWave);
+        applications.push_back(kinectHandWavy);
 	}
 
 	setCurrentApplication(mqttApp);
