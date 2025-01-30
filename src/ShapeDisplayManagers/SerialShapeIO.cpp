@@ -13,6 +13,9 @@ SerialShapeIO::SerialShapeIO(string portName, int baudRate, bool readable) : rea
     if (connectionSuccessful) {
         start();
     }
+    sendBufferAvailible = true;
+    sendBufferWithFeedbackAvailible = true;
+    receiveBufferAvailible = true;
 }
 
 SerialShapeIO::~SerialShapeIO() {
@@ -48,19 +51,13 @@ void SerialShapeIO::threadedFunction() {
             timespec smallTimespan[] = {{0, 50}};
             nanosleep(smallTimespan, NULL);
 		}
-		if (sendBuffer.size() > 0) {
-			sendShortMessage = true;
-			numToCopy = std::min(size_t(MSG_SIZE_SEND), sendBuffer.size());
-			std::memcpy(&messageContent, sendBuffer.data(), numToCopy * sizeof(MessageSend));
-			sendBuffer.erase(sendBuffer.begin(), sendBuffer.begin() + numToCopy);
-		}
-        //if (sendBuffer.size() > 0) { // if there is an element in my buffer
-        //    for (int i = 0; i < MSG_SIZE_SEND; i++) { // copy the content
-        //        messageContent[i] = sendBuffer.front().messageContent[i];
-        //    }
-        //    sendBuffer.erase(sendBuffer.begin());
-        //    sendShortMessage = true;
-        //}
+        if (sendBuffer.size() > 0) { // if there is an element in my buffer
+            for (int i = 0; i < MSG_SIZE_SEND; i++) { // copy the content
+                messageContent[i] = sendBuffer.front().messageContent[i];
+            }
+            sendBuffer.erase(sendBuffer.begin());
+            sendShortMessage = true;
+        }
 		sendBufferAvailible = true;
         if (sendShortMessage) {
             serial.writeBytes(messageContent, MSG_SIZE_SEND);
@@ -83,19 +80,13 @@ void SerialShapeIO::threadedFunction() {
             timespec smallTimespan[] = {{0, 50}};
             nanosleep(smallTimespan, NULL);
 		}
-		if (sendBufferMessageWithFeedback.size() > 0) {
-			sendLongMessage = true;
-			numToCopy = std::min(size_t(MSG_SIZE_SEND_AND_RECEIVE), sendBufferMessageWithFeedback.size());
-			std::memcpy(&messageContent, sendBufferMessageWithFeedback.data(), numToCopy * sizeof(MessageSend));
-			sendBufferMessageWithFeedback.erase(sendBufferMessageWithFeedback.begin(), sendBufferMessageWithFeedback.begin() + numToCopy);
-		}
-        //if (sendBufferMessageWithFeedback.size() > 0) { // if there is an element in my buffer
-        //    for (int i = 0; i < MSG_SIZE_SEND_AND_RECEIVE; i++) { // copy the content
-        //        longMessageContent[i] = sendBufferMessageWithFeedback.front().messageContent[i];
-        //    }
-        //    sendBufferMessageWithFeedback.erase(sendBufferMessageWithFeedback.begin());
-        //    sendLongMessage = true;
-        //}
+        if (sendBufferMessageWithFeedback.size() > 0) { // if there is an element in my buffer
+            for (int i = 0; i < MSG_SIZE_SEND_AND_RECEIVE; i++) { // copy the content
+                longMessageContent[i] = sendBufferMessageWithFeedback.front().messageContent[i];
+            }
+            sendBufferMessageWithFeedback.erase(sendBufferMessageWithFeedback.begin());
+            sendLongMessage = true;
+        }
 		sendBufferWithFeedbackAvailible = true;
         if (sendLongMessage) {
             serial.writeBytes(longMessageContent, MSG_SIZE_SEND_AND_RECEIVE);
