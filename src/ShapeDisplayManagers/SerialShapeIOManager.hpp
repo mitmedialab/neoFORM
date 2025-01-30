@@ -161,6 +161,8 @@ protected:
     const float secondsUntilPinToggledOff = 1.0;
     const float secondsUntilPinToggledOn = 3.0;
     
+    int forceDelayMilliseconds = 0;
+    
     int geebsTEMP[8];
     ofPixels feebsTEMP;
     

@@ -67,6 +67,9 @@ InFormIOManager::InFormIOManager() {
     // Connect to shape display.
     connectToDisplay();
     
+    // fixes strangle delay issue, not ideal
+    forceDelayMilliseconds = 15;
+    
     configureBoards();
 }
 
