@@ -29,7 +29,7 @@ void SerialShapeIO::stop() {
 }
 
 void SerialShapeIO::threadedFunction() {
-    ofSleepMillis(500);
+    ofSleepMillis(50);
     
     unsigned char messageContent[MSG_SIZE_SEND];
     unsigned char longMessageContent[MSG_SIZE_SEND_AND_RECEIVE];
@@ -39,17 +39,29 @@ void SerialShapeIO::threadedFunction() {
     int receiveCounter = 0;
     
     while (isThreadRunning() != 0) {
+		size_t numToCopy;
         // send the messages in the short message buffer
         bool sendShortMessage = false;
-        lock();
-        if (sendBuffer.size() > 0) { // if there is an element in my buffer
-            for (int i = 0; i < MSG_SIZE_SEND; i++) { // copy the content
-                messageContent[i] = sendBuffer.front().messageContent[i];
-            }
-            sendBuffer.erase(sendBuffer.begin());
-            sendShortMessage = true;
-        }
-        unlock();
+
+		// waits for sendBufferMessageWithFeedback to become available
+        while(sendBufferAvailible.exchange(false) == false) {
+            timespec smallTimespan[] = {{0, 50}};
+            nanosleep(smallTimespan, NULL);
+		}
+		if (sendBuffer.size() > 0) {
+			sendShortMessage = true;
+			numToCopy = std::min(size_t(MSG_SIZE_SEND), sendBuffer.size());
+			std::memcpy(&messageContent, sendBuffer.data(), numToCopy * sizeof(MessageSend));
+			sendBuffer.erase(sendBuffer.begin(), sendBuffer.begin() + numToCopy);
+		}
+        //if (sendBuffer.size() > 0) { // if there is an element in my buffer
+        //    for (int i = 0; i < MSG_SIZE_SEND; i++) { // copy the content
+        //        messageContent[i] = sendBuffer.front().messageContent[i];
+        //    }
+        //    sendBuffer.erase(sendBuffer.begin());
+        //    sendShortMessage = true;
+        //}
+		sendBufferAvailible = true;
         if (sendShortMessage) {
             serial.writeBytes(messageContent, MSG_SIZE_SEND);
         }
@@ -65,15 +77,26 @@ void SerialShapeIO::threadedFunction() {
 
         // send the messages in the long message buffer (the one where we request feedback)
         bool sendLongMessage = false;
-        lock();
-        if (sendBufferMessageWithFeedback.size() > 0) { // if there is an element in my buffer
-            for (int i = 0; i < MSG_SIZE_SEND_AND_RECEIVE; i++) { // copy the content
-                longMessageContent[i] = sendBufferMessageWithFeedback.front().messageContent[i];
-            }
-            sendBufferMessageWithFeedback.erase(sendBufferMessageWithFeedback.begin());
-            sendLongMessage = true;
-        }
-        unlock();
+
+		// waits for sendBufferMessageWithFeedback to become available
+        while(sendBufferWithFeedbackAvailible.exchange(false) == false) {
+            timespec smallTimespan[] = {{0, 50}};
+            nanosleep(smallTimespan, NULL);
+		}
+		if (sendBufferMessageWithFeedback.size() > 0) {
+			sendLongMessage = true;
+			numToCopy = std::min(size_t(MSG_SIZE_SEND_AND_RECEIVE), sendBufferMessageWithFeedback.size());
+			std::memcpy(&messageContent, sendBufferMessageWithFeedback.data(), numToCopy * sizeof(MessageSend));
+			sendBufferMessageWithFeedback.erase(sendBufferMessageWithFeedback.begin(), sendBufferMessageWithFeedback.begin() + numToCopy);
+		}
+        //if (sendBufferMessageWithFeedback.size() > 0) { // if there is an element in my buffer
+        //    for (int i = 0; i < MSG_SIZE_SEND_AND_RECEIVE; i++) { // copy the content
+        //        longMessageContent[i] = sendBufferMessageWithFeedback.front().messageContent[i];
+        //    }
+        //    sendBufferMessageWithFeedback.erase(sendBufferMessageWithFeedback.begin());
+        //    sendLongMessage = true;
+        //}
+		sendBufferWithFeedbackAvailible = true;
         if (sendLongMessage) {
             serial.writeBytes(longMessageContent, MSG_SIZE_SEND_AND_RECEIVE);
         } else {
@@ -101,9 +124,14 @@ void SerialShapeIO::threadedFunction() {
                 if (receiveCounter >= 8) {
                     receiveCounter = 0;
                     receivedMessage = true;
-                    lock();
+                    //lock();
+        			while(receiveBufferAvailible.exchange(false) == false) {
+        			    timespec smallTimespan[] = {{0, 50}};
+        			    nanosleep(smallTimespan, NULL);
+					}
                     receiveBuffer.push_back(newReceivedMessage);
-                    unlock();
+					receiveBufferAvailible = true;
+                    //unlock();
                 }
             }
         }
@@ -116,9 +144,14 @@ void SerialShapeIO::writeMessage(unsigned char messageContent[MSG_SIZE_SEND]) {
         for (int i = 0; i < MSG_SIZE_SEND; i++) {
             newMessage.messageContent[i] = messageContent[i];
         }
-        lock();
+        //lock();
+        while(sendBufferAvailible.exchange(false) == false) {
+            timespec smallTimespan[] = {{0, 50}};
+            nanosleep(smallTimespan, NULL);
+		}
         sendBuffer.push_back(newMessage);
-        unlock();
+        //unlock();
+		sendBufferAvailible = true;
     }
 }
 
@@ -128,20 +161,30 @@ void SerialShapeIO::writeMessageRequestFeedback(unsigned char messageContent[MSG
         for (int i = 0; i < MSG_SIZE_SEND_AND_RECEIVE; i++) {
             newMessage.messageContent[i] = messageContent[i];
         }
-        lock();
+        //lock();
+        while(sendBufferWithFeedbackAvailible.exchange(false) == false) {
+            timespec smallTimespan[] = {{0, 50}};
+            nanosleep(smallTimespan, NULL);
+		}
         sendBufferMessageWithFeedback.push_back(newMessage);
-        unlock();
+        //unlock();
+		sendBufferWithFeedbackAvailible = true;
     }
 }
 
 bool SerialShapeIO::hasNewMessage() {
     bool newMessage = false;
     if (isThreadRunning()) {
-        lock();
+        //lock();
+        while(receiveBufferAvailible.exchange(false) == false) {
+            timespec smallTimespan[] = {{0, 50}};
+            nanosleep(smallTimespan, NULL);
+		}
         if (receiveBuffer.size() > 0) {
             newMessage = true;
         }
-        unlock();
+        //unlock();
+		receiveBufferAvailible = true;
     }
     return newMessage;
 }
@@ -149,7 +192,11 @@ bool SerialShapeIO::hasNewMessage() {
 bool SerialShapeIO::readMessage(unsigned char messageContent[MSG_SIZE_RECEIVE]) {
     bool newMessageReceived = false;
     if (isThreadRunning()) {
-        lock();
+        //lock();
+        while(receiveBufferAvailible.exchange(false) == false) {
+            timespec smallTimespan[] = {{0, 50}};
+            nanosleep(smallTimespan, NULL);
+		}
         if (receiveBuffer.size() > 0) { // if there is an element in my buffer
             for (int i = 0; i < MSG_SIZE_RECEIVE; i++) { // copy the content
                 messageContent[i] = receiveBuffer.front().messageContent[i];
@@ -157,7 +204,8 @@ bool SerialShapeIO::readMessage(unsigned char messageContent[MSG_SIZE_RECEIVE]) 
             receiveBuffer.erase(receiveBuffer.begin());
             newMessageReceived = true;
         }
-        unlock();
+        //unlock();
+		receiveBufferAvailible = true;
     }
     return newMessageReceived;
 }
