@@ -67,6 +67,9 @@ InFormIOManager::InFormIOManager() {
     // Connect to shape display.
     connectToDisplay();
     
+    // fixes strangle delay issue, not ideal
+    forceDelayMilliseconds = 15;
+    
     configureBoards();
 }
 
@@ -138,7 +141,7 @@ void InFormIOManager::configureBoards() {
 
 void InFormIOManager::activatePowerSupply() {
     // Open the serial connection to the power supply
-    powerSupplySerial.setup("/dev/tty.usbserial-240", 4800); // Adjust the port and baud rate as needed, could also be dev/tty.usbserial-2120
+    powerSupplySerial.setup("/dev/tty.usbserial-230", 4800); // Adjust the port and baud rate as needed, could also be dev/tty.usbserial-240
 
     // Send command to activate the power supply
     powerSupplySerial.writeBytes("SYSTem:REMote\r\n", 15);

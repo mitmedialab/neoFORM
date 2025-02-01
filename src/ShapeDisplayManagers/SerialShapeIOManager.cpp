@@ -288,6 +288,9 @@ void SerialShapeIOManager::update() {
     } else {
         sendUpdatedConfigValues();
     }
+    
+    timespec fiveMillis[] = {{0, 1000000 * forceDelayMilliseconds}};
+    nanosleep(fiveMillis, NULL);
 }
 
 
