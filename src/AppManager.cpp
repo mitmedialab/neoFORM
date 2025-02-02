@@ -7,12 +7,16 @@
 
 #include "AppManager.hpp"
 #include "AmbientWave.hpp"
-#include "SinglePinDebug.hpp"
+#include "Application.hpp"
+#include "PropagationWave.hpp"
+#include "KinectMaskMaker.hpp"
 #include "TransitionApp.hpp"
 #include "ofEvents.h"
 #include "ofGraphics.h"
+#include "ofxXmlSettings.h"
 #include "utils.hpp"
 #include <iterator>
+#include "PinDisabler.hpp"
 
 void AppManager::setup() {
 	
@@ -34,19 +38,15 @@ void AppManager::setup() {
 	
 	// set up applications
 	mqttApp = new MqttTransmissionApp(m_serialShapeIOManager);
-	applications["mqttTransmission"] = mqttApp;
 	
-	singlePinDebug = new SinglePinDebug(m_serialShapeIOManager, 401, 356, 605, 605);
-	applications["singlePinDebug"] = singlePinDebug;
+	kinectMaskMaker = new KinectMaskMaker(m_serialShapeIOManager, kinectManager);
 	
 	videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
-	applications["videoPlayer"] = videoPlayerApp;
 	videoPlayerApp->setup();
 	
 	// set up debugging application
 	// and the debugging apps, too
 	axisCheckerApp = new AxisCheckerApp(m_serialShapeIOManager);
-	applications["axisChecker"] = axisCheckerApp;
 	
 	// breaks on newer openframeworks (and is no longer needed)
 	// kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
@@ -57,88 +57,98 @@ void AppManager::setup() {
 	//applications["depthDebug"] = depthDebugApp;
 	
 	kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager, kinectManager);
-	applications["kinectHandWavy"] = kinectHandWavy;
     
     // Telepresence mode takes 16 bit thresholding values as parameters here.
     telepresence = new Telepresence(m_serialShapeIOManager, kinectManager,
                                  255 * 256, 140 * 256, cam);
-    applications["telepresence"] = telepresence;
 	
 	equationMode = new EquationMode(m_serialShapeIOManager);
-	applications["equationMode"] = equationMode;
 	
 	waveModeContours = new WaveModeContours(m_serialShapeIOManager, kinectManager);
-	applications["waveModeContours"] = waveModeContours;
+
+	propagationWave = new PropagationWave(m_serialShapeIOManager);
 
 	// not in applications list
 	transitionApp = new TransitionApp(m_serialShapeIOManager);
 	
 	ambientWave = new AmbientWave(m_serialShapeIOManager);
-	applications["AmbientWave"] = ambientWave;
 
-	// Set up the order of the applications in the order vector
-	applicationOrder.push_back("videoPlayer");
-	applicationOrder.push_back("waveModeContours");
-	applicationOrder.push_back("equationMode");
-	applicationOrder.push_back("telepresence");
-	applicationOrder.push_back("kinectHandWavy");
-	applicationOrder.push_back("AmbientWave");
-	applicationOrder.push_back("singlePinDebug");
-	applicationOrder.push_back("axisChecker");
-	applicationOrder.push_back("mqttTransmission");
+	pinDisabler = new PinDisabler(m_serialShapeIOManager, 400, 356, 600, 600);
+
+	if (m_serialShapeIOManager->getShapeDisplayName() == "inFORM") {
+		applications.push_back(equationMode);
+		applications.push_back(telepresence);
+        applications.push_back(kinectHandWavy);
+	} else if (m_serialShapeIOManager->getShapeDisplayName() == "TRANSFORM") {
+		applications.push_back(videoPlayerApp);
+		applications.push_back(waveModeContours);
+		applications.push_back(ambientWave);
+        applications.push_back(kinectHandWavy);
+	}
+
+	setCurrentApplication(mqttApp);
+
+	debugApplications.push_back(pinDisabler);
+	debugApplications.push_back(kinectMaskMaker);
+
+	options.push_back(&autoTransition);
+	optionNames.push_back("auto transition");
 
 	// innitialize GUI
-	gui.setup("modes:");
-	gui.setPosition(5, 20);
+	debugGui.setup("debug modes:");
+	debugGui.setPosition(5, 60 + 65 * (applications.size() + options.size()));
 	
 	// IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
 	// of modeButtons will invalidate all existing pointers stored in gui.
 	// DO NOT .push_back MORE THAN applications.size()!!!!
-	modeButtons.reserve(applications.size());
+	debugModeButtons.reserve(debugApplications.size());
 
 	int appIndex = 1; // Initialize an index for iteration
 
     // Iterate over the applicationOrder vector and add the corresponding app to the GUI
-    for (const auto& appName : applicationOrder) {
-        Application *app = applications[appName];
-        
-        modeButtons.push_back(ofxButton());
-        modeNames.push_back(appName);
+    for (Application* app : debugApplications) {
+        debugModeButtons.push_back(ofxButton());
         
         // Construct the new button name with the index prepended
         std::string buttonName = std::to_string(appIndex) + ": " + app->getName();
-        auto p_button = modeButtons.back().setup(buttonName);
-        gui.add(p_button);
+        auto p_button = debugModeButtons.back().setup(buttonName);
+        debugGui.add(p_button);
         
         appIndex++;
     }
 
 	// Collapse the GUI panel for now to make room for the new graphical buttons.
-	gui.minimize();
+	debugGui.minimize();
 	
-	// set default application
-	setCurrentApplication("mqttTransmission");
-
 	// *** Rectangular button setup ***
     // Load a font for the button text.
     ofTrueTypeFont::setGlobalDpi(72);
     displayFont20.load("SourceSans3-Regular.ttf", 20);
     
     // Set up the buttons by creating an ofRectangle for each application
-    for (int i = 0; i < applicationOrder.size(); i++){
+    for (int i = 0; i < applications.size(); i++){
         ofRectangle button;
         button.set(20, 60 + 65*i, 240, 50);
         applicationButtons.push_back(button);
     }
+
+	// Set up the buttons based on options
+	for (int i = 0; i < options.size(); i++) {
+		ofRectangle button;
+		int yOffset = 60 + 65 * (i + applications.size());
+		button.set(20, yOffset, 240, 50);
+		optionButtons.push_back(button);
+	}
 
 }
 
 // initialize the shape display and set up shape display helper objects
 void AppManager::setupShapeDisplayManagement() {
 	// initialize communication with the shape display
-	// This is where the particulars of the shape display are set (i.e. TRANSFORM,
-	// inFORM, or any other physical layout).
-	string shapeDisplayToUse = "inFORM";
+	
+	ofxXmlSettings settings;
+	settings.load("settings.xml");
+	string shapeDisplayToUse = settings.getValue("name", "inFORM");
 	
 	if (shapeDisplayToUse == "TRANSFORM") {
 		m_serialShapeIOManager = new TransformIOManager(kinectManager);
@@ -185,7 +195,9 @@ void AppManager::update() {
 	// cout << "Update in App Manager\n";
 	
 	// time elapsed since last update
-	float currentTime = elapsedTimeInSeconds();
+	std::chrono::steady_clock clock;
+	std::chrono::duration<double, std::ratio<1, 1>> time = clock.now().time_since_epoch();
+	double currentTime = time.count();
 	double dt = currentTime - timeOfLastUpdate;
 	timeOfLastUpdate = currentTime;
 	
@@ -228,11 +240,13 @@ void AppManager::update() {
 	
 	// set the application based on the GUI mode buttons
 	int i = 0;
-	for (string name : modeNames) {
-		if (modeButtons[i] && applications[name] != currentApplication)
-			setCurrentApplication(name);
+	for (Application* app : debugApplications) {
+		if (debugModeButtons[i] && app != currentApplication)
+			setCurrentApplication(app);
 		i++;
 	}
+
+	if (autoTransition) checkAutoTransition(dt);
 }
 
 // Takes a 2D vector of heights and converts it to an ofPixels object
@@ -283,19 +297,19 @@ void AppManager::draw() {
 	menuHeight += 30;
 	
 	// if there isn't already a debug gui, draw some more information
-	if (!showDebugGui || currentApplication == applications["waveModeContours"] || currentApplication == applications["stretchy"]) {
+	if (!showDebugGui || currentApplication == waveModeContours) {
 		ofDrawBitmapString(currentApplication->appInstructionsText(),menuLeftCoordinate, menuHeight);
 		menuHeight += 20;
 	}
 	
-	gui.draw();
+	debugGui.draw();
 
     // Draw the rectangular buttons for each application.
     for (int i = 0; i < applicationButtons.size(); i++){
-        if (applications[applicationOrder[i]] == currentApplication){
+        if (applications[i] == currentApplication){
             // Green for the current application
             ofSetColor(ofColor::seaGreen);
-        } else if (applicationSwitchBlocked && applications[applicationOrder[i]] == applications[lastSelectedApplicationName]){
+        } else if (applicationSwitchBlocked && applications[i] == lastSelectedApplication){
             // Dark green for the target application during the transition, so that there is immediate button feedback.
 			ofSetColor(ofColor::darkGreen);
         } else {
@@ -306,7 +320,7 @@ void AppManager::draw() {
         ofDrawRectRounded(applicationButtons[i], 20);
         
         // Make a stroke around the current application button
-        if (applications[applicationOrder[i]] == currentApplication){
+        if (applications[i] == currentApplication){
             ofSetColor(ofColor::white);
             ofNoFill();
             ofSetLineWidth(2);
@@ -315,15 +329,35 @@ void AppManager::draw() {
         }
 
         // Make a string with the name of the application with the loop index plus one prepended.
-        Application *app = applications[applicationOrder[i]];
+        Application *app = applications[i];
         string applicationOrderString = ofToString(i+1) + ": " + app->getName();
         
         // Add label for application button
         ofSetColor(ofColor::white);
         displayFont20.drawString(applicationOrderString, applicationButtons[i].x + 25, applicationButtons[i].y + 30);
     }
-	
-	// draw shape and color I/O images
+
+	// draw the buttons for options
+	for (int i = 0; i < options.size(); i++) {
+		if (*options[i]) {
+            ofSetColor(ofColor::lightGoldenRodYellow);
+		} else {
+			// dark purple
+            ofSetColor(ofColor::fromHex(0x300040));
+		}
+
+		// Draw a rounded rectangle for the application button with a 20 pixel radius.
+        ofDrawRectRounded(optionButtons[i], 20);
+
+        // Add label for application button
+        if (*options[i]) {
+			ofSetColor(ofColor::black);
+		} else {
+			ofSetColor(ofColor::white);
+		}
+        displayFont20.drawString(optionNames[i] + (*options[i] ? " (ON)" : " (OFF)"), optionButtons[i].x + 25, optionButtons[i].y + 30);
+	}
+	ofSetColor(ofColor::white);
 	
 	/* Draw the height data being returned for the pin heights by the arduinos */
 	ofDrawRectangle(400, 50, 302, 302);
@@ -371,22 +405,56 @@ void AppManager::draw() {
 	}
 }
 
-void AppManager::setCurrentApplication(string appName) {
+void AppManager::setCurrentApplication(Application* application) {
 	if (applicationSwitchBlocked) return;
 
-	if (applications.find(appName) == applications.end()) {
-		throw "no application exists with name " + appName;
+	if (currentApplication == application) {
+		return;
 	}
 
 	if (currentApplication == nullptr) {
-		currentApplication = applications[appName];
+		currentApplication = application;
 	} else {
 		applicationSwitchBlocked = true;
-		transitionApp->startTransition(currentApplication, applications[appName], 0.6f, &currentApplication, &applicationSwitchBlocked);
+		transitionApp->startTransition(currentApplication, application, 0.6f, &currentApplication, &applicationSwitchBlocked);
 		currentApplication = transitionApp;
 	}
 	
 	updateDepthInputBoundaries();
+}
+
+void AppManager::checkAutoTransition(double dt) {
+	// some modes don't use the kinect manager, so this ensures it is listening
+	kinectManager->update();
+	int i = 0;
+	for (auto rule : rules) {
+		// only check rule if currentApplication matches
+		if (*rule.from != currentApplication) continue;
+
+		switch (rule.condition) {
+		case kinectMovementAboveThreshold:
+			if (kinectManager->getMovementInMasked() <= rule.threshold) {
+				timeRulesSatisfied[i] = 0.0;
+				continue;
+			}
+			break;
+		case kinectMovementBelowThreshold:
+			if (kinectManager->getMovementInMasked() >= rule.threshold) {
+				timeRulesSatisfied[i] = 0.0;
+				continue;
+			}
+			break;
+		}
+
+		timeRulesSatisfied[i] += dt;
+
+		// transitions if all conditions met
+		if (timeRulesSatisfied[i] >= rule.timeRuleSatisfiedNeeded) {
+			setCurrentApplication(*rule.to);
+			timeRulesSatisfied[i] = 0;
+		}
+		i++;
+	}
 }
 
 void AppManager::updateDepthInputBoundaries() {
@@ -406,6 +474,9 @@ void AppManager::exit() {
 	if (projectorWindow != nullptr) {
 		projectorWindow->setWindowShouldClose();
 	}
+
+	// delete kinectManager to let it write to settings file
+	delete kinectManager;
 
 	// delete m_serialShapeIOManager to shut down the shape display
 	delete m_serialShapeIOManager;
@@ -429,9 +500,9 @@ void AppManager::keyPressed(int key) {
 			paused = !paused;
         } else if (key > '0' && key <= '9') {
             int num = key - '0';
-            if (num > 0 && num <= applicationOrder.size()) {
-                setCurrentApplication(applicationOrder[num - 1]);
-                lastSelectedApplicationName = applicationOrder[num - 1];
+            if (num > 0 && num <= applications.size()) {
+                setCurrentApplication(applications[num - 1]);
+                lastSelectedApplication = applications[num - 1];
             }
         }
 		/*else if (key == '1') {
@@ -466,11 +537,19 @@ void AppManager::mousePressed(int x, int y, int button) {
     for (int i = 0; i < applicationButtons.size(); i++){
         if (applicationButtons[i].inside(x, y)){
 			// Set the current application to the one that was clicked.
-            setCurrentApplication(applicationOrder[i]);
+            setCurrentApplication(applications[i]);
 			// Also set the last selected application, so that the button can be highlighted during the transition to the new application.
-            lastSelectedApplicationName = applicationOrder[i];
+            lastSelectedApplication = applications[i];
         }
     }
+
+	for (int i = 0; i < optionButtons.size(); i++) {
+		if (optionButtons[i].inside(x, y)) {
+			*options[i] = !*options[i];
+		}
+	}
+
+    currentApplication->mousePressed(x, y, button);
 };
 void AppManager::mouseReleased(int x, int y, int button) {};
 void AppManager::windowResized(int w, int h) {};

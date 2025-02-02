@@ -35,7 +35,7 @@ public:
     float timeControl;
     float rainDropsPerSecond; // Variable to control the number of raindrops per second
     float lastRippleTime; // Timer to track the last ripple effect time
-    
+	float currentRainDropInterval; // Randomized Period
     
     // velocity and density are 2d arrays that represent the state of the fluid simulation.
     std::vector<std::vector<float>> velocity;
@@ -88,6 +88,8 @@ private:
     ofxCvGrayscaleImage depthImg;
     ofPixels maskPixels;
     
+	void recalculateRainInterval();
+
     int m_contoursRecordedFlag = 0;
     std::vector<ofRectangle> m_capturedContours;
 };

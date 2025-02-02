@@ -30,7 +30,6 @@
 
 // debugging applications
 #include "AxisCheckerApp.hpp"
-#include "SinglePinDebug.hpp"
 #include "KinectDebugApp.hpp"
 
 // mqtt application
@@ -41,6 +40,7 @@
 
 // Debugging app for the frame buffer and image slicing
 #include "DepthDebugApp.hpp"
+#include "KinectMaskMaker.hpp"
 
 #include "KinectHandWavy.hpp"
 #include "Telepresence.hpp"
@@ -48,11 +48,29 @@
 #include "EquationMode.hpp"
 
 #include "WaveModeContours.hpp"
+#include "PropagationWave.hpp"
 
 #include "TransitionApp.hpp"
 
 #include "AmbientWave.hpp"
 
+
+
+#include "PinDisabler.hpp"
+
+enum autoTransitionCondition {
+	kinectMovementAboveThreshold,
+	kinectMovementBelowThreshold,
+};
+
+struct autoTransitionRule{
+	// These are double pointers so transitionRules can be constant (not updated when applications are initialized)
+	Application **from;
+	Application **to;
+	double threshold;
+	autoTransitionCondition condition;	
+	double timeRuleSatisfiedNeeded;
+};
 
 
 class AppManager : public ofBaseApp {
@@ -87,37 +105,42 @@ public:
     friend class ProjectorApp;
 private:
     // new gui
-    ofxGuiGroup gui;
-    vector<ofxButton> modeButtons;
-    vector<string> modeNames;
+    ofxGuiGroup debugGui;
+    vector<ofxButton> debugModeButtons;
 
+	void checkAutoTransition(double dt);
     void setupShapeDisplayManagement();
     void updateDepthInputBoundaries();
-    void setCurrentApplication(string appName);
+    void setCurrentApplication(Application* application);
     // interfaces to the peripherals
     SerialShapeIOManager *m_serialShapeIOManager;
     
     // external devices
     KinectManagerSimple *kinectManager;
     
-    // applications
-    unordered_map<string, Application *> applications;
-    std::vector<std::string> applicationOrder; // Vector to maintain insertion order of applications
+    // applications (in order)
+    vector<Application*> applications;
+	vector<Application*> debugApplications;
 
     // Graphical buttons, made of rectangles
     std::vector<ofRectangle> applicationButtons;
+	std::vector<ofRectangle> optionButtons;
+	std::vector<bool*> options;
+	std::vector<std::string> optionNames;
     ofTrueTypeFont displayFont20;
     // Track the last application that was selected, so we can give it a button status during the transition
     // because it won't be the active application until the transition is complete.
-    std::string lastSelectedApplicationName;
+    Application *lastSelectedApplication;
     
     Application *currentApplication;
     
     // debugging applications
     AxisCheckerApp *axisCheckerApp;
-    SinglePinDebug *singlePinDebug;
     //KinectDebugApp *kinectDebugApp;
     DepthDebugApp *depthDebugApp;
+    PinDisabler *pinDisabler;
+
+	KinectMaskMaker *kinectMaskMaker;
     
     // mqtt application
     MqttTransmissionApp *mqttApp;
@@ -134,6 +157,7 @@ private:
     EquationMode *equationMode;
     
     WaveModeContours *waveModeContours;
+	PropagationWave *propagationWave;
 
 	  TransitionApp *transitionApp;
 	  bool applicationSwitchBlocked = false;
@@ -144,12 +168,13 @@ private:
     
     // program state
     bool paused = false;
+	bool autoTransition = false;
     double timeOfLastUpdate = -1;
     double timeOfLastPinConfigsUpdate = -1;
 
     // gui state
     bool showGlobalGuiInstructions = false;
-    bool showDebugGui = true;
+    bool showDebugGui = false;
     
     // I/O data buffers
 
@@ -163,6 +188,16 @@ private:
     ofFbo graphicsFromShapeDisplay;
     ofPixels colorPixels;
     //ofPixels depthPixels;
+	
+	// rules for autoTransition
+	const std::array<autoTransitionRule, 4> rules = {
+		autoTransitionRule{(Application**)&waveModeContours, (Application**)&ambientWave, 1.0e-8, kinectMovementBelowThreshold, 20.0},
+		autoTransitionRule{(Application**)&ambientWave, (Application**)&waveModeContours, 5.0e-7, kinectMovementAboveThreshold, 0.1},
+		autoTransitionRule{(Application**)&equationMode, (Application**)&telepresence, 1.0e-6, kinectMovementAboveThreshold, 0.1},
+		autoTransitionRule{(Application**)&telepresence, (Application**)&equationMode, 1.0e-8, kinectMovementBelowThreshold, 10.0},
+	};
+	std::array<double, 4> timeRulesSatisfied = {0.0, 0.0, 0.0, 0.0};
+
     
     ofPixels convertHeightsToPixels(const std::vector<std::vector<unsigned char>>& heights);
 };

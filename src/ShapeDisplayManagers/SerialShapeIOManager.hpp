@@ -69,6 +69,19 @@ public:
     // Virtual class for hardware specific pin layouts.
     virtual std::vector<ofRectangle> createSections(float pixelsPerInch) {return std::vector<ofRectangle>();}
 
+
+	// Completely grid-based (physical distance independent) switching between 
+	// fullSurface (physical) and activeSurface (the pin heights).
+	virtual ofPixels gridCropToActiveSurface(const ofPixels& fullSurface) = 0;
+	// modifies fullSurface, leaving portions not in activeSurface untouched
+	virtual void gridApplyToFullSurface(ofPixels& fullSurface, const ofPixels& activeSurface) = 0;
+	virtual int getGridFullWidth() = 0;
+	virtual int getGridFullHeight() = 0;
+	// these functions assume input is a valid coordinate in it's respective system
+	virtual std::pair<int, int> gridFullCoordinateFromActive(std::pair<int, int> activeCoordinate) = 0;
+	virtual bool gridFullCoordinateIsActive(std::pair<int, int> fullCoordinate) = 0;
+
+
     // Public getters for protected hardware constants, these are specific to the pin configs so might be abstracted into a single array of values.
     float getGainP()    const { return gainP; }
     float getGainI()    const { return gainI; }
@@ -85,10 +98,13 @@ public:
     
     int numberOfArduinos;
     
+	bool getIsConnected() {return isConnected;}
     
     // shape display height values (both intended and actual values)
     std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
     std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
+    // specific to device pin-disabling, return pin location to disable
+    vector<pair<int, int>> getDisabledPins();
 
 protected:
     // manage the connection to the shape display
@@ -99,13 +115,6 @@ protected:
     // setup hardware-specific board configuration
     virtual void configureBoards() = 0;
     void printBoardConfiguration();
-
-    struct PinLocation {
-        int x;
-        int y;
-    };
-    // specific to device pin-disabling, return pin location to disable
-    virtual vector<PinLocation> getDisabledPins() {return {};}
 
     // pin height data processors
     void toggleStuckPins();
@@ -151,6 +160,8 @@ protected:
     const int pinDiscrepancyToggleThreshold = 100;
     const float secondsUntilPinToggledOff = 1.0;
     const float secondsUntilPinToggledOn = 3.0;
+    
+    int forceDelayMilliseconds = 0;
     
     int geebsTEMP[8];
     ofPixels feebsTEMP;

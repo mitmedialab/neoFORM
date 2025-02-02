@@ -59,6 +59,12 @@ private:
 
     ofSerial serial;
 
+	// instead of locking the thread every time buffers are used by the program, 
+	// only allow program to access the buffers while they *specifically* aren't being used
+	std::atomic<bool> sendBufferAvailible;
+	std::atomic<bool> receiveBufferAvailible;
+	std::atomic<bool> sendBufferWithFeedbackAvailible;
+	
     vector<MessageSend> sendBuffer;
     vector<MessageReceive> receiveBuffer;
     vector<MessageSendAndReceive> sendBufferMessageWithFeedback;

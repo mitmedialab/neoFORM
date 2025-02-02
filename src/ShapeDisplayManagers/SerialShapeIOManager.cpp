@@ -7,6 +7,7 @@
 
 #include "SerialShapeIOManager.hpp"
 #include "constants.h"
+#include "ofxXmlSettings.h"
 
 //--------------------------------------------------------------
 //
@@ -200,15 +201,15 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
     float thresholdScalar = 1.0 * pinHeightRange / 255;
     for (int i = 0; i < shapeDisplaySizeX; i++) {
         for (int j = 0; j < shapeDisplaySizeY; j++) {
-            // to rescale the values instead of clipping them, use this line:
-            //heightsForShapeDisplay[i][j] = heightsForShapeDisplay[i][j] * thresholdScalar + pinHeightMin;
+            // rescales the values instead of clipping them
+            heightsForShapeDisplay[i][j] = heightsForShapeDisplay[i][j] * thresholdScalar + pinHeightMin;
 
-            if (heightsForShapeDisplay[i][j] <= pinHeightMin) {
-                heightsForShapeDisplay[i][j] = (unsigned char) pinHeightMin;
-            }
-            else if (heightsForShapeDisplay[i][j] >= pinHeightMax) {
-                heightsForShapeDisplay[i][j] = (unsigned char) pinHeightMax;
-            }
+            //if (heightsForShapeDisplay[i][j] <= pinHeightMin) {
+            //    heightsForShapeDisplay[i][j] = (unsigned char) pinHeightMin;
+            //}
+            //else if (heightsForShapeDisplay[i][j] >= pinHeightMax) {
+            //    heightsForShapeDisplay[i][j] = (unsigned char) pinHeightMax;
+            //}
         }
     }
 }
@@ -217,8 +218,8 @@ void SerialShapeIOManager::clipAllHeightValuesToBeWithinRange() {
 // structures. Flip height values where needed to match the board's orientation.
 void SerialShapeIOManager::readyDataForArduinos() {
     // set any disabled pins to 0
-    for (PinLocation pinLoc : getDisabledPins()) {
-        heightsForShapeDisplay[pinLoc.x][pinLoc.y] = pinHeightMin;
+    for (pair<int, int> pinLoc : getDisabledPins()) {
+        heightsForShapeDisplay[pinLoc.first][pinLoc.second] = pinHeightMin;
     }
 
     for (int i = 0; i < numberOfArduinos; i++) {
@@ -287,6 +288,9 @@ void SerialShapeIOManager::update() {
     } else {
         sendUpdatedConfigValues();
     }
+    
+    timespec fiveMillis[] = {{0, 1000000 * forceDelayMilliseconds}};
+    nanosleep(fiveMillis, NULL);
 }
 
 
@@ -313,6 +317,31 @@ void SerialShapeIOManager::sendValueToAllBoards(unsigned char termId, unsigned c
     for (auto& connection : serialConnections) {
         connection->writeMessage(messageContents);
     }
+}
+
+
+// Get disabled pins from settings
+vector<pair<int, int>> SerialShapeIOManager::getDisabledPins() {
+    ofxXmlSettings settings;
+    std::string name = getShapeDisplayName() + "_pinsDisabled.xml";
+    settings.load(name);
+
+    int numDisabledPins = settings.getValue("num", 0);
+    
+    vector<pair<int, int>> disabledPins = {};
+    
+    for (int i = 0; i < numDisabledPins; i++) {
+        int x = settings.getValue("pin:X", -1, i);
+        int y = settings.getValue("pin:Y", -1, i);
+
+        // doesn't add invalid (out of range) pins
+        if (x >= 0 && x < shapeDisplaySizeX && y >= 0 && y < shapeDisplaySizeY) {
+            disabledPins.push_back({x, y});
+        }
+        //settings.popTag();
+    }
+
+    return disabledPins;
 }
 
 // Send values for some parameter (given by termId) to a board

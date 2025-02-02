@@ -129,18 +129,19 @@ void WaveModeContours::update(float dt){
 // If a new wall is detected based on the last calculated matrix of wall positions, a ripple effect is applied to the fluid simulation at that location.
 void WaveModeContours::updateMask(){
     // Get the depth image from the Kinect manager and apply a Gaussian blur.
-    ofShortPixels pix = m_kinectManager->getDepthPixels();
-    m_kinectManager->crop(pix);
+    ofShortPixels pixels = m_kinectManager->getDepthPixels();
+    m_kinectManager->cropUsingMask(pixels);
     
     // Apply thresholding and interpolation directly to the 16-bit depth pixel values
-    m_kinectManager->thresholdInterp(pix, 200*256, 220*256, 0, 255*256);
+	// Shouldn't be needed if nearThreshold and farThreshold are correct
+    //m_kinectManager->thresholdInterp(pixels, 200*256, 220*256, 0, 65535);
     
     // Cast the incoming ofShortPixels data to ofCvGrayscaleImage for the contour finder.
     ofxCvGrayscaleImage grayImage;
-    grayImage.allocate(pix.getWidth(), pix.getHeight()); // Allocate with the correct dimensions
-    grayImage.setFromPixels(pix);
+    grayImage.allocate(pixels.getWidth(), pixels.getHeight()); // Allocate with the correct dimensions
+    grayImage.setFromPixels(pixels);
     
-    // Blur the image to reduce noise
+    // Blur the image to reduce aliasing 
     grayImage.blurGaussian(1);
 
     // Calculate the maxArea for the contour finder based on the cropped image size.
@@ -207,20 +208,27 @@ void WaveModeContours::updateMask(){
         }
     }
     
-    // Calculate the interval based on rainDropsPerSecond
-    float interval = 1.0 / rainDropsPerSecond;
-
     // Apply a raindrop ripple effect at a random location on the grid at the specified interval.
-    if (timeControl - lastRippleTime >= interval) {
+    while (timeControl - lastRippleTime >= currentRainDropInterval) {
         int randomX = rand() % cols; // Generate a random x-coordinate within the grid
         int randomY = rand() % rows; // Generate a random y-coordinate within the grid
         applyRippleEffect(randomX, randomY);
-        lastRippleTime = timeControl; // Reset the timer
+        lastRippleTime += currentRainDropInterval; // Not a pure reset, allows very small intervals
+
+		recalculateRainInterval();
     }
 
     // Updates the previous wall mask and stores the current centroids.
     updatePreviousWallMask();
     lastContourCentroids = currentCentroids;
+}
+
+void WaveModeContours::recalculateRainInterval() {
+		double randZeroToOne = double(rand()) / RAND_MAX;
+		// A number between -1 and 1, the higher the more random the intervals will be.
+		const double randomFactor = -1.8;
+		// Random interval, with expected value 0.0 / rainDropsPerSecond
+		currentRainDropInterval = (1.0 * randomFactor * randZeroToOne + 1.0 - randomFactor) / rainDropsPerSecond;
 }
 
 // Applies a raindrop-like ripple effect to the surface at the given coordinates.
@@ -294,7 +302,8 @@ void WaveModeContours::updateHeights(){
             ProjectorHeightMapPixels.setColor(x, y, ofColor(r, g, b));
         }
     }
-    heightsForShapeDisplay.rotate90(2);     // this may not be necessary in museum depending on which way kinect is installed
+    // Do not need to flip anymore, but uncomment this if it is necessary to flip the image.
+    //heightsForShapeDisplay.rotate90(2);     // this may not be necessary in museum depending on which way kinect is installed
 }
 
 
@@ -339,7 +348,7 @@ void WaveModeContours::drawGraphicsForShapeDisplay(int x, int y, int width, int 
     drawPreviewMaskRectangle();
 
     //*** Preview shape display pixels
-    m_kinectManager->crop(depthImg.getPixels());
+    m_kinectManager->cropUsingMask(depthImg.getPixels());
     depthImg.draw(2, 400, depthImg.getWidth(), depthImg.getHeight());
 
     //*** Contours are disabled, but maybe they will be useful in the future.
@@ -416,6 +425,8 @@ void WaveModeContours::keyPressed(int Key) {
             // Otherwise, increment it by 1
             rainDropsPerSecond += 1;
         }
+
+		recalculateRainInterval();
     }
     
     // Look for a '[', backward arrow key press or a down arrow key to decrease the rainDropsPerSecond value.
@@ -427,6 +438,8 @@ void WaveModeContours::keyPressed(int Key) {
             // Otherwise, decrement it by 1
             rainDropsPerSecond -= 1;
         }
+
+		recalculateRainInterval();
     }
     
 }

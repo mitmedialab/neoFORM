@@ -227,3 +227,67 @@ std::vector<ofRectangle> TransformIOManager::createSections(float pixelsPerInch)
     
     return sections;
 }
+
+void TransformIOManager::gridApplyToFullSurface(ofPixels& fullSurface, const ofPixels& activeSurface) {
+	for (int y = 0; y < m_Transform_block_h_pins; y++) {
+		// first block
+		for (int x = 0; x < m_Transform_block_w_pins; x++) {
+			fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[0], y)] = activeSurface[activeSurface.getPixelIndex(x, y)];
+		}
+
+		// second block
+		for (int x = m_Transform_block_w_pins; x < 2 * m_Transform_block_w_pins; x++) {
+			fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[1] - m_Transform_block_w_pins, y)] = activeSurface[activeSurface.getPixelIndex(x, y)];
+		}
+
+		// third block
+		for (int x = 2 * m_Transform_block_w_pins; x < 3 * m_Transform_block_w_pins; x++) {
+			fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[2] - 2 * m_Transform_block_w_pins, y)] = activeSurface[activeSurface.getPixelIndex(x, y)];
+		}
+	}
+}
+
+ofPixels TransformIOManager::gridCropToActiveSurface(const ofPixels& fullSurface) {
+	ofPixels temp;
+	temp.allocate(shapeDisplaySizeX, shapeDisplaySizeY, OF_IMAGE_GRAYSCALE);
+
+	for (int y = 0; y < m_Transform_block_h_pins; y++) {
+		// first block
+		for (int x = 0; x < m_Transform_block_w_pins; x++) {
+			temp[temp.getPixelIndex(x, y)] = fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[0], y)];
+		}
+
+		// second block
+		for (int x = m_Transform_block_w_pins; x < 2 * m_Transform_block_w_pins; x++) {
+			temp[temp.getPixelIndex(x, y)] = fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[1] - m_Transform_block_w_pins, y)];
+		}
+
+		// third block
+		for (int x = 2 * m_Transform_block_w_pins; x < 3 * m_Transform_block_w_pins; x++) {
+			temp[temp.getPixelIndex(x, y)] = fullSurface[fullSurface.getPixelIndex(x + gridActiveZoneXStarts[2] - 2 * m_Transform_block_w_pins, y)];
+		}
+	}
+
+	return temp;
+}
+
+std::pair<int, int> TransformIOManager::gridFullCoordinateFromActive(std::pair<int ,int> activeCoordinate) {
+	int trueX;
+	if (activeCoordinate.first < m_Transform_block_w_pins) {
+		trueX = activeCoordinate.first + gridActiveZoneXStarts[0];
+	} else if (activeCoordinate.first < 2 * m_Transform_block_w_pins) {
+		trueX = activeCoordinate.first + gridActiveZoneXStarts[1] - m_Transform_block_w_pins;
+	} else {
+		trueX = activeCoordinate.first + gridActiveZoneXStarts[2] - 2 * m_Transform_block_w_pins;
+	}
+
+	return {trueX, activeCoordinate.second};
+}
+
+bool TransformIOManager::gridFullCoordinateIsActive(std::pair<int, int> fullCoordinate) {
+	int x = fullCoordinate.first;
+	if (x >= gridActiveZoneXStarts[0] && x < gridActiveZoneXStarts[0] + m_Transform_block_w_pins) return true;
+	if (x >= gridActiveZoneXStarts[1] && x < gridActiveZoneXStarts[1] + m_Transform_block_w_pins) return true;
+	if (x >= gridActiveZoneXStarts[2] && x < gridActiveZoneXStarts[2] + m_Transform_block_w_pins) return true;
+	return false;
+}

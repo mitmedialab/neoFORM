@@ -22,7 +22,7 @@ public:
     string appInstructionsText();
     void keyPressed(int key);
 
-    string getName() {return "Video Player";}
+    string getName() {return "Escher Mode";}
 
 private:
     void updateHeights();

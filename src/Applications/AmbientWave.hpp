@@ -30,7 +30,7 @@ protected:
 	const double timescale = 5.0;
 	double currentTime = 0.0;
 
-	std::array<Boat, 5> boats;
+	//std::array<Boat, 5> boats;
 };
 
 
