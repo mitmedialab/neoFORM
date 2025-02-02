@@ -433,13 +433,13 @@ void AppManager::checkAutoTransition(double dt) {
 
 		switch (rule.condition) {
 		case kinectMovementAboveThreshold:
-			if (kinectManager->getMovement() <= rule.threshold) {
+			if (kinectManager->getMovementInMasked() <= rule.threshold) {
 				timeRulesSatisfied[i] = 0.0;
 				continue;
 			}
 			break;
 		case kinectMovementBelowThreshold:
-			if (kinectManager->getMovement() >= rule.threshold) {
+			if (kinectManager->getMovementInMasked() >= rule.threshold) {
 				timeRulesSatisfied[i] = 0.0;
 				continue;
 			}
