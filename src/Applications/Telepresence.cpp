@@ -40,6 +40,13 @@ void Telepresence::drawGraphicsForShapeDisplay(int x, int y, int width, int heig
 	refinedImage.draw(x, y, width, height);
 }
 
+void Telepresence::drawGraphicsForProjector(int x, int y, int width, int height) {
+	// gray
+	ofSetColor(150);
+	ofDrawRectangle(x, y, width, height);
+	ofSetColor(255);
+}
+
 void Telepresence::drawGraphicsForPublicDisplay(int x, int y, int width, int height) {
 	float aspectRatio = cam->getWidth() / cam->getHeight();
 	float displayWidth = height * aspectRatio;
