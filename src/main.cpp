@@ -16,10 +16,9 @@ int main( ){
 
     // create main window with specific location
 	ofGLFWWindowSettings settings;
-	settings.setSize(
-		layoutSettings.getValue("mainWindowWidth", 1010), 
-		layoutSettings.getValue("mainWindowHeight", 1060)
-	);
+	int mainWidth = layoutSettings.getValue("mainWindowWidth", 1010);
+	int mainHeight = layoutSettings.getValue("mainWindowHeight", 1060);
+	settings.setSize(mainWidth, mainHeight);
 	settings.setPosition(glm::vec2(
 		layoutSettings.getValue("mainWindowX", 0),
 		layoutSettings.getValue("mainWindowY", 0)
@@ -27,14 +26,15 @@ int main( ){
 	settings.resizable = true;
     settings.title = "control window";
     auto mainWindow = ofCreateWindow(settings);
+	// Needed for portrait-style dimensions (height > width)
+	mainWindow->setWindowShape(mainWidth, mainHeight);
 
     // create display window
 	std::shared_ptr<ofAppBaseWindow> displayWindow;
 	if (hasPublicWindow) {
-		settings.setSize(
-			layoutSettings.getValue("publicWindowWidth", 600), 
-			layoutSettings.getValue("publicWindowHeight", 600)
-		);
+		int publicWidth = layoutSettings.getValue("publicWindowWidth", 600);
+		int publicHeight = layoutSettings.getValue("publicWindowHeight", 600);
+		settings.setSize(publicWidth, publicHeight);
 		settings.setPosition(glm::vec2(
 			layoutSettings.getValue("publicWindowX", 1020),
 			layoutSettings.getValue("publicWindowY", 0)
@@ -44,6 +44,8 @@ int main( ){
 		// uncomment next line to share main's OpenGL resources with gui
 		//settings.shareContextWith = mainWindow;
 		displayWindow = ofCreateWindow(settings);
+		// Needed for portrait-style dimensions (height > width)
+		displayWindow->setWindowShape(publicWidth, publicHeight);
 	} else {
 		displayWindow = nullptr;
 	}
@@ -51,10 +53,9 @@ int main( ){
     // create display window
 	std::shared_ptr<ofAppBaseWindow> projectorWindow;
 	if (hasProjectorWindow) {
-		settings.setSize(
-			layoutSettings.getValue("projectorWindowWidth", 600), 
-			layoutSettings.getValue("projectorWindowHeight", 600)
-		);
+		int projectorWidth = layoutSettings.getValue("projectorWindowWidth", 600);
+		int projectorHeight = layoutSettings.getValue("projectorWindowHeight", 600);
+		settings.setSize(projectorWidth, projectorHeight);
 		settings.setPosition(glm::vec2(
 			layoutSettings.getValue("projectorWindowX", 1020),
 			layoutSettings.getValue("projectorWindowY", 600)
@@ -62,6 +63,8 @@ int main( ){
 		settings.resizable = true;
     	settings.title = "projector window";
 		projectorWindow = ofCreateWindow(settings);
+		// Needed for portrait-style dimensions (height > width)
+		projectorWindow->setWindowShape(projectorWidth, projectorHeight);
 	} else {
 		projectorWindow = nullptr;
 	}
