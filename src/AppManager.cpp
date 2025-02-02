@@ -78,6 +78,7 @@ void AppManager::setup() {
 	if (m_serialShapeIOManager->getShapeDisplayName() == "inFORM") {
 		applications.push_back(equationMode);
 		applications.push_back(telepresence);
+        applications.push_back(kinectHandWavy);
 	} else if (m_serialShapeIOManager->getShapeDisplayName() == "TRANSFORM") {
 		applications.push_back(videoPlayerApp);
 		applications.push_back(waveModeContours);
