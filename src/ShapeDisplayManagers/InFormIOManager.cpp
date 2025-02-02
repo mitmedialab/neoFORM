@@ -129,7 +129,7 @@ void InFormIOManager::configureBoards() {
           unsigned char j0 = pinBoards[i].pinCoordinates[j][0];
           unsigned char j1 = pinBoards[i].pinCoordinates[j][1];
           pinBoards[i].pinCoordinates[j][0] = shapeDisplaySizeX - 1 - j0;
-          pinBoards[i].pinCoordinates[j][1] = shapeDisplaySizeY - 1 - j1;
+          pinBoards[i].pinCoordinates[j][1] = j1;
         }
       }
     
