@@ -6,6 +6,7 @@
 //
 
 #include "Telepresence.hpp"
+#include "ofGraphics.h"
 #include "ofVideoGrabber.h"
 
 // Just a big member innitialization list, not doing anything interesting.
@@ -31,6 +32,7 @@ void Telepresence::update(float dt) {
 	// Uses ofImage for antialiased resizing
 	ofImage out = refinedImage;
 	out.resize(m_CustomShapeDisplayManager->shapeDisplaySizeX, m_CustomShapeDisplayManager->shapeDisplaySizeY);
+	out.mirror(false, true);
 	heightsForShapeDisplay = out.getPixels();
 }
 
@@ -42,5 +44,7 @@ void Telepresence::drawGraphicsForPublicDisplay(int x, int y, int width, int hei
 	float aspectRatio = cam->getWidth() / cam->getHeight();
 	float displayWidth = height * aspectRatio;
 
-	cam->draw(x + (width - displayWidth)/2, y, displayWidth, height);
+	auto pix = cam->getPixels();
+	pix.mirror(false, true);
+	ofImage(pix).draw(x + (width - displayWidth)/2, y, displayWidth, height);
 }
