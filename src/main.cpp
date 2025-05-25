@@ -11,8 +11,8 @@ int main( ){
 	ofxXmlSettings layoutSettings;
 	layoutSettings.load("layoutSettings.xml");
 
-	bool hasPublicWindow = layoutSettings.getValue("hasPublicWindow", false);
-	bool hasProjectorWindow = layoutSettings.getValue("hasProjectorWindow", false);
+	bool hasPublicWindow = layoutSettings.getValue("hasPublicWindow", true);
+	bool hasProjectorWindow = layoutSettings.getValue("hasProjectorWindow", true);
 
     // create main window with specific location
 	ofGLFWWindowSettings settings;
@@ -49,7 +49,7 @@ int main( ){
 	} else {
 		displayWindow = nullptr;
 	}
-    
+
     // create display window
 	std::shared_ptr<ofAppBaseWindow> projectorWindow;
 	if (hasProjectorWindow) {
@@ -68,7 +68,7 @@ int main( ){
 	} else {
 		projectorWindow = nullptr;
 	}
-    
+
     // seperate applications (needed for some openframeworks stuff)
     auto manager = make_shared<AppManager>();
     auto displayApp = hasPublicWindow ? make_shared<DisplayApp>(displayWindow->getWidth(), displayWindow->getHeight()) : nullptr;
