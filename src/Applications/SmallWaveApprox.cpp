@@ -63,7 +63,7 @@ void SmallWaveApprox::update(float dt) {
 			heightDiffs[x][y] += dt * averageHeight * (leftXVel - rightXVel + downYVel - upYVel);
 
 			// add fake height, to push water away from hand
-			heightDiffs[x][y] += (0 - pixels.getColor(x, y).getBrightness());
+			heightDiffs[x][y] += (0 - pixels.getColor(x, y).getBrightness()) / 256.0f;
 		}
 	}
 
@@ -84,7 +84,7 @@ void SmallWaveApprox::update(float dt) {
 	// take away fake height to maintain volume conservation
 	for (int x = 0; x < cols; x++) {
 		for (int y = 0; y < rows; y++) {
-			heightDiffs[x][y] += (0 - pixels.getColor(x, y).getBrightness());
+			heightDiffs[x][y] += (0 - pixels.getColor(x, y).getBrightness()) / 256.0f;
 		}
 	}
 
