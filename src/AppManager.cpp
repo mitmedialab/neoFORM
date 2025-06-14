@@ -19,58 +19,58 @@
 #include "PinDisabler.hpp"
 
 void AppManager::setup() {
-	
+
 	ofSetFrameRate(30);
-	
+
 	printf("Setting up Shape Display\n");
-	
+
 	// initialize shape display and set up helper objects
 	setupShapeDisplayManagement();
-	
+
 	// setup external devices (e.g., kinect)
 	// kinectManager = new KinectManager();
 	// Depth thresholds for the kinect are set here.
-	
+
 	kinectManager = new KinectManagerSimple();
-	
+
 	// zero timeOfLastUpdate tracker
 	timeOfLastUpdate = elapsedTimeInSeconds();
-	
+
 	// set up applications
 	mqttApp = new MqttTransmissionApp(m_serialShapeIOManager);
-	
+
 	kinectMaskMaker = new KinectMaskMaker(m_serialShapeIOManager, kinectManager);
-	
+
 	videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
 	videoPlayerApp->setup();
-	
+
 	// set up debugging application
 	// and the debugging apps, too
 	axisCheckerApp = new AxisCheckerApp(m_serialShapeIOManager);
-	
+
 	// breaks on newer openframeworks (and is no longer needed)
 	// kinectDebugApp = new KinectDebugApp(m_serialShapeIOManager, kinectManager);
 	// applications["kinectDebug"] = kinectDebugApp;
-	
+
     // DepthDebug is not currently active.
 	//depthDebugApp = new DepthDebugApp(m_serialShapeIOManager);
 	//applications["depthDebug"] = depthDebugApp;
-	
+
 	kinectHandWavy = new KinectHandWavy(m_serialShapeIOManager, kinectManager);
-    
+
     // Telepresence mode takes 16 bit thresholding values as parameters here.
     telepresence = new Telepresence(m_serialShapeIOManager, kinectManager,
                                  255 * 256, 140 * 256, cam);
-	
+
 	equationMode = new EquationMode(m_serialShapeIOManager);
-	
+
 	waveModeContours = new WaveModeContours(m_serialShapeIOManager, kinectManager);
 
 	propagationWave = new PropagationWave(m_serialShapeIOManager);
 
 	// not in applications list
 	transitionApp = new TransitionApp(m_serialShapeIOManager);
-	
+
 	ambientWave = new AmbientWave(m_serialShapeIOManager);
 
 	pinDisabler = new PinDisabler(m_serialShapeIOManager, 400, 356, 600, 600);
@@ -90,6 +90,7 @@ void AppManager::setup() {
 
 	debugApplications.push_back(pinDisabler);
 	debugApplications.push_back(kinectMaskMaker);
+	debugApplications.push_back(waveModeContours);
 
 	options.push_back(&autoTransition);
 	optionNames.push_back("auto transition");
@@ -97,7 +98,7 @@ void AppManager::setup() {
 	// innitialize GUI
 	debugGui.setup("debug modes:");
 	debugGui.setPosition(5, 60 + 65 * (applications.size() + options.size()));
-	
+
 	// IMPORTANT: ofxGui uses raw pointers to ofxButton, so an automatic resize
 	// of modeButtons will invalidate all existing pointers stored in gui.
 	// DO NOT .push_back MORE THAN applications.size()!!!!
@@ -108,23 +109,23 @@ void AppManager::setup() {
     // Iterate over the applicationOrder vector and add the corresponding app to the GUI
     for (Application* app : debugApplications) {
         debugModeButtons.push_back(ofxButton());
-        
+
         // Construct the new button name with the index prepended
         std::string buttonName = std::to_string(appIndex) + ": " + app->getName();
         auto p_button = debugModeButtons.back().setup(buttonName);
         debugGui.add(p_button);
-        
+
         appIndex++;
     }
 
 	// Collapse the GUI panel for now to make room for the new graphical buttons.
 	debugGui.minimize();
-	
+
 	// *** Rectangular button setup ***
     // Load a font for the button text.
     ofTrueTypeFont::setGlobalDpi(72);
     displayFont20.load("SourceSans3-Regular.ttf", 20);
-    
+
     // Set up the buttons by creating an ofRectangle for each application
     for (int i = 0; i < applications.size(); i++){
         ofRectangle button;
@@ -145,11 +146,11 @@ void AppManager::setup() {
 // initialize the shape display and set up shape display helper objects
 void AppManager::setupShapeDisplayManagement() {
 	// initialize communication with the shape display
-	
+
 	ofxXmlSettings settings;
 	settings.load("settings.xml");
 	string shapeDisplayToUse = settings.getValue("name", "inFORM");
-	
+
 	if (shapeDisplayToUse == "TRANSFORM") {
 		m_serialShapeIOManager = new TransformIOManager(kinectManager);
 	} else if (shapeDisplayToUse == "inFORM") {
@@ -157,14 +158,14 @@ void AppManager::setupShapeDisplayManagement() {
 	} else {
 		throw "unknown shape display type: " + shapeDisplayToUse;
 	}
-	
+
 	printf("Setting up Shape Display Management\n");
-	
+
 	// Size the pin arrays correctly based on the hardware specific dimension, and
 	// initialize them with zero values
 	heightsForShapeDisplay = std::vector<std::vector<unsigned char>>(m_serialShapeIOManager->shapeDisplaySizeX, std::vector<unsigned char>(m_serialShapeIOManager->shapeDisplaySizeY));
 	heightsFromShapeDisplay = std::vector<std::vector<unsigned char>>(m_serialShapeIOManager->shapeDisplaySizeX, std::vector<unsigned char>(m_serialShapeIOManager->shapeDisplaySizeY));
-	
+
 	// initialize shape display pin configs
 	PinConfigs pinConfigs;
 	pinConfigs.timeOfUpdate = elapsedTimeInSeconds();
@@ -175,14 +176,14 @@ void AppManager::setupShapeDisplayManagement() {
 	pinConfigs.maxSpeed = m_serialShapeIOManager->getMaxSpeed();
 	m_serialShapeIOManager->setGlobalPinConfigs(pinConfigs);
 	timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
-	
+
 	// Set the dimensions of the pinConfigs
 	pinConfigsForShapeDisplay.resize(m_serialShapeIOManager->shapeDisplaySizeX, std::vector<PinConfigs>(m_serialShapeIOManager->shapeDisplaySizeY, pinConfigs));
-	
+
 	// allocate height pixels objects and clear contents
 	heightPixelsForShapeDisplay.allocate(m_serialShapeIOManager->shapeDisplaySizeX, m_serialShapeIOManager->shapeDisplaySizeY, 1);
 	heightPixelsForShapeDisplay.set(0);
-	
+
 	// allocate shape display graphics container and clear contents
 	graphicsForShapeDisplay.allocate(600, 800, GL_RGBA);
 	graphicsForShapeDisplay.begin();
@@ -191,22 +192,22 @@ void AppManager::setupShapeDisplayManagement() {
 }
 
 void AppManager::update() {
-	
+
 	// cout << "Update in App Manager\n";
-	
+
 	// time elapsed since last update
 	std::chrono::steady_clock clock;
 	std::chrono::duration<double, std::ratio<1, 1>> time = clock.now().time_since_epoch();
 	double currentTime = time.count();
 	double dt = currentTime - timeOfLastUpdate;
 	timeOfLastUpdate = currentTime;
-	
+
 	// copy heights and pin configs from application
 	bool pinConfigsAreStale = false;
 	if (!paused) {
 		currentApplication->update(dt);
 		currentApplication->getHeightsForShapeDisplay(heightPixelsForShapeDisplay);
-		
+
 		// note: manually looping over all pixels is important! the underlying
 		// ofPixels char array is stored as unsigned char[y][x], while the
 		// shape display heights are stored as unsigned char[x][y]
@@ -216,28 +217,28 @@ void AppManager::update() {
 				heightsForShapeDisplay[x][y] = heightPixelsForShapeDisplay[xy];
 			}
 		}
-		
+
 		pinConfigsAreStale = timeOfLastPinConfigsUpdate < currentApplication->timeOfLastPinConfigsUpdate;
 		if (pinConfigsAreStale) {
 			currentApplication->getPinConfigsForShapeDisplay(pinConfigsForShapeDisplay);
 		}
 	}
-	
+
 	// Render the shape preview from the app into the graphicsForShapeDisplay
 	// frame buffer.
-	
+
 	graphicsForShapeDisplay.begin();
 	ofBackground(0);
 	ofSetColor(255);
 	currentApplication->drawGraphicsForShapeDisplay(0, 0, 600, 800);
 	graphicsForShapeDisplay.end();
-	
+
 	m_serialShapeIOManager->sendHeightsToShapeDisplay(heightsForShapeDisplay);
 	if (pinConfigsAreStale) {
 		m_serialShapeIOManager->setPinConfigs(pinConfigsForShapeDisplay);
 		timeOfLastPinConfigsUpdate = elapsedTimeInSeconds();
 	}
-	
+
 	// set the application based on the GUI mode buttons
 	int i = 0;
 	for (Application* app : debugApplications) {
@@ -266,19 +267,19 @@ ofPixels AppManager::convertHeightsToPixels(
 			// ofPixels are storeted as a 1D array, so we need to convert the 2D index
 			// to a 1D index.
 			int index = static_cast<int>(pixels.getPixelIndex(x, y));
-	
+
 			// Set the corresponding pixel in the ofPixels object to the height value.
 			pixels[index] = heights[x][y];
 		}
 	}
-	
+
 	return pixels;
 }
 
 void AppManager::draw() {
 	ofBackground(0, 0, 0);
 	ofSetColor(255);
-	
+
 	// draw text
 	int menuLeftCoordinate = 21;
 	int menuHeight = 680;
@@ -295,13 +296,13 @@ void AppManager::draw() {
 		ofDrawBitmapString((string) "  ' ' : " + (paused ? "play" : "pause"),menuLeftCoordinate, menuHeight);
 	}
 	menuHeight += 30;
-	
+
 	// if there isn't already a debug gui, draw some more information
 	if (!showDebugGui || currentApplication == waveModeContours) {
 		ofDrawBitmapString(currentApplication->appInstructionsText(),menuLeftCoordinate, menuHeight);
 		menuHeight += 20;
 	}
-	
+
 	debugGui.draw();
 
     // Draw the rectangular buttons for each application.
@@ -318,7 +319,7 @@ void AppManager::draw() {
 		}
 		// Draw a rounded rectangle for the application button with a 20 pixel radius.
         ofDrawRectRounded(applicationButtons[i], 20);
-        
+
         // Make a stroke around the current application button
         if (applications[i] == currentApplication){
             ofSetColor(ofColor::white);
@@ -331,7 +332,7 @@ void AppManager::draw() {
         // Make a string with the name of the application with the loop index plus one prepended.
         Application *app = applications[i];
         string applicationOrderString = ofToString(i+1) + ": " + app->getName();
-        
+
         // Add label for application button
         ofSetColor(ofColor::white);
         displayFont20.drawString(applicationOrderString, applicationButtons[i].x + 25, applicationButtons[i].y + 30);
@@ -358,7 +359,7 @@ void AppManager::draw() {
         displayFont20.drawString(optionNames[i] + (*options[i] ? " (ON)" : " (OFF)"), optionButtons[i].x + 25, optionButtons[i].y + 30);
 	}
 	ofSetColor(ofColor::white);
-	
+
 	/* Draw the height data being returned for the pin heights by the arduinos */
 	ofDrawRectangle(400, 50, 302, 302);
 	if (m_serialShapeIOManager->heightsFromShapeDisplayAvailable) {
@@ -366,39 +367,39 @@ void AppManager::draw() {
 		// Make a reference to the heights from the boards, this is memory safe
 		// because it doesn't copy the data.
 		const auto &heightsFromBoards = m_serialShapeIOManager->getHeightsFromShapeDisplay();
-	
+
 		// Convert the heights to pixels and draw them with an ofImage
 		ofPixels pixelsFromBoards = convertHeightsToPixels(heightsFromBoards);
 		ofImage imageFromBoards = ofImage(pixelsFromBoards);
 		setImageNotBlurry(imageFromBoards);
 		imageFromBoards.draw(401, 51, 300, 300);
 	}
-	
+
 	ofDrawRectangle(705, 50, 302, 302);
 	ofDrawBitmapString("Heights Being Sent", 700, 40);
 	ofImage heightImageForShapeDisplay = ofImage(heightPixelsForShapeDisplay);
 	setImageNotBlurry(heightImageForShapeDisplay);
 	heightImageForShapeDisplay.draw(706, 51, 300, 300);
-	
+
 	// display grid position of mouse in pin height input/output
-	auto mouseGridPos = getMouseCoordinateInGrid(400, 50, 302, 302, 
+	auto mouseGridPos = getMouseCoordinateInGrid(400, 50, 302, 302,
 			m_serialShapeIOManager->shapeDisplaySizeX,m_serialShapeIOManager->shapeDisplaySizeY);
 	if (!mouseGridPos.exists)
-		mouseGridPos = getMouseCoordinateInGrid(705, 50, 302, 302, 
+		mouseGridPos = getMouseCoordinateInGrid(705, 50, 302, 302,
 			m_serialShapeIOManager->shapeDisplaySizeX,m_serialShapeIOManager->shapeDisplaySizeY);
 	if (mouseGridPos.exists) {
 		auto pos = mouseGridPos.coordinate;
 		ofDrawBitmapString("Pixel Row: " + to_string(pos.second) + "   Pixel Column: " + to_string(pos.first), 20, 20);
 	}
-	
+
 	ofDrawRectangle(400, 355, 607, 607);
 	graphicsForShapeDisplay.draw(401, 356, 605, 605);
-	
+
 	// ofDrawRectangle(913, 1, 302, 302);
 	// ofImage colorImage = ofImage(colorPixels);
 	// setImageNotBlurry(colorImage);
 	// colorImage.draw(914, 2, 300, 300);
-	
+
 	// draw this app's debugging gui, if selected
 	if (showDebugGui) {
 		currentApplication->drawDebugGui(401, 305);
@@ -419,7 +420,7 @@ void AppManager::setCurrentApplication(Application* application) {
 		transitionApp->startTransition(currentApplication, application, 0.6f, &currentApplication, &applicationSwitchBlocked);
 		currentApplication = transitionApp;
 	}
-	
+
 	updateDepthInputBoundaries();
 }
 
@@ -522,7 +523,7 @@ void AppManager::keyPressed(int key) {
 		} else if (key == '9') {
 			setCurrentApplication("WaveModeContours");
 		}*/
-		
+
 		// forward unreserved keys to the application
 	} else {
 		currentApplication->keyPressed(key);

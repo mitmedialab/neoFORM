@@ -6,7 +6,9 @@
 //
 
 #include "WaveModeContours.hpp"
+#include "ofGraphicsConstants.h"
 #include "ofxXmlSettings.h"
+#include "utils.hpp"
 #include <opencv2/imgproc.hpp>
 #include <cmath>
 #include <vector>
@@ -33,6 +35,8 @@ void WaveModeContours::setup(){
     // Allocate and initialize the internal wave pixels
     m_IntWavePixels.allocate(cols, rows, OF_IMAGE_GRAYSCALE);
     m_IntWavePixels.set(0);
+
+	prevKinectDepth.allocate(cols, rows, OF_IMAGE_GRAYSCALE);
 
     // Set the raindrop ripple effect parameters
     timeControl = 0.0f; // Initialize timeControl
@@ -115,13 +119,15 @@ void WaveModeContours::applyKinectInput() {
     // Get the depth image from the Kinect manager
     ofShortPixels pixels = m_kinectManager->getDepthPixels();
     m_kinectManager->cropUsingMask(pixels);
-	pixels.resize(cols, rows);
+	ofImage im = ofPixels(pixels);
+	im.resize(cols, rows);
 
 	for (int x = 0; x < cols; x++) {
 		for (int y = 0; y < rows; y++) {
-			density[x][y] -= 8.f * ((unsigned short)(0 - pixels.getColor(x, y).getBrightness())) / 65535.f;
+			density[x][y] -= 6.f * (im.getPixels().getColor(x, y).getBrightness() - prevKinectDepth.getColor(x, y).getBrightness());
 		}
 	}
+	prevKinectDepth = im.getPixels();
 }
 
 void WaveModeContours::update(float dt){
@@ -295,15 +301,15 @@ void WaveModeContours::updatePreviousWallMask() {
 
 void WaveModeContours::updateHeights(){
 
-    for (int x = 0; x < cols; x++) {
-        for (int y = 0; y < rows; y++) {
+    for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
             m_IntWavePixels.setColor(x, y, ofColor(ofClamp(127 + velocity[x][y], 0, 255)));
         }
     }
 
 
-    for (int x = 0; x < cols; x++) {
-        for (int y = 0; y < rows; y++) {
+    for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
 
             int flattenedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
 
