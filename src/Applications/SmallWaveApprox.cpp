@@ -65,40 +65,43 @@ void SmallWaveApprox::update(float dt) {
 	setImageNotBlurry(kinectIm);
 	kinectIm.resize(cols, rows);
 
+	int iterations = 3;
 
-	// dh/dt + H(du/dx + dv/dy) = 0
-	for (int x = 0; x < cols; x++) {
-		for (int y = 0; y < rows; y++) {
-			float leftXVel  = x ==        0 ? 0 : xVelocities[x-1][y];
-			float rightXVel = x == cols - 1 ? 0 : xVelocities[x][y];
-			float downYVel  = y ==        0 ? 0 : yVelocities[x][y-1];
-			float upYVel    = y == rows - 1 ? 0 : yVelocities[x][y];
+	for (int i = 0; i < iterations; i++) {
+		// dh/dt + H(du/dx + dv/dy) = 0
+		for (int x = 0; x < cols; x++) {
+			for (int y = 0; y < rows; y++) {
+				float leftXVel  = x ==        0 ? 0 : xVelocities[x-1][y];
+				float rightXVel = x == cols - 1 ? 0 : xVelocities[x][y];
+				float downYVel  = y ==        0 ? 0 : yVelocities[x][y-1];
+				float upYVel    = y == rows - 1 ? 0 : yVelocities[x][y];
 
-			heightDiffs[x][y] += dt * averageHeight * (leftXVel - rightXVel + downYVel - upYVel);
+				heightDiffs[x][y] += dt / iterations * averageHeight * (leftXVel - rightXVel + downYVel - upYVel);
 
-			// add fake height, to push water away from hand
-			heightDiffs[x][y] += (kinectIm.getPixels().getColor(x, y).getBrightness() - prevKinectIm.getPixels().getColor(x, y).getBrightness());
+				// add fake height, to push water away from hand
+				heightDiffs[x][y] += (kinectIm.getPixels().getColor(x, y).getBrightness() - prevKinectIm.getPixels().getColor(x, y).getBrightness());
+			}
 		}
-	}
 
-	// du/dt = -g * dh/dx - ku
-	for (int x = 0; x < cols - 1; x++) {
-		for (int y = 0; y < rows; y++) {
-			xVelocities[x][y] -= dt * (gravConst * (heightDiffs[x+1][y] - heightDiffs[x][y]) + dragConst * xVelocities[x][y]);
+		// du/dt = -g * dh/dx - ku
+		for (int x = 0; x < cols - 1; x++) {
+			for (int y = 0; y < rows; y++) {
+				xVelocities[x][y] -= dt / iterations * (gravConst * (heightDiffs[x+1][y] - heightDiffs[x][y]) + dragConst * xVelocities[x][y]);
+			}
 		}
-	}
 
-	// dv/dt = -g * dh/dy - kv
-	for (int x = 0; x < cols; x++) {
-		for (int y = 0; y < rows - 1; y++) {
-			yVelocities[x][y] -= dt * (gravConst * (heightDiffs[x][y+1] - heightDiffs[x][y]) + dragConst * yVelocities[x][y]);
+		// dv/dt = -g * dh/dy - kv
+		for (int x = 0; x < cols; x++) {
+			for (int y = 0; y < rows - 1; y++) {
+				yVelocities[x][y] -= dt / iterations * (gravConst * (heightDiffs[x][y+1] - heightDiffs[x][y]) + dragConst * yVelocities[x][y]);
+			}
 		}
-	}
 
-	// take away fake height to maintain volume conservation
-	for (int x = 0; x < cols; x++) {
-		for (int y = 0; y < rows; y++) {
-			heightDiffs[x][y] -= (kinectIm.getPixels().getColor(x, y).getBrightness() - prevKinectIm.getPixels().getColor(x, y).getBrightness());
+		// take away fake height to maintain volume conservation
+		for (int x = 0; x < cols; x++) {
+			for (int y = 0; y < rows; y++) {
+				heightDiffs[x][y] -= (kinectIm.getPixels().getColor(x, y).getBrightness() - prevKinectIm.getPixels().getColor(x, y).getBrightness());
+			}
 		}
 	}
 
