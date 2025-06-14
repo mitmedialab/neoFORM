@@ -35,10 +35,12 @@ public:
     string getName() {return "Interactive Wave - Shallow + Small Approx";}
 protected:
 	KinectManagerSimple *m_kinectManager;
+	ofImage kinectIm;
+	ofImage prevKinectIm;
 
-	const double averageHeight = 20; // H
+	const double averageHeight = 30; // H
 	const double gravConst = 0.98;     // g
-	const double dragConst = 0.1;     // k
+	const double dragConst = 0.3;     // k
 
 	std::vector<std::vector<float>> heightDiffs;   // h
 	// velocities are at borders between heights

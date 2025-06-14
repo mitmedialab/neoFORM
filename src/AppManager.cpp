@@ -69,7 +69,7 @@ void AppManager::setup() {
 
 	propagationWave = new PropagationWave(m_serialShapeIOManager);
 
-	smallWaveApprox = new SmallWaveApprox(m_serialShapeIOManager);
+	smallWaveApprox = new SmallWaveApprox(m_serialShapeIOManager, kinectManager);
 
 	// not in applications list
 	transitionApp = new TransitionApp(m_serialShapeIOManager);
@@ -93,7 +93,9 @@ void AppManager::setup() {
 
 	debugApplications.push_back(pinDisabler);
 	debugApplications.push_back(kinectMaskMaker);
+
 	debugApplications.push_back(smallWaveApprox);
+	applications.push_back(waveModeContours);
 
 	options.push_back(&autoTransition);
 	optionNames.push_back("auto transition");

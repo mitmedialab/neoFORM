@@ -10,6 +10,8 @@
 
 #include "SmallWaveApprox.hpp"
 #include "KinectManagerSimple.hpp"
+#include "ofGLUtils.h"
+#include "utils.hpp"
 
 SmallWaveApprox::SmallWaveApprox(SerialShapeIOManager *shapeDisplayManager, KinectManagerSimple *kinectManager)
 : Application(shapeDisplayManager) {
@@ -21,6 +23,8 @@ SmallWaveApprox::SmallWaveApprox(SerialShapeIOManager *shapeDisplayManager, Kine
 	heightDiffs = std::vector<std::vector<float>>(cols, std::vector<float>(rows, 0));
 	xVelocities = std::vector<std::vector<float>>(cols - 1, std::vector<float>(rows, 0));
 	yVelocities = std::vector<std::vector<float>>(cols, std::vector<float>(rows - 1, 0));
+
+	kinectIm.allocate(cols, rows, OF_IMAGE_GRAYSCALE);
 
 	// initiallize the sim with something interesting
 	const float startScale = 150.0f;
@@ -43,14 +47,24 @@ SmallWaveApprox::SmallWaveApprox(SerialShapeIOManager *shapeDisplayManager, Kine
 	}
 }
 
+void SmallWaveApprox::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
+	kinectIm.draw(x, y, width, height);
+}
+
 void SmallWaveApprox::update(float dt) {
 	int cols = m_CustomShapeDisplayManager->shapeDisplaySizeX;
 	int rows = m_CustomShapeDisplayManager->shapeDisplaySizeY;
 
+	m_kinectManager->update();
 	// hand interaction
     ofShortPixels pixels = m_kinectManager->getDepthPixels();
     m_kinectManager->cropUsingMask(pixels);
-	pixels.resize(cols, rows);
+
+	prevKinectIm = kinectIm;
+	kinectIm = ofPixels(pixels);
+	setImageNotBlurry(kinectIm);
+	kinectIm.resize(cols, rows);
+
 
 	// dh/dt + H(du/dx + dv/dy) = 0
 	for (int x = 0; x < cols; x++) {
@@ -63,7 +77,7 @@ void SmallWaveApprox::update(float dt) {
 			heightDiffs[x][y] += dt * averageHeight * (leftXVel - rightXVel + downYVel - upYVel);
 
 			// add fake height, to push water away from hand
-			heightDiffs[x][y] += (0 - pixels.getColor(x, y).getBrightness()) / 256.0f;
+			heightDiffs[x][y] += (kinectIm.getPixels().getColor(x, y).getBrightness() - prevKinectIm.getPixels().getColor(x, y).getBrightness());
 		}
 	}
 
@@ -84,7 +98,7 @@ void SmallWaveApprox::update(float dt) {
 	// take away fake height to maintain volume conservation
 	for (int x = 0; x < cols; x++) {
 		for (int y = 0; y < rows; y++) {
-			heightDiffs[x][y] += (0 - pixels.getColor(x, y).getBrightness()) / 256.0f;
+			heightDiffs[x][y] -= (kinectIm.getPixels().getColor(x, y).getBrightness() - prevKinectIm.getPixels().getColor(x, y).getBrightness());
 		}
 	}
 
@@ -93,9 +107,6 @@ void SmallWaveApprox::update(float dt) {
 			heightsForShapeDisplay.setColor(x, y, std::clamp(heightDiffs[x][y] * 1.0f + 127.0f, 0.0f, 255.0f));
 		}
 	}
-}
-
-void SmallWaveApprox::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
 }
 
 void SmallWaveApprox::mousePressed(int x, int y, int mouse) {
