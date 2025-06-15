@@ -68,19 +68,19 @@ struct autoTransitionRule{
 	Application **from;
 	Application **to;
 	double threshold;
-	autoTransitionCondition condition;	
+	autoTransitionCondition condition;
 	double timeRuleSatisfiedNeeded;
 };
 
 
 class AppManager : public ofBaseApp {
-    
+
 public:
     void setup();
     void update();
     void draw();
     void exit();
-    
+
     void keyPressed(int key);
     void keyReleased(int key);
     void mouseMoved(int x, int y);
@@ -90,10 +90,10 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    
+
     void mouseEntered(int x, int y);
     void mouseExited(int x, int y);
-    
+
     shared_ptr<ofAppBaseWindow> displayWindow;
     shared_ptr<ofAppBaseWindow> projectorWindow;
 
@@ -114,10 +114,10 @@ private:
     void setCurrentApplication(Application* application);
     // interfaces to the peripherals
     SerialShapeIOManager *m_serialShapeIOManager;
-    
+
     // external devices
     KinectManagerSimple *kinectManager;
-    
+
     // applications (in order)
     vector<Application*> applications;
 	vector<Application*> debugApplications;
@@ -131,9 +131,9 @@ private:
     // Track the last application that was selected, so we can give it a button status during the transition
     // because it won't be the active application until the transition is complete.
     Application *lastSelectedApplication;
-    
+
     Application *currentApplication;
-    
+
     // debugging applications
     AxisCheckerApp *axisCheckerApp;
     //KinectDebugApp *kinectDebugApp;
@@ -141,21 +141,21 @@ private:
     PinDisabler *pinDisabler;
 
 	KinectMaskMaker *kinectMaskMaker;
-    
+
     // mqtt application
     MqttTransmissionApp *mqttApp;
-    
+
     // static applications
     VideoPlayerApp *videoPlayerApp;
-    
+
     // hand wavy application
     KinectHandWavy *kinectHandWavy;
-    
+
     // Telepresence
     Telepresence *telepresence;
-    
+
     EquationMode *equationMode;
-    
+
     WaveModeContours *waveModeContours;
 	PropagationWave *propagationWave;
 
@@ -165,7 +165,7 @@ private:
 
     AmbientWave *ambientWave;
 
-    
+
     // program state
     bool paused = false;
 	bool autoTransition = false;
@@ -175,7 +175,7 @@ private:
     // gui state
     bool showGlobalGuiInstructions = false;
     bool showDebugGui = false;
-    
+
     // I/O data buffers
 
     // maybe rename to serialHeightOutput()
@@ -188,8 +188,9 @@ private:
     ofFbo graphicsFromShapeDisplay;
     ofPixels colorPixels;
     //ofPixels depthPixels;
-	
+
 	// rules for autoTransition
+	// (doesn't check to see if applications are otherwise used)
 	const std::array<autoTransitionRule, 4> rules = {
 		autoTransitionRule{(Application**)&waveModeContours, (Application**)&ambientWave, 1.0e-8, kinectMovementBelowThreshold, 20.0},
 		autoTransitionRule{(Application**)&ambientWave, (Application**)&waveModeContours, 5.0e-7, kinectMovementAboveThreshold, 0.1},
@@ -198,7 +199,7 @@ private:
 	};
 	std::array<double, 4> timeRulesSatisfied = {0.0, 0.0, 0.0, 0.0};
 
-    
+
     ofPixels convertHeightsToPixels(const std::vector<std::vector<unsigned char>>& heights);
 };
 

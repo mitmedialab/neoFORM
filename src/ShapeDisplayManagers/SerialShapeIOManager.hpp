@@ -37,18 +37,18 @@ public:
     virtual ~SerialShapeIOManager(){
         disconnectFromDisplay();
     };
-    
+
     // send and receive height values
     void sendHeightsToShapeDisplay(const std::vector<std::vector<unsigned char>>& heights);
 
     const std::vector<std::vector<unsigned char>>& getHeightsFromShapeDisplay() const {
         return heightsFromShapeDisplay;
     }
-    
+
     const std::vector<std::vector<unsigned char>>& getHeightsForShapeDisplay() const {
         return heightsForShapeDisplay;
     }
-    
+
     void clearShapeDisplayHeights(int value=0);
 
     // setters for pin config values
@@ -59,18 +59,18 @@ public:
     bool enableStuckPinSafetyToggle = false;
 
     virtual string getShapeDisplayName() { return "Shape Display Name"; }
-    
+
     // Dan and Jonathan Custom API-like commands
     virtual ofPixels getKinectStream(){return feebsTEMP;}
-    
+
     // Virtual class for hardware specific pin layouts.
     virtual ofPixels cropToActiveSurface(ofPixels fullSurface) = 0;
-    
+
     // Virtual class for hardware specific pin layouts.
     virtual std::vector<ofRectangle> createSections(float pixelsPerInch) {return std::vector<ofRectangle>();}
 
 
-	// Completely grid-based (physical distance independent) switching between 
+	// Completely grid-based (physical distance independent) switching between
 	// fullSurface (physical) and activeSurface (the pin heights).
 	virtual ofPixels gridCropToActiveSurface(const ofPixels& fullSurface) = 0;
 	// modifies fullSurface, leaving portions not in activeSurface untouched
@@ -88,18 +88,18 @@ public:
     int   getMaxI()     const { return maxI; }
     int   getDeadZone() const { return deadZone; }
     int   getMaxSpeed() const { return maxSpeed; }
-    
+
     // can heights be read from the display?
-    const bool heightsFromShapeDisplayAvailable = SHAPE_DISPLAY_CAN_TALK_BACK;
-    
+    bool heightsFromShapeDisplayAvailable = SHAPE_DISPLAY_CAN_TALK_BACK;
+
     // Shape display hardware constants, to be initialized by the relevant sub-class.
     int shapeDisplaySizeX;
     int shapeDisplaySizeY;
-    
+
     int numberOfArduinos;
-    
+
 	bool getIsConnected() {return isConnected;}
-    
+
     // shape display height values (both intended and actual values)
     std::vector<std::vector<unsigned char>> heightsForShapeDisplay;
     std::vector<std::vector<unsigned char>> heightsFromShapeDisplay;
@@ -156,32 +156,32 @@ protected:
     std::vector<std::vector<int>> pinDiscrepancy;
     std::vector<std::vector<bool>> pinEnabled;
     std::vector<std::vector<double>> pinStuckSinceTime;
-    
+
     const int pinDiscrepancyToggleThreshold = 100;
     const float secondsUntilPinToggledOff = 1.0;
     const float secondsUntilPinToggledOn = 3.0;
-    
+
     int forceDelayMilliseconds = 0;
-    
+
     int geebsTEMP[8];
     ofPixels feebsTEMP;
-    
+
     KinectManagerSimple* m_kinectManagerRef;
-    
+
     // Shape display hardware constants (previously defined using #define preprocessor statements.
     // These values are designed to be overridden by their respective individual shape display sub-classes (Transform, Inform, Cooperform, ets.)
-    
+
     int pinHeightMin;
     int pinHeightMax;
     int pinHeightRange;
-    
+
     // Pin configs, maybe split out into a single array instead of separate values.
     float gainP;
     float gainI;
     int maxI;
     int deadZone;
     int maxSpeed;
-    
+
     // Serial connection id strings
     std::vector<std::string> serialPorts;
 
