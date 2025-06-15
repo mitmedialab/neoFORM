@@ -87,6 +87,7 @@ private:
 
     ofxCvContourFinder  contourFinder;
     ofxCvGrayscaleImage depthImg;
+	ofPixels prevKinectDepth;
     ofPixels maskPixels;
 
 	void recalculateRainInterval();

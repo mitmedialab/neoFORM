@@ -94,6 +94,7 @@ void AppManager::setup() {
 
 	debugApplications.push_back(pinDisabler);
 	debugApplications.push_back(kinectMaskMaker);
+	debugApplications.push_back(waveModeContours);
 
 	options.push_back(&autoTransition);
 	optionNames.push_back("auto transition");
