@@ -40,7 +40,7 @@ SerialShapeIOManager::SerialShapeIOManager(KinectManagerSimple* kinectRef) {
 
     // connect to shape display
     connectToDisplay();
-    
+
     //DAN ADDED
     m_kinectManagerRef = kinectRef;
 }
@@ -76,7 +76,7 @@ void SerialShapeIOManager::disconnectFromDisplay(bool clearHeights) {
 
     // close connections
     isConnected = false;
-    
+
     // No longer necessary, the unique_ptrs will automatically deallocate the objects when the vector is cleared or goes out of scope.
     //closeSerialConnections();
 }
@@ -226,7 +226,7 @@ void SerialShapeIOManager::readyDataForArduinos() {
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             int x = pinBoards[i].pinCoordinates[j][0];
             int y = pinBoards[i].pinCoordinates[j][1];
-            
+
             // copy the height value to the board
             pinBoards[i].heights[j] = heightsForShapeDisplay[x][y];
 
@@ -288,7 +288,7 @@ void SerialShapeIOManager::update() {
     } else {
         sendUpdatedConfigValues();
     }
-    
+
     timespec fiveMillis[] = {{0, 1000000 * forceDelayMilliseconds}};
     nanosleep(fiveMillis, NULL);
 }
@@ -312,7 +312,7 @@ void SerialShapeIOManager::sendValueToAllBoards(unsigned char termId, unsigned c
     for (int i = 0; i < NUM_PINS_ARDUINO; i++) {
         messageContents[i + 2] = (unsigned char) value;
     }
-    
+
     // Iterate through all serial connections and send the message to each one.
     for (auto& connection : serialConnections) {
         connection->writeMessage(messageContents);
@@ -327,9 +327,9 @@ vector<pair<int, int>> SerialShapeIOManager::getDisabledPins() {
     settings.load(name);
 
     int numDisabledPins = settings.getValue("num", 0);
-    
+
     vector<pair<int, int>> disabledPins = {};
-    
+
     for (int i = 0; i < numDisabledPins; i++) {
         int x = settings.getValue("pin:X", -1, i);
         int y = settings.getValue("pin:Y", -1, i);
@@ -385,7 +385,7 @@ void SerialShapeIOManager::sendHeightsToBoardAndRequestFeedback(unsigned char bo
     // extra bytes!
     messageContents[8] = 255;
     messageContents[9] = 255;
-    
+
     serialConnections[serialConnection]->writeMessageRequestFeedback(messageContents);
 }
 
@@ -453,13 +453,13 @@ void SerialShapeIOManager::readHeightsFromBoards() {
                 if (boardAddress >= 0 && boardAddress <= numberOfArduinos) {
                     // Iterate through the next 6 bytes of the message, which contain the height values for the 6 pins on the board.
                     for (int j = 0; j < 6; j++) {
-                        // The height value is the third byte of the message. 
+                        // The height value is the third byte of the message.
                         int height = messageContent[j + 2];
                         // If the board inverts height values, then invert the height value.
                         if (pinBoards[boardAddress].invertHeight) {
                             height = 255 - height;
                         }
-                        
+
                         // Check if the height value is within the valid range of 0 to 255.
                         if (height >= 0 && height <= 255) {
 

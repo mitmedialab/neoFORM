@@ -12,6 +12,8 @@ ReliefIOManager::ReliefIOManager() {
     // Set the Relief specific hardware parameters here.
     //shapeDisplayName = "Relief";
 
+	heightsFromShapeDisplayAvailable = false;
+
     shapeDisplaySizeX = 30;
     shapeDisplaySizeY = 30;
 
