@@ -6,6 +6,7 @@
 //
 
 #include "ReliefIOManager.hpp"
+#include "constants.h"
 
 
 ReliefIOManager::ReliefIOManager() {
@@ -28,8 +29,8 @@ ReliefIOManager::ReliefIOManager() {
     // Also size the array that receives height values from the shape display.
     heightsFromShapeDisplay.resize(shapeDisplaySizeX, std::vector<unsigned char>(shapeDisplaySizeY, 0));
 
-    pinHeightMin = 70;
-    pinHeightMax = 245;
+    pinHeightMin = 30;
+    pinHeightMax = 240;
     pinHeightRange = pinHeightMax - pinHeightMin;
 
     // Pin config values, might be abstracted into a single array.
@@ -175,6 +176,15 @@ void ReliefIOManager::configureBoards() {
             pinBoards[i].pinCoordinates[j][1] = (!pinBoards[i].invertHeight) ? 12 + 29 - pinBoards[i].pinCoordinates[j][1] : pinBoards[i].pinCoordinates[j][1];
         }
     }
+
+	// rotate 90 degrees counterclockwise (and mirrors)
+	for (int i = 0; i < 150; i++) {
+		for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
+			std::swap(pinBoards[i].pinCoordinates[j][0], pinBoards[i].pinCoordinates[j][1]);
+			pinBoards[i].pinCoordinates[j][1] *= -1;
+			pinBoards[i].pinCoordinates[j][1] += 29;
+		}
+	}
 
     printBoardConfiguration();
     // Flag configuration as complete.
