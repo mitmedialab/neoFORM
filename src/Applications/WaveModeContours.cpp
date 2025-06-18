@@ -128,10 +128,21 @@ void WaveModeContours::applyKinectInput() {
     ofxCvGrayscaleImage grayImage;
     grayImage.allocate(shortPixels.getWidth(), shortPixels.getHeight()); // Allocate with the correct dimensions
     grayImage.setFromPixels(shortPixels);
-	grayImage.resize(cols, rows);
+
+	// blur to improve downscaling (resizing)
+	int scale = std::min(grayImage.width / cols, grayImage.height / rows);
+	scale = std::max(1, scale); // in case we're scaling up
+    grayImage.blurGaussian(scale * 2 + 1); // makes sure value is odd
+	//grayImage.resize(cols, rows);
+
+	ofPixels activeSurface = m_CustomShapeDisplayManager->cropToActiveSurface(grayImage.getPixels());
+    grayImage.allocate(activeSurface.getWidth(), activeSurface.getHeight());
+    grayImage.setFromPixels(activeSurface);
 
     // Blur the image to improve interaction "smoothness"
-    grayImage.blurGaussian(2 / m_CustomShapeDisplayManager->getPinSizeInInches());
+	int blurRange = 1/ m_CustomShapeDisplayManager->getPinSizeInInches();
+	blurRange = std::max(1, blurRange);
+    //grayImage.blurGaussian(2 * blurRange + 1);
 	ofPixels pix = grayImage.getPixels();
 
 	for (int x = 0; x < cols; x++) {
