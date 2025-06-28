@@ -47,7 +47,7 @@ public:
     std::vector<std::vector<bool>> previousWallMask;
 
     float getAdjacencyDensitySum(int x, int y);
-    void solveFluid();
+    void solveFluid(double progressAmount);
 
     void updatePreviousWallMask();
     void applyRippleEffect(int x, int y);

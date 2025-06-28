@@ -81,6 +81,8 @@ public:
 	virtual std::pair<int, int> gridFullCoordinateFromActive(std::pair<int, int> activeCoordinate) = 0;
 	virtual bool gridFullCoordinateIsActive(std::pair<int, int> fullCoordinate) = 0;
 
+	virtual double getPinSizeInInches() {return 1.0;}
+
 
     // Public getters for protected hardware constants, these are specific to the pin configs so might be abstracted into a single array of values.
     float getGainP()    const { return gainP; }
@@ -90,7 +92,7 @@ public:
     int   getMaxSpeed() const { return maxSpeed; }
 
     // can heights be read from the display?
-    bool heightsFromShapeDisplayAvailable = SHAPE_DISPLAY_CAN_TALK_BACK;
+    const bool heightsFromShapeDisplayAvailable = SHAPE_DISPLAY_CAN_TALK_BACK;
 
     // Shape display hardware constants, to be initialized by the relevant sub-class.
     int shapeDisplaySizeX;

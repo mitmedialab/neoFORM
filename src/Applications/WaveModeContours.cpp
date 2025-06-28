@@ -99,14 +99,14 @@ float WaveModeContours::getAdjacencyDensitySum(int x, int y){
     return sum;
 }
 
-void WaveModeContours::solveFluid(){
+void WaveModeContours::solveFluid(double progressAmount){
     // Iterate over each cell in the fluid grid
     for (int x = 0; x < cols; x++){
         for (int y = 0; y < rows; y++){
         // Update the velocity of the current cell
         // The velocity is adjusted based on friction and the difference between the sum of adjacent densities
         // and the current cell's density. This simulates the fluid dynamics.
-        velocity[x][y] = friction * velocity[x][y] + (getAdjacencyDensitySum(x, y) - density[x][y] * 4.0) * 0.1;
+        velocity[x][y] = friction * velocity[x][y] + (getAdjacencyDensitySum(x, y) - density[x][y] * 4.0) * progressAmount;
 
         // Update the density of the current cell
         // The density is updated by adding the new velocity to the current density.
@@ -117,17 +117,29 @@ void WaveModeContours::solveFluid(){
 
 void WaveModeContours::applyKinectInput() {
     // Get the depth image from the Kinect manager
-    ofShortPixels pixels = m_kinectManager->getDepthPixels();
-    m_kinectManager->cropUsingMask(pixels);
-	ofImage im = ofPixels(pixels);
-	im.resize(cols, rows);
+    ofShortPixels shortPixels = m_kinectManager->getDepthPixels();
+    m_kinectManager->cropUsingMask(shortPixels);
+
+    // Apply thresholding and interpolation directly to the 16-bit depth pixel values
+	// Shouldn't be needed if nearThreshold and farThreshold are correct
+    //m_kinectManager->thresholdInterp(pixels, 200*256, 220*256, 0, 65535);
+
+    // Cast the incoming ofShortPixels data to ofCvGrayscaleImage for the contour finder.
+    ofxCvGrayscaleImage grayImage;
+    grayImage.allocate(shortPixels.getWidth(), shortPixels.getHeight()); // Allocate with the correct dimensions
+    grayImage.setFromPixels(shortPixels);
+	grayImage.resize(cols, rows);
+
+    // Blur the image to improve interaction "smoothness"
+    grayImage.blurGaussian(2 / m_CustomShapeDisplayManager->getPinSizeInInches());
+	ofPixels pix = grayImage.getPixels();
 
 	for (int x = 0; x < cols; x++) {
 		for (int y = 0; y < rows; y++) {
-			density[x][y] -= 6.f * (im.getPixels().getColor(x, y).getBrightness() - prevKinectDepth.getColor(x, y).getBrightness());
+			density[x][y] -= 6.f * (pix.getColor(x, y).getBrightness() - prevKinectDepth.getColor(x, y).getBrightness());
 		}
 	}
-	prevKinectDepth = im.getPixels();
+	prevKinectDepth = pix;
 }
 
 void WaveModeContours::update(float dt){
@@ -135,7 +147,12 @@ void WaveModeContours::update(float dt){
     m_kinectManager->update();
     //updateMask();
 	applyKinectInput();
-    solveFluid();
+	int iterations = int(1/m_CustomShapeDisplayManager->getPinSizeInInches());
+	iterations = std::max(1, iterations);
+	double progressAmount = 0.1/m_CustomShapeDisplayManager->getPinSizeInInches();
+	for (int i = 0; i < iterations; i++) {
+		solveFluid(progressAmount/iterations);
+	}
     updateHeights();
     //updatePreviousWallMask();
 
