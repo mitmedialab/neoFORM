@@ -517,6 +517,7 @@ void WaveModeContours::applyWaterSimulation(const ofPixels& currentDepthFrame) {
     // 4. Apply the resulting forces to the density field
     
     // Initialize smoothedChanges array if it doesn't exist yet (persists between calls)
+    // Declared as static to maintain state across multiple calls; this means we don't have to initialize it in the class constructor.
     static std::vector<std::vector<float>> smoothedChanges;
     if (smoothedChanges.empty()) {
         smoothedChanges.resize(cols, std::vector<float>(rows, 0.0f));
