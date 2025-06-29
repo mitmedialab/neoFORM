@@ -145,9 +145,23 @@ void WaveModeContours::applyKinectInput() {
     //grayImage.blurGaussian(2 * blurRange + 1);
 	ofPixels pix = grayImage.getPixels();
 
+	// This loop applies Kinect interaction forces to the wave simulation:
+	// 1. For each point in the grid, compute difference between current and previous depth
+	// 2. Multiply by -10.0 to create appropriate force direction (negative coefficient 
+	//    means decreasing depth/approaching hand creates upward wave motion)
+	// 3. Apply this force to the density field which influences wave propagation
+	// 4. Limit the maximum change to create more water-like subtle waves
+	const float maxDensityChange = 70.0f; // Maximum allowed change per frame - adjust as needed
 	for (int x = 0; x < cols; x++) {
 		for (int y = 0; y < rows; y++) {
-			density[x][y] -= 6.f * (pix.getColor(x, y).getBrightness() - prevKinectDepth.getColor(x, y).getBrightness());
+			// Calculate raw change based on depth difference
+			float rawChange = 10.f * (pix.getColor(x, y).getBrightness() - prevKinectDepth.getColor(x, y).getBrightness());
+			
+			// Limit the change to a maximum value (in both positive and negative directions)
+			float limitedChange = std::max(-maxDensityChange, std::min(maxDensityChange, rawChange));
+			
+			// Apply the limited change to the density field
+			density[x][y] -= limitedChange;
 		}
 	}
 	prevKinectDepth = pix;
