@@ -83,6 +83,7 @@ void AppManager::setup() {
 	} else if (m_serialShapeIOManager->getShapeDisplayName() == "Relief") {
 		applications.push_back(telepresence);
         applications.push_back(kinectHandWavy);
+		applications.push_back(waveModeContours);
 	} else if (m_serialShapeIOManager->getShapeDisplayName() == "TRANSFORM") {
 		applications.push_back(videoPlayerApp);
 		applications.push_back(waveModeContours);
