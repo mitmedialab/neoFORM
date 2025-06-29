@@ -145,23 +145,44 @@ void WaveModeContours::applyKinectInput() {
     //grayImage.blurGaussian(2 * blurRange + 1);
 	ofPixels pix = grayImage.getPixels();
 
-	// This loop applies Kinect interaction forces to the wave simulation:
+	// This loop applies Kinect interaction forces to the wave simulation with enhanced water-like behavior:
 	// 1. For each point in the grid, compute difference between current and previous depth
-	// 2. Multiply by -10.0 to create appropriate force direction (negative coefficient 
-	//    means decreasing depth/approaching hand creates upward wave motion)
-	// 3. Apply this force to the density field which influences wave propagation
-	// 4. Limit the maximum change to create more water-like subtle waves
-	const float maxDensityChange = 70.0f; // Maximum allowed change per frame - adjust as needed
+	// 2. Apply non-linear response curve to create natural falloff (sigmoid/tanh function)
+	// 3. Apply temporal smoothing to make changes flow more naturally over time
+	// 4. Apply the processed change to the density field with appropriate limits
+	
+	const float maxDensityChange = 130.0f; // Maximum allowed change per frame
+	const float responseCurveStrength = 0.6f; // Controls the shape of the sigmoid curve (higher = sharper knee)
+	const float temporalSmoothingFactor = 0.5f; // How much previous frames influence current frame (0-1)
+	const float inputAmplification = 12.0f; // Amplifies input changes for more pronounced effects (was 10.0f)
+	
+	// Initialize smoothedChanges array if it doesn't exist yet
+	static std::vector<std::vector<float>> smoothedChanges;
+	if (smoothedChanges.empty()) {
+		smoothedChanges.resize(cols, std::vector<float>(rows, 0.0f));
+	}
+	
 	for (int x = 0; x < cols; x++) {
 		for (int y = 0; y < rows; y++) {
 			// Calculate raw change based on depth difference
-			float rawChange = 10.f * (pix.getColor(x, y).getBrightness() - prevKinectDepth.getColor(x, y).getBrightness());
+			float depthDifference = pix.getColor(x, y).getBrightness() - prevKinectDepth.getColor(x, y).getBrightness();
+			float rawChange = inputAmplification * depthDifference;
 			
-			// Limit the change to a maximum value (in both positive and negative directions)
-			float limitedChange = std::max(-maxDensityChange, std::min(maxDensityChange, rawChange));
+			// Apply non-linear response curve (sigmoid/tanh) for more natural falloff
+			// This creates a gentle response to small changes and saturation for large changes
+			float responseScale = maxDensityChange * 1.0f; // Scale factor to keep within our limits
+			float nonLinearResponse = responseScale * tanh(rawChange * responseCurveStrength / responseScale);
 			
-			// Apply the limited change to the density field
-			density[x][y] -= limitedChange;
+			// Apply temporal smoothing by blending with previous frame's changes
+			// This creates more fluid, gradual transitions like real water
+			float newChange = temporalSmoothingFactor * smoothedChanges[x][y] + 
+							 (1.0f - temporalSmoothingFactor) * nonLinearResponse;
+							 
+			// Store the smoothed value for the next frame
+			smoothedChanges[x][y] = newChange;
+			
+			// Apply the processed change to the density field
+			density[x][y] -= newChange;
 		}
 	}
 	prevKinectDepth = pix;
