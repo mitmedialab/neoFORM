@@ -73,7 +73,21 @@ private:
     KinectManagerSimple* m_kinectManager;
 
     void updateHeights();
-	void applyKinectInput();
+    void applyKinectInput();
+    
+    // Water simulation parameters - adjustable for different effects
+    struct WaterSimParams {
+        float maxDensityChange = 130.0f;      // Maximum allowed density change per frame
+        float responseCurveStrength = 0.6f;   // Controls sigmoid curve sharpness (higher = sharper)
+        float temporalSmoothingFactor = 0.5f; // Previous frame influence (0-1)
+        float inputAmplification = 12.0f;     // Amplifies input changes for more pronounced effects
+    };
+    
+    // Applies the water simulation effects using depth data
+    void applyWaterSimulation(const ofPixels& currentDepthFrame);
+    
+    // Simulation parameters - can be exposed to UI if needed
+    WaterSimParams waterParams;
 
     ofPixels rawSurfaceDepth;
     ofPixels m_IntWavePixels;
