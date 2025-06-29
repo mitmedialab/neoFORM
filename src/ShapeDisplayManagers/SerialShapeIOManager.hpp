@@ -92,7 +92,7 @@ public:
     int   getMaxSpeed() const { return maxSpeed; }
 
     // can heights be read from the display?
-    const bool heightsFromShapeDisplayAvailable = SHAPE_DISPLAY_CAN_TALK_BACK;
+    bool heightsFromShapeDisplayAvailable = SHAPE_DISPLAY_CAN_TALK_BACK;
 
     // Shape display hardware constants, to be initialized by the relevant sub-class.
     int shapeDisplaySizeX;
