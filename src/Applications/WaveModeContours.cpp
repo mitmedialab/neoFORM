@@ -113,11 +113,11 @@ void WaveModeContours::solveFluid(double progressAmount){
         // Update the velocity of the current cell
         // The velocity is adjusted based on friction and the difference between the sum of adjacent densities
         // and the current cell's density. This simulates the fluid dynamics.
-        velocity[x][y] = friction * velocity[x][y] + (getAdjacencyDensitySum(x, y) - density[x][y] * 4.0) * progressAmount;
+        velocity[x][y] = (1.0 - progressAmount * (1.0 - friction)) * velocity[x][y] + (getAdjacencyDensitySum(x, y) - density[x][y] * 4.0) * 0.1;
 
         // Update the density of the current cell
         // The density is updated by adding the new velocity to the current density.
-        density[x][y] = density[x][y] + velocity[x][y];
+        density[x][y] = density[x][y] + velocity[x][y] * progressAmount;
         }
     }
 }
@@ -164,9 +164,9 @@ void WaveModeContours::update(float dt){
     m_kinectManager->update();
     //updateMask();
 	applyKinectInput();
-	int iterations = int(std::sqrt(2/m_CustomShapeDisplayManager->getPinSizeInInches()));
+	int iterations = int(0.6 + std::sqrt(2/m_CustomShapeDisplayManager->getPinSizeInInches()));
 	iterations = std::max(1, iterations);
-	double progressAmount = 0.1 * std::sqrt(2/m_CustomShapeDisplayManager->getPinSizeInInches());
+	double progressAmount = std::sqrt(2/m_CustomShapeDisplayManager->getPinSizeInInches());
 	for (int i = 0; i < iterations; i++) {
 		solveFluid(progressAmount/iterations);
 	}
