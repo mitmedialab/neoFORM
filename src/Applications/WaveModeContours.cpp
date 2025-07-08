@@ -80,7 +80,7 @@ void WaveModeContours::setup(){
 
     ProjectorHeightMapPixels.allocate(cols, rows, OF_IMAGE_COLOR);
     ProjectorHeightMapPixels.setColor(ofColor::black);
-    
+
     // Initialize water simulation parameters with default values
     // These can be adjusted for different water behaviors
     waterParams.maxDensityChange = 130.0f;
@@ -154,7 +154,7 @@ void WaveModeContours::applyKinectInput() {
 
 	// Apply water simulation with Kinect input
 	applyWaterSimulation(pix);
-	
+
 	// Store current frame as previous for next frame's comparison
 	prevKinectDepth = pix;
 }
@@ -164,9 +164,9 @@ void WaveModeContours::update(float dt){
     m_kinectManager->update();
     //updateMask();
 	applyKinectInput();
-	int iterations = int(1/m_CustomShapeDisplayManager->getPinSizeInInches());
+	int iterations = int(std::sqrt(2/m_CustomShapeDisplayManager->getPinSizeInInches()));
 	iterations = std::max(1, iterations);
-	double progressAmount = 0.1/m_CustomShapeDisplayManager->getPinSizeInInches();
+	double progressAmount = 0.1 * std::sqrt(2/m_CustomShapeDisplayManager->getPinSizeInInches());
 	for (int i = 0; i < iterations; i++) {
 		solveFluid(progressAmount/iterations);
 	}
@@ -515,35 +515,35 @@ void WaveModeContours::applyWaterSimulation(const ofPixels& currentDepthFrame) {
     // 2. Apply non-linear sigmoid response for natural falloff behavior
     // 3. Apply temporal smoothing for fluid-like transitions
     // 4. Apply the resulting forces to the density field
-    
+
     // Initialize smoothedChanges array if it doesn't exist yet (persists between calls)
     // Declared as static to maintain state across multiple calls; this means we don't have to initialize it in the class constructor.
     static std::vector<std::vector<float>> smoothedChanges;
     if (smoothedChanges.empty()) {
         smoothedChanges.resize(cols, std::vector<float>(rows, 0.0f));
     }
-    
+
     for (int x = 0; x < cols; x++) {
         for (int y = 0; y < rows; y++) {
             // Calculate raw change based on depth difference
-            float depthDifference = currentDepthFrame.getColor(x, y).getBrightness() - 
+            float depthDifference = currentDepthFrame.getColor(x, y).getBrightness() -
                                    prevKinectDepth.getColor(x, y).getBrightness();
             float rawChange = waterParams.inputAmplification * depthDifference;
-            
+
             // Apply non-linear response curve (sigmoid/tanh) for more natural falloff
             // This creates a gentle response to small changes and saturation for large changes
             float responseScale = waterParams.maxDensityChange * 1.0f;
-            float nonLinearResponse = responseScale * 
+            float nonLinearResponse = responseScale *
                                      tanh(rawChange * waterParams.responseCurveStrength / responseScale);
-            
+
             // Apply temporal smoothing by blending with previous frame's changes
             // This creates more fluid, gradual transitions like real water
-            float newChange = waterParams.temporalSmoothingFactor * smoothedChanges[x][y] + 
+            float newChange = waterParams.temporalSmoothingFactor * smoothedChanges[x][y] +
                              (1.0f - waterParams.temporalSmoothingFactor) * nonLinearResponse;
-                             
+
             // Store the smoothed value for the next frame
             smoothedChanges[x][y] = newChange;
-            
+
             // Apply the processed change to the density field
             density[x][y] -= newChange;
         }
