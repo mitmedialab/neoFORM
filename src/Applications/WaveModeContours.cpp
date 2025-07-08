@@ -108,12 +108,13 @@ float WaveModeContours::getAdjacencyDensitySum(int x, int y){
 
 void WaveModeContours::solveFluid(double progressAmount){
     // Iterate over each cell in the fluid grid
+	float adjustedFriction = (1.0 - progressAmount * (1.0 - friction));
     for (int x = 0; x < cols; x++){
         for (int y = 0; y < rows; y++){
         // Update the velocity of the current cell
         // The velocity is adjusted based on friction and the difference between the sum of adjacent densities
         // and the current cell's density. This simulates the fluid dynamics.
-        velocity[x][y] = (1.0 - progressAmount * (1.0 - friction)) * velocity[x][y] + (getAdjacencyDensitySum(x, y) - density[x][y] * 4.0) * 0.1;
+        velocity[x][y] = adjustedFriction * velocity[x][y] + (getAdjacencyDensitySum(x, y) - density[x][y] * 4.0) * 0.1;
 
         // Update the density of the current cell
         // The density is updated by adding the new velocity to the current density.
@@ -164,7 +165,7 @@ void WaveModeContours::update(float dt){
     m_kinectManager->update();
     //updateMask();
 	applyKinectInput();
-	int iterations = int(0.6 + std::sqrt(2/m_CustomShapeDisplayManager->getPinSizeInInches()));
+	int iterations = int(0.6 + std::sqrt(5/m_CustomShapeDisplayManager->getPinSizeInInches()));
 	iterations = std::max(1, iterations);
 	double progressAmount = std::sqrt(2/m_CustomShapeDisplayManager->getPinSizeInInches());
 	for (int i = 0; i < iterations; i++) {
