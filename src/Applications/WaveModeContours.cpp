@@ -356,7 +356,7 @@ void WaveModeContours::updateHeights(){
         }
     }
     // Do not need to flip anymore, but uncomment this if it is necessary to flip the image.
-    //heightsForShapeDisplay.rotate90(2);     // this may not be necessary in museum depending on which way kinect is installed
+    heightsForShapeDisplay.rotate90(2);     // this may not be necessary in museum depending on which way kinect is installed
 }
 
 
