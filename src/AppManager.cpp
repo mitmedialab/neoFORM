@@ -292,6 +292,10 @@ void AppManager::draw() {
 	int menuHeight = 680;
 	string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
 	ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
+	
+	string frameRate = "FPS: " + ofToString(ofGetFrameRate(), 2);
+	ofDrawBitmapString(frameRate, menuLeftCoordinate, menuHeight + 20);
+	
 	menuHeight += 30;
 	ofDrawBitmapString((string) "  '?' : " + (showGlobalGuiInstructions ? "hide" : "show") + " instructions",menuLeftCoordinate, menuHeight);
 	if (showGlobalGuiInstructions) {
