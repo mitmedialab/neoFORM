@@ -33,14 +33,14 @@ void SerialShapeIO::stop() {
 
 void SerialShapeIO::threadedFunction() {
     ofSleepMillis(50);
-    
+
     unsigned char messageContent[MSG_SIZE_SEND];
     unsigned char longMessageContent[MSG_SIZE_SEND_AND_RECEIVE];
     MessageReceive newReceivedMessage;
-    
+
     int currentReceivedByte = 0;
     int receiveCounter = 0;
-    
+
     while (isThreadRunning() != 0) {
 		size_t numToCopy;
         // send the messages in the short message buffer
@@ -92,7 +92,7 @@ void SerialShapeIO::threadedFunction() {
             serial.writeBytes(longMessageContent, MSG_SIZE_SEND_AND_RECEIVE);
         } else {
             // pause is dependent on the speed of the machine right now, so that is a problem.
-            
+
             //            usleep(500);
             // usleep symbol isn't found
             // and according to http://stackoverflow.com/questions/14340485/getting-stuck-in-usleep1
@@ -101,7 +101,7 @@ void SerialShapeIO::threadedFunction() {
             timespec twentieth_of_second[] = {{0, 50000000}};
             nanosleep(twentieth_of_second, NULL);
         }
-        
+
         // receive messages from the table if there are any
         while (serial.available()) {
             bool receivedMessage = false;

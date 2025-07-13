@@ -40,6 +40,8 @@ public:
 	int getGridFullHeight() {return 30;}
 	std::pair<int, int> gridFullCoordinateFromActive(std::pair<int, int> activeCoordinate) {return activeCoordinate;}
 	bool gridFullCoordinateIsActive(std::pair<int, int> fullCoordinate) {return true;}
+	
+	double getPinSizeInInches() {return 0.5;}
 
 protected:
     // setup hardware-specific board configuration

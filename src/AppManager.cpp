@@ -83,6 +83,7 @@ void AppManager::setup() {
 	} else if (m_serialShapeIOManager->getShapeDisplayName() == "Relief") {
 		applications.push_back(telepresence);
         applications.push_back(kinectHandWavy);
+		applications.push_back(waveModeContours);
 	} else if (m_serialShapeIOManager->getShapeDisplayName() == "TRANSFORM") {
 		applications.push_back(videoPlayerApp);
 		applications.push_back(waveModeContours);
@@ -94,6 +95,7 @@ void AppManager::setup() {
 
 	debugApplications.push_back(pinDisabler);
 	debugApplications.push_back(kinectMaskMaker);
+	debugApplications.push_back(waveModeContours);
 
 	options.push_back(&autoTransition);
 	optionNames.push_back("auto transition");
@@ -290,6 +292,10 @@ void AppManager::draw() {
 	int menuHeight = 680;
 	string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
 	ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
+	
+	string frameRate = "FPS: " + ofToString(ofGetFrameRate(), 2);
+	ofDrawBitmapString(frameRate, menuLeftCoordinate, menuHeight + 20);
+	
 	menuHeight += 30;
 	ofDrawBitmapString((string) "  '?' : " + (showGlobalGuiInstructions ? "hide" : "show") + " instructions",menuLeftCoordinate, menuHeight);
 	if (showGlobalGuiInstructions) {

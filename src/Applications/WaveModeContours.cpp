@@ -6,7 +6,9 @@
 //
 
 #include "WaveModeContours.hpp"
+#include "ofGraphicsConstants.h"
 #include "ofxXmlSettings.h"
+#include "utils.hpp"
 #include <opencv2/imgproc.hpp>
 #include <cmath>
 #include <vector>
@@ -25,7 +27,7 @@ WaveModeContours::WaveModeContours(SerialShapeIOManager *theSerialShapeIOManager
 
 
 void WaveModeContours::setup(){
-    
+
     // Get the dimensions of the shape display
     cols = (m_CustomShapeDisplayManager)->shapeDisplaySizeX;
     rows = (m_CustomShapeDisplayManager)->shapeDisplaySizeY;
@@ -33,7 +35,9 @@ void WaveModeContours::setup(){
     // Allocate and initialize the internal wave pixels
     m_IntWavePixels.allocate(cols, rows, OF_IMAGE_GRAYSCALE);
     m_IntWavePixels.set(0);
-        
+
+	prevKinectDepth.allocate(cols, rows, OF_IMAGE_GRAYSCALE);
+
     // Set the raindrop ripple effect parameters
     timeControl = 0.0f; // Initialize timeControl
     rainDropsPerSecond = 0.2; // Example initial value, can be adjusted during runtime
@@ -44,13 +48,13 @@ void WaveModeContours::setup(){
     velocity.resize(cols, std::vector<float>(rows, 0));
     wallMask.resize(cols, std::vector<bool>(rows, false));
     previousWallMask.resize(cols, std::vector<bool>(rows, false));
-    
+
     // Initialize contour finder and last contour centroids
     contourFinder;
     lastContourCentroids;
-    
+
     friction = 0.8;
-    
+
     // Initialize density and velocity arrays with sinusoidal values.
     // This sets up an initial wave pattern for the fluid simulation.
     // It is optional, the fluid simulation can be started with a blank state.
@@ -70,10 +74,10 @@ void WaveModeContours::setup(){
             previousWallMask[x][y] = wall;
         }
     }
-    
+
     // Initialize a random seed for raindrop ripple position.
     srand(static_cast<unsigned int>(time(0)));
-    
+
     ProjectorHeightMapPixels.allocate(cols, rows, OF_IMAGE_COLOR);
     ProjectorHeightMapPixels.setColor(ofColor::black);
 }
@@ -88,41 +92,84 @@ void WaveModeContours::setup(){
 // and the current cell's density. The density is then updated by adding the new velocity.
 float WaveModeContours::getAdjacencyDensitySum(int x, int y){
     float sum = 0;
-    if (x - 1 >= 0 and not wallMask[x - 1][y]){sum += density[x - 1][y];}
-    if (x + 1 < cols and not wallMask[x + 1][y]){sum += density[x + 1][y];}
-    if (y - 1 >= 0 and not wallMask[x][y - 1]){sum += density[x][y - 1];}
-    if (y + 1 < rows and not wallMask[x][y + 1]){sum += density[x][y + 1];}
+    if (x - 1 >= 0){sum += density[x - 1][y];}
+    if (x + 1 < cols){sum += density[x + 1][y];}
+    if (y - 1 >= 0){sum += density[x][y - 1];}
+    if (y + 1 < rows){sum += density[x][y + 1];}
     return sum;
 }
 
-void WaveModeContours::solveFluid(){
+void WaveModeContours::solveFluid(double progressAmount){
     // Iterate over each cell in the fluid grid
+	float adjustedFriction = (1.0 - progressAmount * (1.0 - friction));
     for (int x = 0; x < cols; x++){
         for (int y = 0; y < rows; y++){
         // Update the velocity of the current cell
         // The velocity is adjusted based on friction and the difference between the sum of adjacent densities
         // and the current cell's density. This simulates the fluid dynamics.
-        velocity[x][y] = friction * velocity[x][y] + (getAdjacencyDensitySum(x, y) - density[x][y] * 4.0) * 0.1;
-        
+        velocity[x][y] = adjustedFriction * velocity[x][y] + (getAdjacencyDensitySum(x, y) - density[x][y] * 4.0) * 0.1;
+
         // Update the density of the current cell
         // The density is updated by adding the new velocity to the current density.
-        density[x][y] = density[x][y] + velocity[x][y];
+        density[x][y] = density[x][y] + velocity[x][y] * progressAmount;
         }
     }
 }
 
+void WaveModeContours::applyKinectInput() {
+    // Get the depth image from the Kinect manager
+    ofShortPixels shortPixels = m_kinectManager->getDepthPixels();
+    m_kinectManager->cropUsingMask(shortPixels);
+
+    // Apply thresholding and interpolation directly to the 16-bit depth pixel values
+	// Shouldn't be needed if nearThreshold and farThreshold are correct
+    //m_kinectManager->thresholdInterp(pixels, 200*256, 220*256, 0, 65535);
+
+    // Cast the incoming ofShortPixels data to ofCvGrayscaleImage for the contour finder.
+    ofxCvGrayscaleImage grayImage;
+    grayImage.allocate(shortPixels.getWidth(), shortPixels.getHeight()); // Allocate with the correct dimensions
+    grayImage.setFromPixels(shortPixels);
+
+	// blur to improve downscaling (resizing)
+	int scale = std::min(grayImage.width / cols, grayImage.height / rows);
+	scale = std::max(3, scale); // in case we're scaling up
+    grayImage.blurGaussian(scale * 2 + 1); // makes sure value is odd
+	//grayImage.resize(cols, rows);
+
+	ofPixels activeSurface = m_CustomShapeDisplayManager->cropToActiveSurface(grayImage.getPixels());
+    grayImage.allocate(activeSurface.getWidth(), activeSurface.getHeight());
+    grayImage.setFromPixels(activeSurface);
+
+    // Blur the image to improve interaction "smoothness", uses the pin size in inches to help determine the blur range.
+	int blurRange = 1/ m_CustomShapeDisplayManager->getPinSizeInInches();
+	blurRange = std::max(1, blurRange);
+    //grayImage.blurGaussian(2 * blurRange + 1);
+	ofPixels pix = grayImage.getPixels();
+
+	// Apply water simulation with Kinect input
+	applyWaterSimulation(pix);
+
+	// Store current frame as previous for next frame's comparison
+	prevKinectDepth = pix;
+}
 
 void WaveModeContours::update(float dt){
-    
+
     m_kinectManager->update();
-    updateMask();
-    solveFluid();
+    //updateMask();
+	applyKinectInput();
+	int iterations = int(0.6 + std::sqrt(5/m_CustomShapeDisplayManager->getPinSizeInInches()));
+	iterations = std::max(1, iterations);
+	double progressAmount = std::sqrt(2/m_CustomShapeDisplayManager->getPinSizeInInches());
+	for (int i = 0; i < iterations; i++) {
+		solveFluid(progressAmount/iterations);
+	}
     updateHeights();
-    updatePreviousWallMask();
+    //updatePreviousWallMask();
 
     // Increment timeControl based on delta time
     timeControl += dt;
-    
+
 }
 
 // Processes incoming depth data, finds the contours of detected objects, and updates the matrix of detected obstacles (called walls here).
@@ -131,17 +178,17 @@ void WaveModeContours::updateMask(){
     // Get the depth image from the Kinect manager and apply a Gaussian blur.
     ofShortPixels pixels = m_kinectManager->getDepthPixels();
     m_kinectManager->cropUsingMask(pixels);
-    
+
     // Apply thresholding and interpolation directly to the 16-bit depth pixel values
 	// Shouldn't be needed if nearThreshold and farThreshold are correct
     //m_kinectManager->thresholdInterp(pixels, 200*256, 220*256, 0, 65535);
-    
+
     // Cast the incoming ofShortPixels data to ofCvGrayscaleImage for the contour finder.
     ofxCvGrayscaleImage grayImage;
     grayImage.allocate(pixels.getWidth(), pixels.getHeight()); // Allocate with the correct dimensions
     grayImage.setFromPixels(pixels);
-    
-    // Blur the image to reduce aliasing 
+
+    // Blur the image to reduce aliasing
     grayImage.blurGaussian(1);
 
     // Calculate the maxArea for the contour finder based on the cropped image size.
@@ -149,20 +196,20 @@ void WaveModeContours::updateMask(){
 
     // Find the contours in the cropped depth image.
     contourFinder.findContours(grayImage, 100, maxArea, 1, false);
-    
+
     maskPixels = grayImage.getPixels();
     std::vector<ofPoint> currentCentroids;
-    
+
     float dist;
     int numBlobs = contourFinder.nBlobs;
-    
+
     // For each detected blob, the centroid is calculated and stored.
     // The mask pixels are updated based on the distance from the centroid.
     for (int i = 0; i < numBlobs; i++) {
         ofxCvBlob blob = contourFinder.blobs[i];
         ofPoint centroid = blob.centroid;
         currentCentroids.push_back(centroid);
-        
+
         int center_x = centroid.x;
         int center_y = centroid.y;
         float area = blob.area;
@@ -178,13 +225,13 @@ void WaveModeContours::updateMask(){
             }
         }
     }
-    
+
     // Resizes the mask image to match the shape display size.
     ofImage img;
     img.setFromPixels(maskPixels);
     img.resize((m_CustomShapeDisplayManager)->shapeDisplaySizeX, (m_CustomShapeDisplayManager)->shapeDisplaySizeY);
     maskPixels = img.getPixels();
-    
+
     for (int x = 0; x < cols; x++) {
         for (int y = 0; y < rows; y++) {
             ofColor color = maskPixels.getColor(x, y);
@@ -199,7 +246,7 @@ void WaveModeContours::updateMask(){
                             break;
                         }
                     }
-                    
+
                     if (newPositionDetected) {
                         handInteraction(x, y);
                     }
@@ -207,7 +254,7 @@ void WaveModeContours::updateMask(){
             } else { wallMask[x][y] = false; }
         }
     }
-    
+
     // Apply a raindrop ripple effect at a random location on the grid at the specified interval.
     while (timeControl - lastRippleTime >= currentRainDropInterval) {
         int randomX = rand() % cols; // Generate a random x-coordinate within the grid
@@ -282,20 +329,20 @@ void WaveModeContours::updatePreviousWallMask() {
 
 void WaveModeContours::updateHeights(){
 
-    for (int x = 0; x < cols; x++) {
-        for (int y = 0; y < rows; y++) {
+    for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
             m_IntWavePixels.setColor(x, y, ofColor(ofClamp(127 + velocity[x][y], 0, 255)));
         }
     }
-    
-   
-    for (int x = 0; x < cols; x++) {
-        for (int y = 0; y < rows; y++) {
-            
+
+
+    for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
+
             int flattenedIndex = heightsForShapeDisplay.getPixelIndex(x, y);
-            
+
             heightsForShapeDisplay[flattenedIndex] = m_IntWavePixels[flattenedIndex];
-            
+
             std::tuple<int, int, int> projector_color = heightPixelToMapColor(m_IntWavePixels[flattenedIndex]);
             int r, g, b;
             std::tie(r, g, b) = projector_color;
@@ -303,7 +350,7 @@ void WaveModeContours::updateHeights(){
         }
     }
     // Do not need to flip anymore, but uncomment this if it is necessary to flip the image.
-    //heightsForShapeDisplay.rotate90(2);     // this may not be necessary in museum depending on which way kinect is installed
+    heightsForShapeDisplay.rotate90(2);     // this may not be necessary in museum depending on which way kinect is installed
 }
 
 
@@ -325,14 +372,14 @@ std::tuple<int, int, int> WaveModeContours::heightPixelToMapColor(int Height) {
 
     return std::make_tuple(r, g, b);
 }
-    
+
 // This is responsible for drawing the on screen preview of the app's behavior.
 void WaveModeContours::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
 
     //*** Draw the color pixels for reference.
     ofImage colorImg = m_kinectManager->getColorPixels();
     colorImg.draw(2, 2, colorImg.getWidth(), colorImg.getHeight());
-    
+
     //*** Overlay the depth image on top of the color image.
     // Set the color to white with 50% opacity
     ofSetColor(255, 255, 255, 127);
@@ -340,7 +387,7 @@ void WaveModeContours::drawGraphicsForShapeDisplay(int x, int y, int width, int 
     // Draw the depth image
     ofShortImage depthImg = m_kinectManager->getDepthPixels();
     depthImg.draw(2, 2, depthImg.getWidth(), depthImg.getHeight());
-    
+
     // Reset the color to fully opaque white
     ofSetColor(255, 255, 255, 255);
 
@@ -361,7 +408,7 @@ void WaveModeContours::drawGraphicsForShapeDisplay(int x, int y, int width, int 
 }
 
 void WaveModeContours::drawSectionPreviewFrameBuffer(int x, int y, int width, int height){
-    
+
 }
 
 void WaveModeContours::drawPreviewMaskRectangle() {
@@ -415,7 +462,7 @@ void WaveModeContours::drawPreviewActuatedSections() {
 // Uses 2 different scales for the rainDropsPerSecond value, depending on whether it is less than 1 or greater than 1.
 // The rainDropsPerSecond value is changed by 0.2 if it is less than 1, and by 1 if it is greater than 1; this is to give more options for light rain.
 void WaveModeContours::keyPressed(int Key) {
-    
+
     // Look for a ']', a forward arrow key press, or a an up arrow key press to increase the rainDropsPerSecond value.
     if (Key == 93 || Key == 57358 || Key == 57357) {
         // If rainDropsPerSecond is less than 1, increment it by .2
@@ -428,7 +475,7 @@ void WaveModeContours::keyPressed(int Key) {
 
 		recalculateRainInterval();
     }
-    
+
     // Look for a '[', backward arrow key press or a down arrow key to decrease the rainDropsPerSecond value.
     if (Key == 91 || Key == 57356 || Key == 57359) {
         // If rainDropsPerSecond is less than or equal to, decrement it by .2
@@ -441,7 +488,7 @@ void WaveModeContours::keyPressed(int Key) {
 
 		recalculateRainInterval();
     }
-    
+
 }
 
 string WaveModeContours::appInstructionsText() {
@@ -453,4 +500,46 @@ string WaveModeContours::appInstructionsText() {
     stream << std::fixed << std::setprecision(1) << rainDropsPerSecond;
     instructions += "Raindrops per second is " + stream.str() + "\n";
     return instructions;
+}
+
+// Apply water simulation effects using the current depth frame
+void WaveModeContours::applyWaterSimulation(const ofPixels& currentDepthFrame) {
+    // This method implements a physically-based water simulation with Kinect interaction:
+    // 1. Compute depth differences between current and previous frames
+    // 2. Apply non-linear sigmoid response for natural falloff behavior
+    // 3. Apply temporal smoothing for fluid-like transitions
+    // 4. Apply the resulting forces to the density field
+
+    // Initialize smoothedChanges array if it doesn't exist yet (persists between calls)
+    // Declared as static to maintain state across multiple calls; this means we don't have to initialize it in the class constructor.
+    static std::vector<std::vector<float>> smoothedChanges;
+    if (smoothedChanges.empty()) {
+        smoothedChanges.resize(cols, std::vector<float>(rows, 0.0f));
+    }
+
+    for (int x = 0; x < cols; x++) {
+        for (int y = 0; y < rows; y++) {
+            // Calculate raw change based on depth difference
+            float depthDifference = currentDepthFrame.getColor(x, y).getBrightness() -
+                                   prevKinectDepth.getColor(x, y).getBrightness();
+            float rawChange = waterParams.inputAmplification * depthDifference;
+
+            // Apply non-linear response curve (sigmoid/tanh) for more natural falloff
+            // This creates a gentle response to small changes and saturation for large changes
+            float responseScale = waterParams.maxDensityChange * 1.0f;
+            float nonLinearResponse = responseScale *
+                                     tanh(rawChange * waterParams.responseCurveStrength / responseScale);
+
+            // Apply temporal smoothing by blending with previous frame's changes
+            // This creates more fluid, gradual transitions like real water
+            float newChange = waterParams.temporalSmoothingFactor * smoothedChanges[x][y] +
+                             (1.0f - waterParams.temporalSmoothingFactor) * nonLinearResponse;
+
+            // Store the smoothed value for the next frame
+            smoothedChanges[x][y] = newChange;
+
+            // Apply the processed change to the density field
+            density[x][y] -= newChange;
+        }
+    }
 }
