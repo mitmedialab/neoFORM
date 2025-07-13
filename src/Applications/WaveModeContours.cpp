@@ -140,7 +140,7 @@ void WaveModeContours::applyKinectInput() {
     grayImage.allocate(activeSurface.getWidth(), activeSurface.getHeight());
     grayImage.setFromPixels(activeSurface);
 
-    // Blur the image to improve interaction "smoothness"
+    // Blur the image to improve interaction "smoothness", uses the pin size in inches to help determine the blur range.
 	int blurRange = 1/ m_CustomShapeDisplayManager->getPinSizeInInches();
 	blurRange = std::max(1, blurRange);
     //grayImage.blurGaussian(2 * blurRange + 1);
