@@ -80,13 +80,6 @@ void WaveModeContours::setup(){
 
     ProjectorHeightMapPixels.allocate(cols, rows, OF_IMAGE_COLOR);
     ProjectorHeightMapPixels.setColor(ofColor::black);
-
-    // Initialize water simulation parameters with default values
-    // These can be adjusted for different water behaviors
-    waterParams.maxDensityChange = 130.0f;
-    waterParams.responseCurveStrength = 0.6f;
-    waterParams.temporalSmoothingFactor = 0.5f;
-    waterParams.inputAmplification = 12.0f;
 }
 
 
