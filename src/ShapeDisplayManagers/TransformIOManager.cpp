@@ -96,7 +96,8 @@ void TransformIOManager::configureBoards() {
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             int currentRow = (int)(i / 4);
             int currentColumn = j + (i % 4 * 6);
-            pinBoards[i].heights[j] = 0;
+            //pinBoards[i].heights[j] = 0;
+  pinBoardHeights[i][j] = 0;
             pinBoards[i].pinCoordinates[j][0] = currentRow;
             pinBoards[i].pinCoordinates[j][1] = currentColumn;
         }

@@ -8,6 +8,7 @@
 #include "SerialShapeIOManager.hpp"
 #include "constants.h"
 #include "ofxXmlSettings.h"
+#include <algorithm>
 
 //--------------------------------------------------------------
 //
@@ -228,7 +229,8 @@ void SerialShapeIOManager::readyDataForArduinos() {
             int y = pinBoards[i].pinCoordinates[j][1];
 
             // copy the height value to the board
-            pinBoards[i].heights[j] = heightsForShapeDisplay[x][y];
+            //pinBoards[i].heights[j] = heightsForShapeDisplay[x][y];
+			pinBoardHeights[i][j] = heightsForShapeDisplay[x][y];
 
             // if they've been updated, copy the pin configs to the board
             if (pinBoards[i].configs[j].timeOfUpdate < pinConfigsForShapeDisplay[x][y].timeOfUpdate) {
@@ -238,7 +240,8 @@ void SerialShapeIOManager::readyDataForArduinos() {
 
             // invert the values if needed (this affects boards mounted upside down)
             if (pinBoards[i].invertHeight) {
-                pinBoards[i].heights[j] = 255 - pinBoards[i].heights[j];
+                //pinBoards[i].heights[j] = 255 - pinBoards[i].heights[j];
+				pinBoardHeights[i][j] = 255 - pinBoardHeights[i][j];
             }
         }
     }
@@ -272,14 +275,20 @@ void SerialShapeIOManager::update() {
     // send height data. if the display talks back, ask it what it's doing
     if (heightsFromShapeDisplayAvailable) {
         for (int i = 0; i < numberOfArduinos; i++) {
-            sendHeightsToBoardAndRequestFeedback(i + 1, pinBoards[i].heights, pinBoards[i].serialConnection);
+			// skip unchanged pins
+			if (std::equal(pinBoardHeights[i], pinBoardHeights[i] + NUM_PINS_ARDUINO, prevPinBoardHeights[i])) continue;
+            sendHeightsToBoardAndRequestFeedback(i + 1, pinBoardHeights[i], pinBoards[i].serialConnection);
         }
         readHeightsFromBoards(); // gets actual heights from arduino boards
     } else {
         for (int i = 0; i < numberOfArduinos; i++) {
-            sendHeightsToBoard(i + 1, pinBoards[i].heights, pinBoards[i].serialConnection);
+			// skip unchanged pins
+			if (std::equal(pinBoardHeights[i], pinBoardHeights[i] + NUM_PINS_ARDUINO, prevPinBoardHeights[i])) continue;
+            sendHeightsToBoard(i + 1, pinBoardHeights[i], pinBoards[i].serialConnection);
         }
     }
+
+	std::swap(pinBoardHeights, prevPinBoardHeights);
 
     // when config values have changed, resend them. periodically resend them
     // even when they haven't changed to correct any errors that cropped up

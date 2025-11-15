@@ -22,7 +22,7 @@
 class SerialPinBoard {
 public:
     unsigned char pinCoordinates[NUM_PINS_ARDUINO][2]; // what physical x and y does each pin on the board map to?
-    unsigned char heights[NUM_PINS_ARDUINO]; // what height should each pin have?
+    //unsigned char heights[NUM_PINS_ARDUINO]; // what height should each pin have?
     PinConfigs configs[NUM_PINS_ARDUINO]; // what configs should each pin have?
     bool invertHeight; // is it mounted upside down? if so, the height is inverted
     double timeOfLastConfigsUpdate = -1; // when were the configs last updated?
@@ -142,6 +142,8 @@ protected:
     std::vector<std::unique_ptr<SerialShapeIO>> serialConnections;
 
     std::vector<SerialPinBoard> pinBoards;
+	std::vector<unsigned char[NUM_PINS_ARDUINO]> pinBoardHeights;
+	std::vector<unsigned char[NUM_PINS_ARDUINO]> prevPinBoardHeights;
 
     // pin behavior configurations
     std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
