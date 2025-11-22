@@ -281,7 +281,7 @@ void SerialShapeIOManager::update() {
     } else {
         for (int i = 0; i < numberOfArduinos; i++) {
 			// skip unchanged pins
-			if (std::equal(pinBoardHeights[i], pinBoardHeights[i] + NUM_PINS_ARDUINO, prevPinBoardHeights[i])) continue;
+			if (std::equal(pinBoardHeights[i].begin(), pinBoardHeights[i].end(), prevPinBoardHeights[i].begin())) continue;
             sendHeightsToBoard(i + 1, pinBoardHeights[i], pinBoards[i].serialConnection);
         }
     }
@@ -373,12 +373,12 @@ void SerialShapeIOManager::sendValuesToBoard(unsigned char termId, unsigned char
 }
 
 // Send height data to a board without requesting feedback. Uses 8 byte message.
-void SerialShapeIOManager::sendHeightsToBoard(unsigned char boardId, unsigned char value[NUM_PINS_ARDUINO], int serialConnection) {
-    sendValuesToBoard(TERM_ID_HEIGHT_SEND, boardId, value, serialConnection);
+void SerialShapeIOManager::sendHeightsToBoard(unsigned char boardId, std::array<unsigned char, NUM_PINS_ARDUINO>value, int serialConnection) {
+    sendValuesToBoard(TERM_ID_HEIGHT_SEND, boardId, value.data(), serialConnection);
 }
 
 // Send height data to a board and request feedback. Uses 10 byte message.
-void SerialShapeIOManager::sendHeightsToBoardAndRequestFeedback(unsigned char boardId, unsigned char value[NUM_PINS_ARDUINO], int serialConnection) {
+void SerialShapeIOManager::sendHeightsToBoardAndRequestFeedback(unsigned char boardId, std::array< unsigned char, NUM_PINS_ARDUINO> value, int serialConnection) {
     if (!(boardsAreConfigured && isConnected)) {
         throw "must initialize shape IO manager before calling `sendHeightsToBoardAndRequestFeedback`";
     }

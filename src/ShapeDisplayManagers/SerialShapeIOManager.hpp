@@ -129,8 +129,8 @@ protected:
     // send data to the shape display
     void sendValueToAllBoards(unsigned char termId, unsigned char value);
     void sendValuesToBoard(unsigned char termId, unsigned char boardId, unsigned char value[NUM_PINS_ARDUINO], int serialConnection);
-    void sendHeightsToBoard(unsigned char boardId, unsigned char value[NUM_PINS_ARDUINO], int serialConnection);
-    void sendHeightsToBoardAndRequestFeedback(unsigned char boardId, unsigned char value[NUM_PINS_ARDUINO], int serialConnection);
+    void sendHeightsToBoard(unsigned char boardId, std::array<unsigned char, NUM_PINS_ARDUINO> value, int serialConnection);
+    void sendHeightsToBoardAndRequestFeedback(unsigned char boardId, std::array<unsigned char, NUM_PINS_ARDUINO> value, int serialConnection);
     void sendConfigsToBoard(unsigned char boardId, PinConfigs configs[NUM_PINS_ARDUINO], int serialConnection);
     void sendUpdatedConfigValues();
     void sendAllConfigValues();
@@ -142,8 +142,8 @@ protected:
     std::vector<std::unique_ptr<SerialShapeIO>> serialConnections;
 
     std::vector<SerialPinBoard> pinBoards;
-	std::vector<unsigned char[NUM_PINS_ARDUINO]> pinBoardHeights;
-	std::vector<unsigned char[NUM_PINS_ARDUINO]> prevPinBoardHeights;
+	std::vector<std::array<unsigned char, NUM_PINS_ARDUINO>> pinBoardHeights;
+	std::vector<std::array<unsigned char, NUM_PINS_ARDUINO>> prevPinBoardHeights;
 
     // pin behavior configurations
     std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;

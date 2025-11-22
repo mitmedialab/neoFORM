@@ -11,32 +11,34 @@
 // configuration
 TransformIOManager::TransformIOManager() {
     // Set the Transform specific hardware parameters here.
-    
+
     shapeDisplaySizeX = 48;
     shapeDisplaySizeY = 24;
-    
+
     numberOfArduinos = 192;
-    
+
     // Size the pinBoards vector appropriately.
     pinBoards.resize(numberOfArduinos);
-    
+    pinBoardHeights.resize(numberOfArduinos);
+    prevPinBoardHeights.resize(numberOfArduinos);
+
     // Size the 2d heights array appropriately for the specific shape display hardware, and initialize it with zero values.
     // This needs to happen in the subclass constructor because the superclass constructor fires first, and won't yet have the subclass specific constants.
     heightsForShapeDisplay.resize(shapeDisplaySizeX, std::vector<unsigned char>(shapeDisplaySizeY, 0));
     // Also size the array that receives height values from the shape display.
     heightsFromShapeDisplay.resize(shapeDisplaySizeX, std::vector<unsigned char>(shapeDisplaySizeY, 0));
-    
+
     pinHeightMin = 50;
     pinHeightMax = 210;
     pinHeightRange = pinHeightMax - pinHeightMin;
-    
+
     // Pin config values, might be abstracted into a single array.
     gainP    = 1.5;
     gainI    = 0.045;
     maxI     = 25;
     deadZone = 2;
     maxSpeed = 200;
-    
+
     // Make a new PinConfigs struct instance with the default values.
     PinConfigs defaultPinConfigs;
     defaultPinConfigs.timeOfUpdate = 0;
@@ -46,16 +48,16 @@ TransformIOManager::TransformIOManager() {
     defaultPinConfigs.deadZone = deadZone;
     defaultPinConfigs.maxSpeed = maxSpeed;
 
-    
-    
+
+
     // Set the dimensions of the pinConfigs, and set all the elements to the defaultPinConfigs struct.
     pinConfigsForShapeDisplay.resize(shapeDisplaySizeX, std::vector<PinConfigs>(shapeDisplaySizeY, defaultPinConfigs));
-    
+
     // Initialize pin tracking vectors.
     pinDiscrepancy.resize(shapeDisplaySizeX, std::vector<int>(shapeDisplaySizeY, 0));
     pinEnabled.resize(shapeDisplaySizeX, std::vector<bool>(shapeDisplaySizeY, true));
     pinStuckSinceTime.resize( shapeDisplaySizeX, std::vector<double>(shapeDisplaySizeY, elapsedTimeInSeconds() ));
-    
+
     // Add serial connection strings to the vector of serial connections.
     serialPorts.push_back("/dev/tty.usbserial-A702YMNV");
     serialPorts.push_back("/dev/tty.usbserial-A702YLM2");
@@ -63,11 +65,11 @@ TransformIOManager::TransformIOManager() {
     serialPorts.push_back("/dev/tty.usbserial-A702YLM6");
     serialPorts.push_back("/dev/tty.usbserial-A702YLM9");
     serialPorts.push_back("/dev/tty.usbserial-A30011Hp");
-    
+
 
     // Connect to shape display.
     connectToDisplay();
-    
+
     configureBoards();
 }
 
@@ -89,10 +91,10 @@ void TransformIOManager::configureBoards() {
         } else {
             pinBoards[i].serialConnection = ((i / 2) % 2 == 0) ? 4 : 5;
         }
-        
+
         // every 5th to 8th board is mounted upside down, so invert the height
         pinBoards[i].invertHeight = ((i / 4) % 2 == 0) ? false : true;
-        
+
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             int currentRow = (int)(i / 4);
             int currentColumn = j + (i % 4 * 6);
@@ -101,10 +103,10 @@ void TransformIOManager::configureBoards() {
             pinBoards[i].pinCoordinates[j][0] = currentRow;
             pinBoards[i].pinCoordinates[j][1] = currentColumn;
         }
-        
+
         if ((i / 2) % 2 == 0) {
             int pinCoordinateRows[NUM_PINS_ARDUINO];
-            
+
             // invert pin order if the boards are mounted rotated
             for (int count = 0; count < NUM_PINS_ARDUINO; count++) {
                 pinCoordinateRows[NUM_PINS_ARDUINO - count - 1] = pinBoards[i].pinCoordinates[count][1];
@@ -112,11 +114,11 @@ void TransformIOManager::configureBoards() {
             for (int count = 0; count < NUM_PINS_ARDUINO; count++) {
                 pinBoards[i].pinCoordinates[count][1] = pinCoordinateRows[count];
             }
-            
+
             // also invert the pin height again if they are:
             pinBoards[i].invertHeight = !pinBoards[i].invertHeight;
         }
-        
+
         // last, orient the x-y coordinate axes to the desired external axes
         for (int j = 0; j < NUM_PINS_ARDUINO; j++) {
             unsigned char j0 = pinBoards[i].pinCoordinates[j][0];
@@ -137,21 +139,21 @@ ofPixels TransformIOManager::cropToActiveSurface( ofPixels fullSurface ) {
     // Get the conversion factor for going from the physical dimension of the surface
     // to the pixel dimension of the image.
     float pixelsPerInch = fullSurface.getWidth() / m_Transform_W;
-    
+
     // Create rectangles representing the active zones in the fullSurface image.
     std::vector<ofRectangle> sections = createSections(pixelsPerInch);
-    
+
     // Crop the full surface to just the active zones
     ofPixels combinedActiveZones = combineActiveZones(fullSurface, sections);
-    
+
     // Scale and rotate the combined active zones to match the display.
     combinedActiveZones.resize(shapeDisplaySizeX, shapeDisplaySizeY);
-    
+
     combinedActiveZones.rotate90(2);
-    
+
     // Return the cropped and transformed image
     return combinedActiveZones;
-    
+
 }
 
 // Takes the full surface image, and an array of rectangles representing the active zones,
@@ -193,7 +195,7 @@ ofPixels TransformIOManager::combineActiveZones(ofPixels fullSurface, std::vecto
 
         // Draw the image at the correct x position for the section into the framebuffer.
         zoneImage.draw(x, 0);
-        
+
         // Increment the x position by the width of the section, to make sure everything is consistently spaced.
         x += static_cast<int>(round(section.width));
     }
@@ -225,7 +227,7 @@ std::vector<ofRectangle> TransformIOManager::createSections(float pixelsPerInch)
         ofRectangle activeRegion(activePixelX, 0, activeRegionWidth, activeRegionHeight);
         sections.push_back(activeRegion);
     }
-    
+
     return sections;
 }
 

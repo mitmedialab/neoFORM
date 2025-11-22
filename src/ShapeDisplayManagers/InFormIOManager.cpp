@@ -19,6 +19,8 @@ InFormIOManager::InFormIOManager() {
 
     // Size the pinBoards vector appropriately.
     pinBoards.resize(numberOfArduinos);
+    pinBoardHeights.resize(numberOfArduinos);
+    prevPinBoardHeights.resize(numberOfArduinos);
 
     // Size the 2d heights array appropriately for the specific shape display hardware, and initialize it with zero values.
     // This needs to happen in the subclass constructor because the superclass constructor fires first, and won't yet have the subclass specific constants.
