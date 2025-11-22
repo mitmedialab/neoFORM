@@ -275,8 +275,6 @@ void SerialShapeIOManager::update() {
     // send height data. if the display talks back, ask it what it's doing
     if (heightsFromShapeDisplayAvailable) {
         for (int i = 0; i < numberOfArduinos; i++) {
-			// skip unchanged pins
-			if (std::equal(pinBoardHeights[i], pinBoardHeights[i] + NUM_PINS_ARDUINO, prevPinBoardHeights[i])) continue;
             sendHeightsToBoardAndRequestFeedback(i + 1, pinBoardHeights[i], pinBoards[i].serialConnection);
         }
         readHeightsFromBoards(); // gets actual heights from arduino boards
