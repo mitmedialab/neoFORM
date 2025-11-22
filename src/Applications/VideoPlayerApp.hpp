@@ -18,19 +18,22 @@ public:
     void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     void drawSectionPreviewFrameBuffer(int x, int y, int width, int height);
-    
+
     string appInstructionsText();
     void keyPressed(int key);
+	void switchFile(std::string filename);
 
-    string getName() {return "Escher Mode";}
+    string getName();
 
 private:
+	std::string current_name = "";
+	bool cut_video = true;
+	int current_video = 1;
+
     void updateHeights();
     ofVideoPlayer video;
-    
+
     ofPixels m_videoPixels;
-    
-    
 };
 
 #endif /* VideoPlayerApp_hpp */
