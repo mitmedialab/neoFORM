@@ -22,13 +22,15 @@ public:
     string appInstructionsText();
     void keyPressed(int key);
 	void switchFile(std::string filename);
+	pair<vector<bool*>, vector<string>> getOptions();
 
     string getName();
 
 private:
 	std::string current_name = "";
 	bool cut_video = true;
-	int current_video = 1;
+	bool is_esher = true;
+	bool last_is_esher = true;
 
     void updateHeights();
     ofVideoPlayer video;

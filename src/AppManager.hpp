@@ -124,9 +124,12 @@ private:
 
     // Graphical buttons, made of rectangles
     std::vector<ofRectangle> applicationButtons;
-	std::vector<ofRectangle> optionButtons;
 	std::vector<bool*> options;
 	std::vector<std::string> optionNames;
+	std::vector<ofRectangle> allOptionButtons;
+	std::vector<bool*> allOptions;
+	std::vector<std::string> allOptionNames;
+
     ofTrueTypeFont displayFont20;
     // Track the last application that was selected, so we can give it a button status during the transition
     // because it won't be the active application until the transition is complete.

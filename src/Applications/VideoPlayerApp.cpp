@@ -26,9 +26,26 @@ void VideoPlayerApp::setup() {
 }
 
 void VideoPlayerApp::update(float dt) {
+	if (is_esher != last_is_esher) {
+		if (is_esher) {
+			if (m_CustomShapeDisplayManager->getShapeDisplayName() == "TRANSFORM") {
+    		    switchFile("escher-5-slow.mov");
+    		} else {
+    		    switchFile("inFORM-escher-mode.mp4");
+    		}
+		} else {
+			switchFile("machine-mode-TRANSFORM.mov");
+		}
+	}
+	last_is_esher = is_esher;
+
     video.update();
     updateHeights();
 }
+
+pair<vector<bool*>, vector<string>> VideoPlayerApp::getOptions() {
+	return pair<vector<bool*>, vector<string>>({&is_esher}, {is_esher ? "switch to: Machine Mode" : "switch to: Esher Mode"});
+};
 
 void VideoPlayerApp::switchFile(std::string filename) {
 	if (filename == "escher-5-slow.mov" || filename == "inFORM-escher-mode.mp4") {
@@ -47,7 +64,7 @@ void VideoPlayerApp::switchFile(std::string filename) {
 }
 
 std::string VideoPlayerApp::getName() {
-	return current_name;
+	return "Video Player";
 }
 
 void VideoPlayerApp::updateHeights() {
@@ -114,34 +131,21 @@ void VideoPlayerApp::drawSectionPreviewFrameBuffer(int x, int y, int width, int 
 }
 
 string VideoPlayerApp::appInstructionsText() {
-    string instructions = (string) "Plays video files;\n press 1 for Escher and 2 for Machine";
+    string instructions = is_esher ?
+		"Plays video files;\nplaying: Esher Mode" :
+		"Plays video files;\nplaying: Machine Mode";
 
     return instructions;
 }
 
 void VideoPlayerApp::keyPressed(int key) {
-	int next_video = current_video;
 	// '[', back, or down arrow
     if (key == 91 || key == 57356 || key == 57359) {
-		next_video -=1;
-		next_video %=2;
+		is_esher = !is_esher;
 	}
 
 	// ']', foreward, or up arrow
     if (key == 93 || key == 57358 || key == 57357) {
-		next_video +=1;
-		next_video %=2;
+		is_esher = !is_esher;
 	}
-
-	if (next_video == 1) {
-		if (m_CustomShapeDisplayManager->getShapeDisplayName() == "TRANSFORM") {
-    	    switchFile("escher-5-slow.mov");
-    	} else {
-    	    switchFile("inFORM-escher-mode.mp4");
-    	}
-	} else {
-		switchFile("machine-mode-TRANSFORM.mov");
-	}
-
-	current_video = next_video;
 }

@@ -21,9 +21,9 @@
 class Application {
 public:
     Application();
-    
+
     Application(SerialShapeIOManager *theCustomShapeDisplayManager);
-    
+
     void getHeightsForShapeDisplay(ofPixels &heights);
     void getPinConfigsForShapeDisplay(std::vector<std::vector<PinConfigs>>& configs);
 
@@ -43,22 +43,23 @@ public:
     virtual void mousePressed(int x, int y, int button) {};
 
     virtual string getName() {return "Application";};
+	virtual pair<vector<bool*>, vector<string>> getOptions();
 
     // near and far boundary values for depth data captured, specified in millimeters.
     // return negative values to use the default boundaries.
     virtual pair<int, int> getDepthInputBoundaries() {return pair<int, int>(-1, -1);};
 
     double timeOfLastPinConfigsUpdate = -1;
-    
-    
+
+
     //Dan trying to add stuff
     void setRefForShapeIOManager(SerialShapeIOManager* customIOManager);
-    
+
 protected:
-    
+
     ofPixels heightsForShapeDisplay;
     std::vector<std::vector<PinConfigs>> pinConfigsForShapeDisplay;
-    
+
     /* This is deprecated and should be removed, apps can get heights from the shape display manager directly */
     //const ofPixels *heightsFromShapeDisplay;
     bool hasHeightsFromShapeDisplay = false;
@@ -68,7 +69,7 @@ protected:
     bool hasPixelsFromKinect = false;
 
     ofFbo heightsDrawingBuffer;
-    
+
     SerialShapeIOManager* m_CustomShapeDisplayManager;
 };
 
