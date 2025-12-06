@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include "Application.hpp"
+#include "ofVideoPlayer.h"
 
 class VideoPlayerApp : public Application {
 public:
@@ -21,7 +22,6 @@ public:
 
     string appInstructionsText();
     void keyPressed(int key);
-	void switchFile(std::string filename);
 	pair<vector<bool*>, vector<string>> getOptions();
 
     string getName();
@@ -29,11 +29,13 @@ public:
 private:
 	std::string current_name = "";
 	bool cut_video = true;
-	bool is_esher = true;
-	bool last_is_esher = true;
+	bool is_escher = true;
+	bool last_is_escher = true;
 
     void updateHeights();
-    ofVideoPlayer video;
+    ofVideoPlayer* cur_video = &escher_video;
+	ofVideoPlayer escher_video;
+	ofVideoPlayer machine_video;
 
     ofPixels m_videoPixels;
 };

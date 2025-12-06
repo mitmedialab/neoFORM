@@ -17,51 +17,37 @@ void VideoPlayerApp::setup() {
 	current_name = "Escher Mode";
     // Select a video appropriate for the shape display.
     if (m_CustomShapeDisplayManager->getShapeDisplayName() == "TRANSFORM") {
-        video.load("escher-5-slow.mov");
+        escher_video.load("escher-5-slow.mov");
     } else {
-        video.load("inFORM-escher-mode.mp4");
+        escher_video.load("inFORM-escher-mode.mp4");
     }
+	machine_video.load("machine-mode-TRANSFORM.mov");
 
-    video.play();
+	cur_video = &escher_video;
+    cur_video->play();
 }
 
 void VideoPlayerApp::update(float dt) {
-	if (is_esher != last_is_esher) {
-		if (is_esher) {
-			if (m_CustomShapeDisplayManager->getShapeDisplayName() == "TRANSFORM") {
-    		    switchFile("escher-5-slow.mov");
-    		} else {
-    		    switchFile("inFORM-escher-mode.mp4");
-    		}
+	if (is_escher != last_is_escher) {
+		cur_video->stop();
+		if (is_escher) {
+			cur_video = &escher_video;
+			cut_video = true;
 		} else {
-			switchFile("machine-mode-TRANSFORM.mov");
+			cur_video = &machine_video;
+			cut_video = false;
 		}
+		cur_video->play();
 	}
-	last_is_esher = is_esher;
+	last_is_escher = is_escher;
 
-    video.update();
+    cur_video->update();
     updateHeights();
 }
 
 pair<vector<bool*>, vector<string>> VideoPlayerApp::getOptions() {
-	return pair<vector<bool*>, vector<string>>({&is_esher}, {is_esher ? "switch to: Machine Mode" : "switch to: Esher Mode"});
+	return pair<vector<bool*>, vector<string>>({&is_escher}, {is_escher ? "switch to: Machine Mode" : "switch to: Escher Mode"});
 };
-
-void VideoPlayerApp::switchFile(std::string filename) {
-	if (filename == "escher-5-slow.mov" || filename == "inFORM-escher-mode.mp4") {
-		current_name = "Escher Mode";
-		cut_video = filename == "escher-5-slow.mov";
-	} else if (filename == "machine-mode-TRANSFORM.mov") {
-		current_name = "Machine Mode";
-		cut_video = false;
-	} else {
-		current_name = "Video Player";
-		cut_video = false;
-	}
-	video.close();
-	video.load(filename);
-	video.play();
-}
 
 std::string VideoPlayerApp::getName() {
 	return "Video Player";
@@ -70,7 +56,7 @@ std::string VideoPlayerApp::getName() {
 void VideoPlayerApp::updateHeights() {
     // Get pixel values from the video and map them to pin heights here.
     // m_videoPixels is the stored pixels from the current video frame, stored in this app header.
-    m_videoPixels = video.getPixels();
+    m_videoPixels = cur_video->getPixels();
 
     // Grayscale ensures that there is only one brightness value per pixel (instead of three channel RGB).
     m_videoPixels.setImageType(OF_IMAGE_GRAYSCALE);
@@ -89,7 +75,7 @@ void VideoPlayerApp::updateHeights() {
 
 void VideoPlayerApp::drawGraphicsForShapeDisplay(int x, int y, int width, int height) {
     // Draw the current video frame as a base; .
-    video.draw(30, 300, 544, 128);
+    cur_video->draw(30, 300, 544, 128);
 
     // Draw the preview of the actuated pixels sections.
     if (m_CustomShapeDisplayManager->getShapeDisplayName() == "TRANSFORM") {
@@ -102,14 +88,14 @@ void VideoPlayerApp::drawSectionPreviewFrameBuffer(int x, int y, int width, int 
     float transformWidth = ((TransformIOManager*)m_CustomShapeDisplayManager)->m_Transform_W;
 
     // Calculate the pixels per inch conversion rate.
-    float pixelsPerInch = video.getWidth() / transformWidth;
+    float pixelsPerInch = cur_video->getWidth() / transformWidth;
 
     // Create the actuated pixel sections.
     std::vector<ofRectangle> sections = m_CustomShapeDisplayManager->createSections(pixelsPerInch);
 
    // Create a frame buffer for the preview with the same dimensions as the video.
     ofFbo previewFrameBuffer;
-    previewFrameBuffer.allocate(video.getWidth(), video.getHeight(), GL_RGBA); // GL_RGBA for transparency
+    previewFrameBuffer.allocate(cur_video->getWidth(), cur_video->getHeight(), GL_RGBA); // GL_RGBA for transparency
 
     // Begin drawing into the frame buffer
     previewFrameBuffer.begin();
@@ -131,8 +117,8 @@ void VideoPlayerApp::drawSectionPreviewFrameBuffer(int x, int y, int width, int 
 }
 
 string VideoPlayerApp::appInstructionsText() {
-    string instructions = is_esher ?
-		"Plays video files;\nplaying: Esher Mode" :
+    string instructions = is_escher ?
+		"Plays video files;\nplaying: Escher Mode" :
 		"Plays video files;\nplaying: Machine Mode";
 
     return instructions;
@@ -141,11 +127,11 @@ string VideoPlayerApp::appInstructionsText() {
 void VideoPlayerApp::keyPressed(int key) {
 	// '[', back, or down arrow
     if (key == 91 || key == 57356 || key == 57359) {
-		is_esher = !is_esher;
+		is_escher = !is_escher;
 	}
 
 	// ']', foreward, or up arrow
     if (key == 93 || key == 57358 || key == 57357) {
-		is_esher = !is_esher;
+		is_escher = !is_escher;
 	}
 }
