@@ -27,15 +27,24 @@ public:
     string getName();
 
 private:
-	std::string current_name = "";
-	bool cut_video = true;
-	bool is_escher = true;
-	bool last_is_escher = true;
+    enum VideoSource {
+        ESCHER = 0,
+        MACHINE = 1
+    };
+
+    VideoSource currentVideoIndex = ESCHER;
+    VideoSource lastVideoIndex = ESCHER;
 
     void updateHeights();
-    ofVideoPlayer* cur_video = &escher_video;
-	ofVideoPlayer escher_video;
-	ofVideoPlayer machine_video;
+    
+    // Video resources
+	ofVideoPlayer escherVideo;
+	ofVideoPlayer machineVideo;
+    
+    // Video metadata - parallel arrays indexed by VideoSource
+    vector<ofVideoPlayer*> videos;
+    vector<string> videoNames;
+    vector<bool> videosNeedCropping;
 
     ofPixels m_videoPixels;
 };
