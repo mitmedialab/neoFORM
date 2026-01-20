@@ -130,7 +130,7 @@ void VideoPlayerApp::keyPressed(int key) {
 		is_escher = !is_escher;
 	}
 
-	// ']', foreward, or up arrow
+	// ']', forward, or up arrow
     if (key == 93 || key == 57358 || key == 57357) {
 		is_escher = !is_escher;
 	}
