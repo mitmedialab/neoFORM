@@ -41,6 +41,10 @@ public:
     virtual void drawDebugGui(int x, int y) {};
     virtual void keyPressed(int key) {};
     virtual void mousePressed(int x, int y, int button) {};
+    
+    // Lifecycle hooks called when application becomes active/inactive
+    virtual void onBecameActive() {};
+    virtual void onBecameInactive() {};
 
     virtual string getName() {return "Application";};
 	virtual pair<vector<bool*>, vector<string>> getOptions();

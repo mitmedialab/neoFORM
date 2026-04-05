@@ -14,38 +14,29 @@
 
 class VideoPlayerApp : public Application {
 public:
-    VideoPlayerApp(SerialShapeIOManager *theCustomShapeDisplayManager);
+    VideoPlayerApp(SerialShapeIOManager *theCustomShapeDisplayManager, string mode);
     void setup();
     void update(float dt);
     void drawGraphicsForShapeDisplay(int x, int y, int width, int height);
     void drawSectionPreviewFrameBuffer(int x, int y, int width, int height);
 
     string appInstructionsText();
-    void keyPressed(int key);
-	pair<vector<bool*>, vector<string>> getOptions();
 
     string getName();
+    
+    // Lifecycle hooks
+    void onBecameActive() override;
+    void onBecameInactive() override;
 
 private:
-    enum VideoSource {
-        ESCHER = 0,
-        MACHINE = 1
-    };
-
-    VideoSource currentVideoIndex = ESCHER;
-    VideoSource lastVideoIndex = ESCHER;
-
     void updateHeights();
     
-    // Video resources
-	ofVideoPlayer escherVideo;
-	ofVideoPlayer machineVideo;
+    string mode;  // "escher" or "machine"
+    string displayName;  // "Escher Mode" or "Machine Mode"
+    string videoFilename;
+    bool needsCropping;
     
-    // Video metadata - parallel arrays indexed by VideoSource
-    vector<ofVideoPlayer*> videos;
-    vector<string> videoNames;
-    vector<bool> videosNeedCropping;
-
+    ofVideoPlayer video;
     ofPixels m_videoPixels;
 };
 

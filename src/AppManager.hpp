@@ -148,8 +148,9 @@ private:
     // mqtt application
     MqttTransmissionApp *mqttApp;
 
-    // static applications
-    VideoPlayerApp *videoPlayerApp;
+    // video player applications (separate instances for different modes)
+    VideoPlayerApp *escherModeApp;
+    VideoPlayerApp *machineModeApp;
 
     // hand wavy application
     KinectHandWavy *kinectHandWavy;

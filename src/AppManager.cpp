@@ -42,8 +42,12 @@ void AppManager::setup() {
 
 	kinectMaskMaker = new KinectMaskMaker(m_serialShapeIOManager, kinectManager);
 
-	videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
-	videoPlayerApp->setup();
+	// Create separate video player instances for each mode
+	escherModeApp = new VideoPlayerApp(m_serialShapeIOManager, "escher");
+	escherModeApp->setup();
+
+	machineModeApp = new VideoPlayerApp(m_serialShapeIOManager, "machine");
+	machineModeApp->setup();
 
 	// set up debugging application
 	// and the debugging apps, too
@@ -85,7 +89,8 @@ void AppManager::setup() {
         applications.push_back(kinectHandWavy);
 		applications.push_back(waveModeContours);
 	} else if (m_serialShapeIOManager->getShapeDisplayName() == "TRANSFORM") {
-		applications.push_back(videoPlayerApp);
+		applications.push_back(escherModeApp);
+		applications.push_back(machineModeApp);
 		applications.push_back(waveModeContours);
 		applications.push_back(ambientWave);
         applications.push_back(kinectHandWavy);
@@ -436,7 +441,9 @@ void AppManager::setCurrentApplication(Application* application) {
 
 	if (currentApplication == nullptr) {
 		currentApplication = application;
+		application->onBecameActive();
 	} else {
+		currentApplication->onBecameInactive();
 		applicationSwitchBlocked = true;
 		transitionApp->startTransition(currentApplication, application, 0.6f, &currentApplication, &applicationSwitchBlocked);
 		currentApplication = transitionApp;
