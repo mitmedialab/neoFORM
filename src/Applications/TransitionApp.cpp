@@ -23,6 +23,10 @@ void TransitionApp::startTransition(Application* start, Application* end, float 
 	transitionProgress = 0.0f;
 	appManagerPointer = pointerToActiveApplication;
 	appManagerBlock = pointerToBlock;
+	
+	// Activate the end app immediately so it initializes properly for the transition
+	// (e.g., video restarts from beginning before crossfade starts)
+	endApp->onBecameActive();
 }
 
 void TransitionApp::update(float dt) {
@@ -36,6 +40,7 @@ void TransitionApp::update(float dt) {
 		// manually sets the appManager's active app
 		*appManagerPointer = endApp;
 		*appManagerBlock = false;
+		// Note: onBecameActive() already called in startTransition()
 		endApp->update(dt);
 		return;
 	}

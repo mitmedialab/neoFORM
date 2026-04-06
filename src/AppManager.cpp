@@ -42,8 +42,12 @@ void AppManager::setup() {
 
 	kinectMaskMaker = new KinectMaskMaker(m_serialShapeIOManager, kinectManager);
 
-	videoPlayerApp = new VideoPlayerApp(m_serialShapeIOManager);
-	videoPlayerApp->setup();
+	// Create separate video player instances for each mode
+	escherModeApp = new VideoPlayerApp(m_serialShapeIOManager, "escher");
+	escherModeApp->setup();
+
+	machineModeApp = new VideoPlayerApp(m_serialShapeIOManager, "machine");
+	machineModeApp->setup();
 
 	// set up debugging application
 	// and the debugging apps, too
@@ -85,7 +89,8 @@ void AppManager::setup() {
         applications.push_back(kinectHandWavy);
 		applications.push_back(waveModeContours);
 	} else if (m_serialShapeIOManager->getShapeDisplayName() == "TRANSFORM") {
-		applications.push_back(videoPlayerApp);
+		applications.push_back(escherModeApp);
+		applications.push_back(machineModeApp);
 		applications.push_back(waveModeContours);
 		applications.push_back(ambientWave);
         applications.push_back(kinectHandWavy);
@@ -98,8 +103,7 @@ void AppManager::setup() {
 	debugApplications.push_back(waveModeContours);
 
 	options.push_back(&autoTransition);
-	optionNames.push_back("auto transition");
-
+	optionNames.push_back(autoTransition ? "auto transition (ON)" : "auto transition (OFF)");
 	// innitialize GUI
 	debugGui.setup("debug modes:");
 	debugGui.setPosition(5, 60 + 65 * (applications.size() + options.size()));
@@ -137,14 +141,6 @@ void AppManager::setup() {
         button.set(20, 60 + 65*i, 240, 50);
         applicationButtons.push_back(button);
     }
-
-	// Set up the buttons based on options
-	for (int i = 0; i < options.size(); i++) {
-		ofRectangle button;
-		int yOffset = 60 + 65 * (i + applications.size());
-		button.set(20, yOffset, 240, 50);
-		optionButtons.push_back(button);
-	}
 
 }
 
@@ -231,6 +227,25 @@ void AppManager::update() {
 		}
 	}
 
+	optionNames[0] = (autoTransition ? "auto transition (ON)" : "auto transition (OFF)");
+	allOptions = options;
+	allOptionNames = optionNames;
+	auto appSpecificOptionsAndNames = currentApplication->getOptions();
+	for (int i = 0; i < appSpecificOptionsAndNames.first.size(); i++) {
+		allOptions.push_back(appSpecificOptionsAndNames.first[i]);
+		allOptionNames.push_back(appSpecificOptionsAndNames.second[i]);
+	}
+	// Set up the buttons based on options
+	allOptionButtons = {};
+	for (int i = 0; i < allOptions.size(); i++) {
+		ofRectangle button;
+		int yOffset = 60 + 65 * (i + applications.size());
+		button.set(20, yOffset, 240, 50);
+		allOptionButtons.push_back(button);
+	}
+	debugGui.setPosition(5, 60 + 65 * (applications.size() + allOptions.size()));
+
+
 	// Render the shape preview from the app into the graphicsForShapeDisplay
 	// frame buffer.
 
@@ -292,10 +307,10 @@ void AppManager::draw() {
 	int menuHeight = 680;
 	string title = currentApplication->getName() + (showDebugGui ? " - Debug" : "");
 	ofDrawBitmapString(title, menuLeftCoordinate, menuHeight);
-	
+
 	string frameRate = "FPS: " + ofToString(ofGetFrameRate(), 2);
 	ofDrawBitmapString(frameRate, menuLeftCoordinate, menuHeight + 20);
-	
+
 	menuHeight += 30;
 	ofDrawBitmapString((string) "  '?' : " + (showGlobalGuiInstructions ? "hide" : "show") + " instructions",menuLeftCoordinate, menuHeight);
 	if (showGlobalGuiInstructions) {
@@ -350,8 +365,8 @@ void AppManager::draw() {
     }
 
 	// draw the buttons for options
-	for (int i = 0; i < options.size(); i++) {
-		if (*options[i]) {
+	for (int i = 0; i < allOptions.size(); i++) {
+		if (*allOptions[i]) {
             ofSetColor(ofColor::lightGoldenRodYellow);
 		} else {
 			// dark purple
@@ -359,15 +374,15 @@ void AppManager::draw() {
 		}
 
 		// Draw a rounded rectangle for the application button with a 20 pixel radius.
-        ofDrawRectRounded(optionButtons[i], 20);
+        ofDrawRectRounded(allOptionButtons[i], 20);
 
         // Add label for application button
-        if (*options[i]) {
+        if (*allOptions[i]) {
 			ofSetColor(ofColor::black);
 		} else {
 			ofSetColor(ofColor::white);
 		}
-        displayFont20.drawString(optionNames[i] + (*options[i] ? " (ON)" : " (OFF)"), optionButtons[i].x + 25, optionButtons[i].y + 30);
+        displayFont20.drawString(allOptionNames[i], allOptionButtons[i].x + 25, allOptionButtons[i].y + 30);
 	}
 	ofSetColor(ofColor::white);
 
@@ -426,7 +441,9 @@ void AppManager::setCurrentApplication(Application* application) {
 
 	if (currentApplication == nullptr) {
 		currentApplication = application;
+		application->onBecameActive();
 	} else {
+		currentApplication->onBecameInactive();
 		applicationSwitchBlocked = true;
 		transitionApp->startTransition(currentApplication, application, 0.6f, &currentApplication, &applicationSwitchBlocked);
 		currentApplication = transitionApp;
@@ -555,9 +572,9 @@ void AppManager::mousePressed(int x, int y, int button) {
         }
     }
 
-	for (int i = 0; i < optionButtons.size(); i++) {
-		if (optionButtons[i].inside(x, y)) {
-			*options[i] = !*options[i];
+	for (int i = 0; i < allOptionButtons.size(); i++) {
+		if (allOptionButtons[i].inside(x, y)) {
+			*allOptions[i] = !*allOptions[i];
 		}
 	}
 

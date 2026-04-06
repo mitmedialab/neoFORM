@@ -12,13 +12,13 @@ Application::Application() {
 };
 
 Application::Application(SerialShapeIOManager *theCustomShapeDisplayManager){
-    
+
     m_CustomShapeDisplayManager = theCustomShapeDisplayManager;
-    
+
     heightsForShapeDisplay.allocate(theCustomShapeDisplayManager->shapeDisplaySizeX, theCustomShapeDisplayManager->shapeDisplaySizeY, OF_IMAGE_GRAYSCALE);
     heightsForShapeDisplay.set(0);
     heightsDrawingBuffer.allocate(theCustomShapeDisplayManager->shapeDisplaySizeX, theCustomShapeDisplayManager->shapeDisplaySizeY);
-    
+
 }
 
 void Application::setRefForShapeIOManager(SerialShapeIOManager* customIOManager){
@@ -32,6 +32,10 @@ void Application::getHeightsForShapeDisplay(ofPixels &heights) {
 
 void Application::getPinConfigsForShapeDisplay(std::vector<std::vector<PinConfigs>>& configs) {
     pinConfigsForShapeDisplay = configs;
+};
+
+pair<vector<bool*>, vector<string>> Application::getOptions() {
+	return pair<vector<bool*>, vector<string>>({}, {});
 };
 
 /* This is deprecated and should be removed */
