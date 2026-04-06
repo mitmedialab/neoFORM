@@ -8,6 +8,7 @@ DisplayApp::~DisplayApp() {
 //--------------------------------------------------------------
 void DisplayApp::setup(){
 	mainApp->equationMode->publicDisplaySetup();
+    cam.setDeviceID(camDeviceId);
     cam.setup(1920, 1080);
 }
 
