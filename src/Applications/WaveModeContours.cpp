@@ -42,6 +42,7 @@ void WaveModeContours::setup(){
     timeControl = 0.0f; // Initialize timeControl
     rainDropsPerSecond = 0.2; // Example initial value, can be adjusted during runtime
     lastRippleTime = 0.0f; // Initialize the timer
+    recalculateRainInterval(); // Initialize currentRainDropInterval
 
     // Allocate memory for density, velocity, wallMask, and previousWallMask vectors
     density.resize(cols, std::vector<float>(rows, 0));
@@ -116,6 +117,9 @@ void WaveModeContours::solveFluid(double progressAmount){
     }
 }
 
+// Takes incoming depth data from the Kinect, processes it, and applies it to the fluid simulation.
+// This is the primary way the fluid simulation is influenced by external input, the other functions
+// that look like they are doing this are older and no longer used.
 void WaveModeContours::applyKinectInput() {
     // Get the depth image from the Kinect manager
     ofShortPixels shortPixels = m_kinectManager->getDepthPixels();
@@ -158,6 +162,25 @@ void WaveModeContours::update(float dt){
     m_kinectManager->update();
     //updateMask();
 	applyKinectInput();
+	
+	// Apply raindrop ripple effects at random locations based on rainfall rate.
+	// Defensively ensure the interval is always a positive finite value so the
+	// loop makes progress even if rainfall settings become invalid.
+	if (!std::isfinite(currentRainDropInterval) || currentRainDropInterval <= 0.0f) {
+		currentRainDropInterval = 1.0f;
+	}
+	while (timeControl - lastRippleTime >= currentRainDropInterval) {
+		int randomX = rand() % cols; // Generate a random x-coordinate within the grid
+		int randomY = rand() % rows; // Generate a random y-coordinate within the grid
+		applyRippleEffect(randomX, randomY);
+		lastRippleTime += currentRainDropInterval; // Not a pure reset, allows very small intervals
+		recalculateRainInterval();
+		// Guard against invalid intervals from recalculation
+		if (!std::isfinite(currentRainDropInterval) || currentRainDropInterval <= 0.0f) {
+			currentRainDropInterval = 1.0f;
+		}
+	}
+	
 	int iterations = int(0.6 + std::sqrt(5/m_CustomShapeDisplayManager->getPinSizeInInches()));
 	iterations = std::max(1, iterations);
 	double progressAmount = std::sqrt(2/m_CustomShapeDisplayManager->getPinSizeInInches());
@@ -299,6 +322,7 @@ void WaveModeContours::applyRippleEffect(int x, int y) {
     }
 }
 
+// No longer used, should probably be removed?
 void WaveModeContours::handInteraction(int x, int y) {
     int radius = 3;
     float strength = 10.0;
