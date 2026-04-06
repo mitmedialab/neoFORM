@@ -163,13 +163,22 @@ void WaveModeContours::update(float dt){
     //updateMask();
 	applyKinectInput();
 	
-	// Apply raindrop ripple effects at random locations based on rainfall rate
+	// Apply raindrop ripple effects at random locations based on rainfall rate.
+	// Defensively ensure the interval is always a positive finite value so the
+	// loop makes progress even if rainfall settings become invalid.
+	if (!std::isfinite(currentRainDropInterval) || currentRainDropInterval <= 0.0f) {
+		currentRainDropInterval = 1.0f;
+	}
 	while (timeControl - lastRippleTime >= currentRainDropInterval) {
 		int randomX = rand() % cols; // Generate a random x-coordinate within the grid
 		int randomY = rand() % rows; // Generate a random y-coordinate within the grid
 		applyRippleEffect(randomX, randomY);
 		lastRippleTime += currentRainDropInterval; // Not a pure reset, allows very small intervals
 		recalculateRainInterval();
+		// Guard against invalid intervals from recalculation
+		if (!std::isfinite(currentRainDropInterval) || currentRainDropInterval <= 0.0f) {
+			currentRainDropInterval = 1.0f;
+		}
 	}
 	
 	int iterations = int(0.6 + std::sqrt(5/m_CustomShapeDisplayManager->getPinSizeInInches()));
