@@ -6,7 +6,7 @@
 
 class DisplayApp : public ofBaseApp{
 public:
-    DisplayApp(int startWidth, int startHeight) : width(startWidth), height(startHeight) {}
+    DisplayApp(int startWidth, int startHeight, int camDeviceId) : width(startWidth), height(startHeight), camDeviceId(camDeviceId) {}
     ~DisplayApp();
 
 		void setup();
@@ -37,4 +37,5 @@ public:
 protected:
     int width;
     int height;
+    int camDeviceId;
 };

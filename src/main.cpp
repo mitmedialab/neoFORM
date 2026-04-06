@@ -13,6 +13,7 @@ int main( ){
 
 	bool hasPublicWindow = layoutSettings.getValue("hasPublicWindow", false);
 	bool hasProjectorWindow = layoutSettings.getValue("hasProjectorWindow", false);
+	int camDeviceId = layoutSettings.getValue("camDeviceId", 0);
 
     // create main window with specific location
 	ofGLFWWindowSettings settings;
@@ -71,7 +72,7 @@ int main( ){
     
     // seperate applications (needed for some openframeworks stuff)
     auto manager = make_shared<AppManager>();
-    auto displayApp = hasPublicWindow ? make_shared<DisplayApp>(displayWindow->getWidth(), displayWindow->getHeight()) : nullptr;
+    auto displayApp = hasPublicWindow ? make_shared<DisplayApp>(displayWindow->getWidth(), displayWindow->getHeight(), camDeviceId) : nullptr;
     auto projectorApp = hasProjectorWindow ? make_shared<ProjectorApp>(projectorWindow->getWidth(), projectorWindow->getHeight()) : nullptr;
 
     // let the windows see each other
@@ -79,7 +80,11 @@ int main( ){
     manager->displayWindow = displayWindow;
     if (hasProjectorWindow) projectorApp->mainApp = manager;
     manager->projectorWindow = projectorWindow;
-    manager->cam = &displayApp->cam;
+    
+    // Only set camera reference if public window exists
+    if (hasPublicWindow) {
+        manager->cam = &displayApp->cam;
+    }
 
     ofRunApp(mainWindow, manager);
     if (hasPublicWindow) ofRunApp(displayWindow, displayApp);
