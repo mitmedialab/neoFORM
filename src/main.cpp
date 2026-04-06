@@ -80,7 +80,11 @@ int main( ){
     manager->displayWindow = displayWindow;
     if (hasProjectorWindow) projectorApp->mainApp = manager;
     manager->projectorWindow = projectorWindow;
-    manager->cam = &displayApp->cam;
+    
+    // Only set camera reference if public window exists
+    if (hasPublicWindow) {
+        manager->cam = &displayApp->cam;
+    }
 
     ofRunApp(mainWindow, manager);
     if (hasPublicWindow) ofRunApp(displayWindow, displayApp);
